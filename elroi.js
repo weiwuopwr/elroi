@@ -724,15 +724,15 @@
          * @param {String} dateFormat
          * @return {Array} xLabels An array of correctly formatted labels for the x-axis
          */
-        function getXLabels(series, dateFormat){
+        function getXLabels(series, dateOptions){
 
             var xLabels = [];
 
             $(series).each(function(){
 
                 var startDate,
-                    startDateFormat = dateFormat,
-                    endDateFormat = dateFormat,
+                    startDateFormat = dateOptions.format,
+                    endDateFormat = dateOptions.format,
                     endDate,
                     label = '';
 
@@ -754,13 +754,13 @@
                 }
 
                 if (startDate) {
-                    label += elroi.fn.formatDate(startDateFormat, startDate);
+                    label += elroi.fn.formatDate(startDateFormat, startDate, dateOptions);
                 }
                 if(startDate && endDate) {
                     label += " &ndash;";
                 }
                 if(endDate) {
-                    label += elroi.fn.formatDate(endDateFormat, endDate);
+                    label += elroi.fn.formatDate(endDateFormat, endDate, dateOptions);
                     label = label.replace(/\s/g, '&nbsp;');
                 }
 
@@ -948,14 +948,14 @@
             if(graph.options.axes.x1.show){
                 if(!graph.options.axes.x1.labels || graph.options.axes.x1.labels.length === 0) {
                     seriesIndex = graph.options.axes.x1.seriesIndex;
-                    graph.options.axes.x1.labels= getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.dates.format);
+                    graph.options.axes.x1.labels= getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.dates);
                 }
                 drawXLabels(graph.options.axes.x1);
             }
             if(graph.options.axes.x2.show && graph.hasData){
                 if (!graph.options.axes.x2.labels || graph.options.axes.x2.labels.length === 0) {
                     seriesIndex = graph.options.axes.x2.seriesIndex;
-                    graph.options.axes.x2.labels = getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.dates.format);
+                    graph.options.axes.x2.labels = getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.dates);
                 }
                 drawXLabels(graph.options.axes.x2);
             }
