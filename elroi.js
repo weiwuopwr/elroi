@@ -22,7 +22,9 @@
         var defaults = {
             animation: true,
             colors: ['#99cc33', '#ffee44', '#ffbb11', '#ee5500', '#33bbcc', '#88ddee'],
-            labelDateFormat: 'auto',
+            dates : {
+               format: 'auto'
+            },
             errorMessage : false,
             labelWidth : 'auto',
             flagOffset : 5,
@@ -229,11 +231,13 @@
             DAY_NAMES_LONG = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
             MONTH_NAMES_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
             MONTH_NAMES_LONG = ['January','Feburary','March','April','May','June','July','August','September','October','November','December'],
+            MERIDIAN = ['am', 'pm'],
             date = new Date(value),
             dayNamesShort,
             dayNamesLong,
             monthNamesShort,
             monthNamesLong,
+            merid,
             formattedDate = "",
             thisChar,
             isDoubled,
@@ -247,6 +251,7 @@
         dayNamesLong = options.dayNamesLong || DAY_NAMES_LONG;
         monthNamesShort = options.monthNamesShort || MONTH_NAMES_SHORT;
         monthNamesLong = options.monthNamesLong || MONTH_NAMES_LONG;
+        merid = options.meridian || MERIDIAN;
 
         for(i = 0; i < format.length; i++) {
             thisChar = format.charAt(i);
@@ -304,7 +309,7 @@
                     formattedDate += date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
                     break;
                 case 'a':
-                    formattedDate += date.getHours() < 12 ? 'am' : 'pm';
+                    formattedDate += date.getHours() < 12 ? merid[0] : merid[1];
                     break;
                 default:
                     formattedDate += thisChar;
@@ -646,8 +651,8 @@
         sums = elroi.fn.helpers.sumSeries(dataValuesSet);
         hasData = elroi.fn.helpers.hasData(graph.allSeries)
 
-        if(graph.options.labelDateFormat === 'auto') {
-            graph.options.labelDateFormat = elroi.fn.helpers.determineDateFormat(graph.allSeries);
+        if(graph.options.dates.format === 'auto') {
+            graph.options.dates.format = elroi.fn.helpers.determineDateFormat(graph.allSeries);
         }
 
         var numPoints = !hasData ? 1 : graph.allSeries[0].series[0].length;
@@ -719,15 +724,15 @@
          * @param {String} dateFormat
          * @return {Array} xLabels An array of correctly formatted labels for the x-axis
          */
-        function getXLabels(series, dateFormat){
+        function getXLabels(series, dateOptions){
 
             var xLabels = [];
 
             $(series).each(function(){
 
                 var startDate,
-                    startDateFormat = dateFormat,
-                    endDateFormat = dateFormat,
+                    startDateFormat = dateOptions.format,
+                    endDateFormat = dateOptions.format,
                     endDate,
                     label = '';
 
@@ -749,13 +754,13 @@
                 }
 
                 if (startDate) {
-                    label += elroi.fn.formatDate(startDateFormat, startDate);
+                    label += elroi.fn.formatDate(startDateFormat, startDate, dateOptions);
                 }
                 if(startDate && endDate) {
                     label += " &ndash;";
                 }
                 if(endDate) {
-                    label += elroi.fn.formatDate(endDateFormat, endDate);
+                    label += elroi.fn.formatDate(endDateFormat, endDate, dateOptions);
                     label = label.replace(/\s/g, '&nbsp;');
                 }
 
@@ -943,14 +948,14 @@
             if(graph.options.axes.x1.show){
                 if(!graph.options.axes.x1.labels || graph.options.axes.x1.labels.length === 0) {
                     seriesIndex = graph.options.axes.x1.seriesIndex;
-                    graph.options.axes.x1.labels= getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.labelDateFormat);
+                    graph.options.axes.x1.labels= getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.dates);
                 }
                 drawXLabels(graph.options.axes.x1);
             }
             if(graph.options.axes.x2.show && graph.hasData){
                 if (!graph.options.axes.x2.labels || graph.options.axes.x2.labels.length === 0) {
                     seriesIndex = graph.options.axes.x2.seriesIndex;
-                    graph.options.axes.x2.labels = getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.labelDateFormat);
+                    graph.options.axes.x2.labels = getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.dates);
                 }
                 drawXLabels(graph.options.axes.x2);
             }

@@ -139,6 +139,21 @@
         Q.equal(elroi.fn.formatDate('hh a', new Date('2011/03/02 01:00')), "01 am", 'Double digit time with am');
         Q.equal(elroi.fn.formatDate('H:n', new Date('2011/03/02 01:09')), "1:09", 'Single digit military time');
         Q.equal(elroi.fn.formatDate('HH:n', new Date('2011/03/02 13:47')), "13:47", 'Double digit military time');
+        
+        var deDayNamesShort = ['So','Mo','Di','Mi','Do','Fr','Sa'],
+            deDayNamesLong = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
+            deMonthNamesShort = ['Jan','Feb','März','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'],
+            deMonthNamesLong = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+            capMeridians = ['AM', 'PM'];
+       
+       // date format options     
+       Q.equal(elroi.fn.formatDate('HH:n a', new Date('2011/06/03 13:47'), {meridian: capMeridians}), "13:47 PM", 'Overwrite meridian ');  
+       Q.equal(elroi.fn.formatDate('DD', new Date('2011/06/02'), {dayNamesLong: deDayNamesLong}), 'Donnerstag', 'Overwrite long day names');
+       Q.equal(elroi.fn.formatDate('D', new Date('2011/06/01'), {dayNamesShort: deDayNamesShort}), "Mi", 'Overwrite short day names');    
+       Q.equal(elroi.fn.formatDate('M', new Date('2011/03/01'), {monthNamesShort: deMonthNamesShort}), "März", 'Overwrite short month names');
+       Q.equal(elroi.fn.formatDate('MM', new Date('2011/12/02'), {monthNamesLong: deMonthNamesLong}), "Dezember", 'Overwrite long month names'); 
+       
+        
     });
     
     Q.test('elroi date range determiner', function(){
@@ -300,7 +315,7 @@
                              dupeMonth: "<p><strong>About your billing cycle</strong></p><p>You had multiple bills during the same month. Each bill covers different days of the month. Move your mouse over the graph to see the date range.</p>"
                          }
                      },
-                     labelDateFormat: "M",
+                     dates: { format: "M"},
                      errorMessage: false
                  },
                  [
@@ -346,7 +361,10 @@
                             .appendTo($('#test')),
               $singleSeriesBarGraph = $('<div/>')
                   .css({width: 900, height: 300})
-                  .appendTo($('#test')),                            
+                  .appendTo($('#test')),
+            $germanDateLabels = $('<div/>')
+                .css({width: 900, height: 300})
+                .appendTo($('#test')),                            
                testSeriesData = 
                             [
                                 [
@@ -378,7 +396,9 @@
                                     {value: 448, endDate: "2010-04-01T03:59:59.000Z"}
                                 ]
                             ];
-         
+            var deDayNamesShort = ['So','Mo','Di','Mi','Do','Fr','Sa'],
+                deDayNamesLong = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
+                deMonthNamesShort = ['Jan','Feb','März','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
          
              var lg = elroi(
                  $lineGraph,
@@ -405,7 +425,19 @@
                         {value: 6, date: "2009-10-01T03:59:59.000Z"}, 
                         {value: 7, date: "2009-11-01T03:59:59.000Z"}]
               );
-              ssbg = elroi($singleSeriesBarGraph, { series: [ {value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}], options: {type: 'bar'}});      
+              ssbg = elroi($singleSeriesBarGraph, { series: [ {value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}], options: {type: 'bar'}});
+              germLabLG = elroi(
+                  $germanDateLabels,
+                  [ { series: testSeriesData, options : { type: 'line'} }], 
+                  { 
+                      dates: {
+                        format: "DD M",
+                        dayNamesShort: deDayNamesShort,
+                        dayNamesLong: deDayNamesLong,
+                        monthNamesShort: deMonthNamesShort
+                      }
+                  }
+              );      
          });
     
     
