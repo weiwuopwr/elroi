@@ -22,7 +22,9 @@
         var defaults = {
             animation: true,
             colors: ['#99cc33', '#ffee44', '#ffbb11', '#ee5500', '#33bbcc', '#88ddee'],
-            labelDateFormat: 'auto',
+            dates : {
+               format: 'auto'
+            },
             errorMessage : false,
             labelWidth : 'auto',
             flagOffset : 5,
@@ -646,8 +648,8 @@
         sums = elroi.fn.helpers.sumSeries(dataValuesSet);
         hasData = elroi.fn.helpers.hasData(graph.allSeries)
 
-        if(graph.options.labelDateFormat === 'auto') {
-            graph.options.labelDateFormat = elroi.fn.helpers.determineDateFormat(graph.allSeries);
+        if(graph.options.dates.format === 'auto') {
+            graph.options.dates.format = elroi.fn.helpers.determineDateFormat(graph.allSeries);
         }
 
         var numPoints = !hasData ? 1 : graph.allSeries[0].series[0].length;
@@ -943,14 +945,14 @@
             if(graph.options.axes.x1.show){
                 if(!graph.options.axes.x1.labels || graph.options.axes.x1.labels.length === 0) {
                     seriesIndex = graph.options.axes.x1.seriesIndex;
-                    graph.options.axes.x1.labels= getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.labelDateFormat);
+                    graph.options.axes.x1.labels= getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.dates.format);
                 }
                 drawXLabels(graph.options.axes.x1);
             }
             if(graph.options.axes.x2.show && graph.hasData){
                 if (!graph.options.axes.x2.labels || graph.options.axes.x2.labels.length === 0) {
                     seriesIndex = graph.options.axes.x2.seriesIndex;
-                    graph.options.axes.x2.labels = getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.labelDateFormat);
+                    graph.options.axes.x2.labels = getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.dates.format);
                 }
                 drawXLabels(graph.options.axes.x2);
             }

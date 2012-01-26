@@ -300,7 +300,7 @@
                              dupeMonth: "<p><strong>About your billing cycle</strong></p><p>You had multiple bills during the same month. Each bill covers different days of the month. Move your mouse over the graph to see the date range.</p>"
                          }
                      },
-                     labelDateFormat: "M",
+                     dates: { format: "M"},
                      errorMessage: false
                  },
                  [

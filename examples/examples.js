@@ -16,7 +16,7 @@ $(document).ready(function(){
        
        // top level
        graphOpts.animation = $('#animation').is(':checked');
-       graphOpts.labelDateFormat = $('#label-date-format').val();
+       graphOpts.dates = { format: $('#label-date-format').val() };
        graphOpts.errorMessage = $('#error-message').val() == '' ? false : "<p>" + $('#error-message').val() + '</p>';
        graphOpts.labelWidth = $('#label-width').val();
        
