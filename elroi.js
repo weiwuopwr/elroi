@@ -231,11 +231,13 @@
             DAY_NAMES_LONG = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
             MONTH_NAMES_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
             MONTH_NAMES_LONG = ['January','Feburary','March','April','May','June','July','August','September','October','November','December'],
+            MERIDIAN = ['am', 'pm'],
             date = new Date(value),
             dayNamesShort,
             dayNamesLong,
             monthNamesShort,
             monthNamesLong,
+            merid,
             formattedDate = "",
             thisChar,
             isDoubled,
@@ -249,6 +251,7 @@
         dayNamesLong = options.dayNamesLong || DAY_NAMES_LONG;
         monthNamesShort = options.monthNamesShort || MONTH_NAMES_SHORT;
         monthNamesLong = options.monthNamesLong || MONTH_NAMES_LONG;
+        merid = options.meridian || MERIDIAN;
 
         for(i = 0; i < format.length; i++) {
             thisChar = format.charAt(i);
@@ -306,7 +309,7 @@
                     formattedDate += date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
                     break;
                 case 'a':
-                    formattedDate += date.getHours() < 12 ? 'am' : 'pm';
+                    formattedDate += date.getHours() < 12 ? merid[0] : merid[1];
                     break;
                 default:
                     formattedDate += thisChar;
