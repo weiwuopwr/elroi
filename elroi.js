@@ -584,6 +584,10 @@
                 temp,
                 i;
 
+            if (allSeries[0] === undefined) {
+                return allSeries;
+            }
+
             if(typeof(allSeries[0]) == "number") {
                 temp = { series: [[]]};
                 for(i=0; i<allSeries.length; i++) {
