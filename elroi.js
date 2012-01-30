@@ -1855,7 +1855,7 @@
                 }
             }
 
-            graph.$el.bind('barDrawn', function(){$('.point-flag').fadeIn();});
+            graph.$el.bind('barDrawn', function(){$('.elroi-point-flag').fadeIn();});
             for (j = 0; j < series.length; j++) {
                 drawPointFlags(series[j], seriesSum, j+1, graph.yTicks[seriesIndex]);
             }
