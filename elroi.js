@@ -69,7 +69,7 @@
                 }
             },
             tooltip: {
-                formatter : function(tip){return tip},
+                formatter : function(tip){return tip;},
                 show: true,
                 width: 120
             },
@@ -155,7 +155,7 @@
 
             $(graph.allSeries).each(function(i) {
 
-                if(!isGridDrawn && graph.seriesOptions[i].type != 'pie') {
+                if(!isGridDrawn && graph.seriesOptions[i].type !== 'pie') {
                     elroi.fn.grid(graph).draw();
                     isGridDrawn = true;
                 }
@@ -261,7 +261,7 @@
                 case 'd':
                     if(isDoubled) {
                         if(date.getDate() < 10) {
-                            formattedDate += '0'
+                            formattedDate += '0';
                         }
                         formattedDate += date.getDate();
                     } else {
@@ -274,7 +274,7 @@
                 case 'm':
                     if(isDoubled) {
                         if(date.getMonth() < 10) {
-                            formattedDate += '0'
+                            formattedDate += '0';
                         }
                         formattedDate += date.getMonth() + 1;
                     } else {
@@ -337,11 +337,11 @@
         hasData : function(allSeries){
             var hasData = true;
 
-            hasData = allSeries !== undefined
-                    && allSeries.length
-                    && allSeries[0] !== undefined
-                    && allSeries[0].series !== undefined
-                    && allSeries[0].series.length;
+            hasData = allSeries !== undefined &&
+                    allSeries.length &&
+                    allSeries[0] !== undefined &&
+                    allSeries[0].series !== undefined &&
+                    allSeries[0].series.length;
 
 
             $(allSeries).each(function(i) {
@@ -376,7 +376,7 @@
                     var singleSeries = series[j];
 
                     $(singleSeries).each(function(k) {
-                        if (j === 0 || seriesOptions[i].type != 'stackedBar') {
+                        if (j === 0 || seriesOptions[i].type !== 'stackedBar') {
                             dataValues.push(+this.value);
                         }
                         else {
@@ -462,7 +462,7 @@
             var maxVals = [];
 
             $(dataValuesSet).each(function(i) {
-                if (seriesOptions[i].maxYValue == 'auto') {
+                if (seriesOptions[i].maxYValue === 'auto') {
                     maxVals.push(Math.max.apply(Math, dataValuesSet[i]));
                 } else {
                     maxVals.push(seriesOptions[i].maxYValue);
@@ -485,7 +485,7 @@
                 }
 
                 var hasPointFlags = elroi.fn.helpers.hasPointFlags(graph.allSeries);
-                if (hasPointFlags && graph.options.bars.flagPosition != 'interior') {
+                if (hasPointFlags && graph.options.bars.flagPosition !== 'interior') {
                      var $pointFlag = $('<div class="point-flag"><div class="flag-content">Test flag</div></div>').appendTo(graph.$el.find('.paper'));
                      pixelsNeeded += $pointFlag.outerHeight();
                      $pointFlag.remove();
@@ -584,7 +584,7 @@
                 temp,
                 i;
 
-            if(!(allSeries[0] === undefined) && typeof(allSeries[0]) == "number") {
+            if(allSeries[0] !== undefined && typeof(allSeries[0]) === "number") {
                 temp = { series: [[]]};
                 for(i=0; i<allSeries.length; i++) {
                     temp.series[0].push({value: allSeries[i]});
@@ -600,7 +600,7 @@
                     } else {
                         cleanData = allSeries;
                     }
-                } else if (!(allSeries[0] === undefined) && !(allSeries[0] instanceof Array)){
+                } else if (allSeries[0] !== undefined && !(allSeries[0] instanceof Array)){
                     if(allSeries[0].series === undefined) {
                         temp = { series: [] };
                         temp.series.push(allSeries);
@@ -649,7 +649,7 @@
         minVals = [];
         dataValuesSet = elroi.fn.helpers.getDataValues(graph.allSeries, seriesOptions);
         sums = elroi.fn.helpers.sumSeries(dataValuesSet);
-        hasData = elroi.fn.helpers.hasData(graph.allSeries)
+        hasData = elroi.fn.helpers.hasData(graph.allSeries);
 
         if(graph.options.dates.format === 'auto') {
             graph.options.dates.format = elroi.fn.helpers.determineDateFormat(graph.allSeries);
@@ -674,7 +674,7 @@
         });
 
         var labelWidth =
-            graph.options.labelWidth == 'auto' ?
+            graph.options.labelWidth === 'auto' ?
                 (graph.width - graph.padding.left - graph.padding.right) / (numPoints/showEvery) - 2  :  //padding of 2px between labels
                 graph.options.labelWidth;
 
@@ -745,10 +745,10 @@
                 }
 
                 if (startDate && endDate) {
-                    if (startDate.getMonth() == endDate.getMonth()) {
+                    if (startDate.getMonth() === endDate.getMonth()) {
                         endDateFormat = endDateFormat.replace('M', '' && startDateFormat.match('M'));
                     }
-                    if (startDate.getFullYear() == endDate.getFullYear() && startDateFormat.match(', yy')) {
+                    if (startDate.getFullYear() === endDate.getFullYear() && startDateFormat.match(', yy')) {
                         startDateFormat = startDateFormat.replace(', yy', '');
                     }
                 }
@@ -809,9 +809,9 @@
 
             var $labels, axisY;
 
-            if (axis.id == 'x1') {
+            if (axis.id === 'x1') {
                 axisY = graph.height;
-            } else if (axis.id == 'x2') {
+            } else if (axis.id === 'x2') {
                 axisY = graph.padding.top;
             }
 
@@ -843,7 +843,7 @@
 
                 $label.css({ left: x, width: graph.labelWidth });
 
-                if (axis.id == 'x2') {
+                if (axis.id === 'x2') {
                     $label.css( { top: axisY + $labels.height() + graph.padding.top });
                 }
             });
@@ -900,27 +900,27 @@
             $(yLabels).each(function(i){
                 var yLabel = commaFormat(yLabels[i], precision);
 
-                var y = graph.height
-                        - i / (graph.options.grid.numYLabels - 1) * avalaibleArea
-                        - graph.padding.bottom
-                        + graph.padding.top
-                        - graph.labelLineHeight;
+                var y = graph.height -
+                        i / (graph.options.grid.numYLabels - 1) * avalaibleArea -
+                        graph.padding.bottom +
+                        graph.padding.top -
+                        graph.labelLineHeight;
 
                 if(i === graph.options.grid.numYLabels-1) {
-                    yLabel = (axis.prefixUnit ? axis.topUnit : '')
-                            + yLabel
-                            + (!axis.prefixUnit ? " " + axis.topUnit : '');
+                    yLabel = (axis.prefixUnit ? axis.topUnit : '') +
+                            yLabel +
+                            (!axis.prefixUnit ? " " + axis.topUnit : '');
                 } else {
-                    yLabel = (axis.prefixUnit ? axis.unit : '')
-                            + yLabel
-                            + (!axis.prefixUnit ? " " + axis.unit : '');
+                    yLabel = (axis.prefixUnit ? axis.unit : '') +
+                            yLabel +
+                            (!axis.prefixUnit ? " " + axis.unit : '');
                 }
 
                 var cssPosition;
-                if (axis.id == 'y1') {
+                if (axis.id === 'y1') {
                     cssPosition = { 'top' : y, 'left' : 0 };
                 }
-                if (axis.id == 'y2') {
+                if (axis.id === 'y2') {
                     cssPosition = { 'top' : y, 'right' : 0 };
                 }
 
@@ -979,7 +979,7 @@
 
         for (i=0; i<n; i++) {
             for (j=i+1; j<n; j++) {
-                if (arr[i] == arr[j]) {
+                if (arr[i] === arr[j]) {
                     return true;
                 }
             }
@@ -1042,6 +1042,13 @@
          * @param {Boolean} animate - If the point should be animated.
          */
         function drawPoint(x, y, value, color, fillPoint, clickTarget, animate, stroke){
+            var point;
+
+             function conditionallyFillPoint() {
+                 if(fillPoint) {
+                     point.attr({fill: color});
+                 }
+             }
 
              if(stroke) {
 
@@ -1051,15 +1058,9 @@
                      'fill': '#fff'
                  };
 
-                 function conditionallyFillPoint() {
-                     if(fillPoint) {
-                         point.attr({fill: color});
-                     }
-                 }
-
                  if(animate) {
 
-                     var point = graph.paper.circle(x, y, 0).attr(pointAttributes);
+                     point = graph.paper.circle(x, y, 0).attr(pointAttributes);
 
                      conditionallyFillPoint();
 
@@ -1067,7 +1068,7 @@
                  }
                  else {
 
-                     var point = graph.paper.circle(x, y, graph.options.lines.pointRadius).attr(pointAttributes);
+                     point = graph.paper.circle(x, y, graph.options.lines.pointRadius).attr(pointAttributes);
 
                      conditionallyFillPoint();
 
@@ -1150,7 +1151,7 @@
                 units=args.units;
 
 
-            if(index == series.length) {
+            if(index === series.length) {
                 return true;
             }
 
@@ -1192,14 +1193,14 @@
             if(isLineFilled) {
                 if(prevPoint && !isNullPoint) {
                     var yZero = graph.height - graph.padding.bottom + graph.padding.top,
-                        fillLineStartPath = "M" + prevPoint.x + " " + yZero
-                            + "L" + prevPoint.x + " " + prevPoint.y
-                            + "L" + prevPoint.x + " " + prevPoint.y
-                            + "L" + prevPoint.x + " " + yZero,
-                        fillLinePath = "M" + prevPoint.x + " " + yZero
-                            + "L" + prevPoint.x + " " + prevPoint.y
-                            + "L" + x + " " + y
-                            + "L" + x + " " + yZero;
+                        fillLineStartPath = "M" + prevPoint.x + " " + yZero +
+                            "L" + prevPoint.x + " " + prevPoint.y +
+                            "L" + prevPoint.x + " " + prevPoint.y +
+                            "L" + prevPoint.x + " " + yZero,
+                        fillLinePath = "M" + prevPoint.x + " " + yZero +
+                            "L" + prevPoint.x + " " + prevPoint.y +
+                            "L" + x + " " + y +
+                            "L" + x + " " + yZero;
 
                     var fillLine = graph.paper.path(fillLineStartPath).attr({
                             'fill':color,
@@ -1517,52 +1518,52 @@
 
             var rotationAngle = wedge.startAngle - Math.abs((wedge.endAngle - wedge.startAngle)/2),
                 flagCoords = {},
-				selectedFlagOffset = wedge.flag.$el.width()/2,
-				selectedFlagCoords = {};
+                selectedFlagOffset = wedge.flag.$el.width()/2,
+                selectedFlagCoords = {};
 
             $(wedges).each(function(i){
                 flagCoords = getFlagCoords(this.flag.$el, wedges[i].startAngle + (wedges[i].endAngle - wedges[i].startAngle)/2 - rotationAngle);
                 if(graph.options.animation) {
-					flags.fadeOut(40);
-				} else{
-					flags.hide();
-				}
+                    flags.fadeOut(40);
+                } else{
+                    flags.hide();
+                }
                 wedges[i].flag.$el.css({left: flagCoords.x, top: flagCoords.y });
             });
 
 
-			if(graph.options.animation) {
-            	selectedWedge.rObj.animate(
-	                {
-	                    path: selectedWedge.path
-	                },
-	                25,
-	                function(){
-	                    wedgeRobjs.animate(
-	                        {
-	                            'rotation': rotationAngle + ' ' + center.x + ' ' + center.y,
-	                            'stroke-width': 0
-	                        },
-	                        500,
-	                        function(){
+            if(graph.options.animation) {
+                selectedWedge.rObj.animate(
+                    {
+                        path: selectedWedge.path
+                    },
+                    25,
+                    function(){
+                        wedgeRobjs.animate(
+                            {
+                                'rotation': rotationAngle + ' ' + center.x + ' ' + center.y,
+                                'stroke-width': 0
+                            },
+                            500,
+                            function(){
 
-	                            flags.fadeIn();
-								wedge.flag.$el.css('left', wedge.flag.$el.position().left + selectedFlagOffset + FLAGMARGIN);
+                                flags.fadeIn();
+                                wedge.flag.$el.css('left', wedge.flag.$el.position().left + selectedFlagOffset + FLAGMARGIN);
 
-	                            wedge.rObj.animate({
-	                                path: wedge.animPath
-	                            }, 100);
-	                        }
-	                    );
-	                }
-	            );
-			} else {
-				selectedWedge.rObj.attr('path', selectedWedge.path);
-				wedgeRobjs.attr({'rotation': rotationAngle + ' ' + center.x + ' ' + center.y});
-				wedge.rObj.attr({'path': wedge.animPath});
-				flags.show();
-				wedge.flag.$el.css('left', wedge.flag.$el.position().left + selectedFlagOffset + FLAGMARGIN);
-			}
+                                wedge.rObj.animate({
+                                    path: wedge.animPath
+                                }, 100);
+                            }
+                        );
+                    }
+                );
+            } else {
+                selectedWedge.rObj.attr('path', selectedWedge.path);
+                wedgeRobjs.attr({'rotation': rotationAngle + ' ' + center.x + ' ' + center.y});
+                wedge.rObj.attr({'path': wedge.animPath});
+                flags.show();
+                wedge.flag.$el.css('left', wedge.flag.$el.position().left + selectedFlagOffset + FLAGMARGIN);
+            }
 
             selectedWedge = wedge;
         }
@@ -1594,11 +1595,11 @@
 
             selectedWedge = wedges[0];
             if(graph.options.animation) {
-            	wedgeRobjs.attr({opacity: 0});
-				wedgeRobjs.animate({ opacity: 1}, 300, function(){ selectWedge(selectedWedge); });
-			} else {
-				selectWedge(selectedWedge);
-			}
+                wedgeRobjs.attr({opacity: 0});
+                wedgeRobjs.animate({ opacity: 1}, 300, function(){ selectWedge(selectedWedge); });
+            } else {
+                selectWedge(selectedWedge);
+            }
 
             $(wedges).each(function(i){
 
@@ -1689,12 +1690,12 @@
                     var totalBarHeights = seriesSum[i] * yTick;
                     var y = graph.height - totalBarHeights - graph.padding.bottom + graph.padding.top;
 
-                    if (series[i].pointFlag && (seriesCount == graph.allSeries[0].series.length)) {
+                    if (series[i].pointFlag && (seriesCount === graph.allSeries[0].series.length)) {
                             var $pointFlag = series[i].pointFlag;
                             $pointFlag.addClass('elroi-point-flag').appendTo(graph.$el.find('.paper'));
 
                             var pointFlagY;
-                            if (graph.options.bars.flagPosition == 'interior' && $pointFlag.outerHeight() < totalBarHeights) {
+                            if (graph.options.bars.flagPosition === 'interior' && $pointFlag.outerHeight() < totalBarHeights) {
                                 pointFlagY = graph.height - y - $pointFlag.outerHeight() - graph.options.flagOffset;
                             }
                             else {
@@ -1741,6 +1742,7 @@
 
             var rolloverBars = graph.paper.set();
             var rolloverX;
+            var rollOverTargetBar;
             for(var i = 0; i < series.length; i++) {
 
                 barHeight = isStacked ? (total * yTick) + graph.options.bars.highlightBorderWidth :
@@ -1758,8 +1760,8 @@
                             'stroke-opacity': 0
                         });
                 rolloverBars.push(rollOverBar);
-                var targetBarWidth = isStacked ? barWidth : barWidth * series.length
-                var rollOverTargetBar = graph.paper
+                var targetBarWidth = isStacked ? barWidth : barWidth * series.length;
+                rollOverTargetBar = graph.paper
                         .rect(x, 0, targetBarWidth, graph.height)
                         .attr({
                             'fill': 'white',
