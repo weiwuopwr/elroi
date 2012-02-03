@@ -88,13 +88,20 @@
         Q.equal(shouldNotHavePointFlags, false, 'Does not have point flags');
 
     });
-    
+
+    Q.test('elroi can handle an empty dataset without dying', function() {
+        var expectedFormattedData = [];
+        var formattedData = elroi.fn.helpers.dataCleaner([]);
+        Q.deepEqual(formattedData, expectedFormattedData, 'Data cleaner spits back out empty data');
+
+    });
+
     Q.test('elroi accepts simple arrays for data', function() {
         var simpleData = [1,2,3,4,5,6,7];
         var expectedFormattedData = [{series: [[{value: 1},{value: 2},{value: 3},{value: 4},{value: 5},{value: 6},{value: 7}]]}];
         var formattedData = elroi.fn.helpers.dataCleaner(simpleData);
         Q.deepEqual(formattedData, expectedFormattedData, 'Simple array is correctly reformmated');
-       
+
     });
     
     Q.test('elroi accepts a single series for data', function() {

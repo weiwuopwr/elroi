@@ -584,11 +584,7 @@
                 temp,
                 i;
 
-            if (allSeries[0] === undefined) {
-                return allSeries;
-            }
-
-            if(typeof(allSeries[0]) == "number") {
+            if(!(allSeries[0] === undefined) && typeof(allSeries[0]) == "number") {
                 temp = { series: [[]]};
                 for(i=0; i<allSeries.length; i++) {
                     temp.series[0].push({value: allSeries[i]});
@@ -604,7 +600,7 @@
                     } else {
                         cleanData = allSeries;
                     }
-                } else if (!(allSeries[0] instanceof Array)){
+                } else if (!(allSeries[0] === undefined) && !(allSeries[0] instanceof Array)){
                     if(allSeries[0].series === undefined) {
                         temp = { series: [] };
                         temp.series.push(allSeries);
