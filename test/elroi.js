@@ -408,7 +408,7 @@
              sbg = elroi(
                   $stackedBarGraph,
                   [ { series: testSeriesData, options : { type: 'stackedBar'} }],
-                  { animation: false }
+                  {  colors: ['#000', '#090'] }
               ),
               bg = elroi(
                   $barGraph,
