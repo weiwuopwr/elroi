@@ -573,7 +573,7 @@
             } else if(averageGap < MILLISECONDS_PER_YEAR){
                 format = "M";
             } else {
-                format = "YY";
+                format = "yy";
             }
 
             return format;
