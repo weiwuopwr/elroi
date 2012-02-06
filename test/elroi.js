@@ -88,13 +88,20 @@
         Q.equal(shouldNotHavePointFlags, false, 'Does not have point flags');
 
     });
-    
+
+    Q.test('elroi can handle an empty dataset without dying', function() {
+        var expectedFormattedData = [];
+        var formattedData = elroi.fn.helpers.dataCleaner([]);
+        Q.deepEqual(formattedData, expectedFormattedData, 'Data cleaner spits back out empty data');
+
+    });
+
     Q.test('elroi accepts simple arrays for data', function() {
         var simpleData = [1,2,3,4,5,6,7];
         var expectedFormattedData = [{series: [[{value: 1},{value: 2},{value: 3},{value: 4},{value: 5},{value: 6},{value: 7}]]}];
         var formattedData = elroi.fn.helpers.dataCleaner(simpleData);
         Q.deepEqual(formattedData, expectedFormattedData, 'Simple array is correctly reformmated');
-       
+
     });
     
     Q.test('elroi accepts a single series for data', function() {
@@ -139,6 +146,21 @@
         Q.equal(elroi.fn.formatDate('hh a', new Date('2011/03/02 01:00')), "01 am", 'Double digit time with am');
         Q.equal(elroi.fn.formatDate('H:n', new Date('2011/03/02 01:09')), "1:09", 'Single digit military time');
         Q.equal(elroi.fn.formatDate('HH:n', new Date('2011/03/02 13:47')), "13:47", 'Double digit military time');
+        
+        var deDayNamesShort = ['So','Mo','Di','Mi','Do','Fr','Sa'],
+            deDayNamesLong = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
+            deMonthNamesShort = ['Jan','Feb','März','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'],
+            deMonthNamesLong = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+            capMeridians = ['AM', 'PM'];
+       
+       // date format options     
+       Q.equal(elroi.fn.formatDate('HH:n a', new Date('2011/06/03 13:47'), {meridian: capMeridians}), "13:47 PM", 'Overwrite meridian ');  
+       Q.equal(elroi.fn.formatDate('DD', new Date('2011/06/02'), {dayNamesLong: deDayNamesLong}), 'Donnerstag', 'Overwrite long day names');
+       Q.equal(elroi.fn.formatDate('D', new Date('2011/06/01'), {dayNamesShort: deDayNamesShort}), "Mi", 'Overwrite short day names');    
+       Q.equal(elroi.fn.formatDate('M', new Date('2011/03/01'), {monthNamesShort: deMonthNamesShort}), "März", 'Overwrite short month names');
+       Q.equal(elroi.fn.formatDate('MM', new Date('2011/12/02'), {monthNamesLong: deMonthNamesLong}), "Dezember", 'Overwrite long month names'); 
+       
+        
     });
     
     Q.test('elroi date range determiner', function(){
@@ -148,7 +170,7 @@
                 series: 
                     [
                         [
-                            {value:1, date: "2009-05-01T03:59:59.000Z"}, {value: 2, date:"2009-05-01T04:59:59.000Z"}
+                            {value:1, date: "2009/05/01 03:59:59"}, {value: 2, date:"2009/05/01 04:59:59"}
                         ]
                     ]
             }
@@ -159,7 +181,7 @@
                 series: 
                     [
                         [
-                            {value:1, date: "2009-05-01T03:59:59.000Z"}, {value: 2, date:"2009-06-01T03:59:59.000Z"}
+                            {value:1, date: "2009/05/01 03:59:59"}, {value: 2, date:"2009/06/01 03:59:59"}
                         ]
                     ]
             }
@@ -170,7 +192,7 @@
                  series: 
                      [
                          [
-                             {value:1, date: "2009-05-01T03:59:59.000Z"}, {value: 2, date:"2009-05-04T03:59:59.000Z"}
+                             {value:1, date: "2009/05/01 03:59:59"}, {value: 2, date:"2009/05/04 03:59:59"}
                          ]
                      ]
              }
@@ -181,7 +203,7 @@
                   series: 
                       [
                           [
-                              {value:1, date: "2009-05-01T03:59:59.000Z"}, {value: 2, date:"2010-05-01T03:59:59.000Z"}
+                              {value:1, date: "2009/05/01 03:59:59"}, {value: 2, date:"2010/05/01 03:59:59"}
                           ]
                       ]
               }
@@ -191,7 +213,7 @@
          Q.equal(elroi.fn.helpers.determineDateFormat(subDaily), "h:nna", "Under a day should get timestamps");
          Q.equal(elroi.fn.helpers.determineDateFormat(monthlyGaps), "M", "Dates a month apart should give monthly formats");      
          Q.equal(elroi.fn.helpers.determineDateFormat(withinAMonth), "M, d", "Dates within the same month should get day/month");
-         Q.equal(elroi.fn.helpers.determineDateFormat(multiYear), "YY", "Year spanners should use the year");
+         Q.equal(elroi.fn.helpers.determineDateFormat(multiYear), "yy", "Year spanners should use the year");
     });
 
     /*
@@ -222,19 +244,19 @@
                                          value: 683,
                                          clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/4?meterType=ELEC",
                                          pointFlag: false,
-                                         endDate: "2009-05-01T03:59:59.000Z"
+                                         endDate: "2009/05/01 03:59:59"
                                      },
-                                     {value: 689,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/5?meterType=ELEC",pointFlag: false,endDate: "2009-06-01T03:59:59.000Z"},
-                                     {value: 708,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/6?meterType=ELEC",pointFlag: false,endDate: "2009-07-01T03:59:59.000Z"},
-                                     {value: 680,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/7?meterType=ELEC",pointFlag: false,endDate: "2009-08-01T03:59:59.000Z"},
-                                     {value: 690,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/8?meterType=ELEC",pointFlag: false,endDate: "2009-09-01T03:59:59.000Z"},
-                                     {value: 682,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/9?meterType=ELEC",pointFlag: false,endDate: "2009-10-01T03:59:59.000Z"},
-                                     {value: 685,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/10?meterType=ELEC",pointFlag: false,endDate: "2009-11-01T03:59:59.000Z"},
-                                     {value: 707,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/11?meterType=ELEC",pointFlag: false,endDate: "2009-12-01T04:59:59.000Z"},
-                                     {value: 702,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/12?meterType=ELEC",pointFlag: false,endDate: "2010-01-01T04:59:59.000Z"},
-                                     {value: 653,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/1?meterType=ELEC",pointFlag: false,endDate: "2010-02-01T04:59:59.000Z"},
-                                     {value: 748,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/2?meterType=ELEC",pointFlag: false,endDate: "2010-03-01T04:59:59.000Z"},
-                                     {value: 748,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/3?meterType=ELEC",pointFlag: false,endDate: "2010-04-01T03:59:59.000Z"}
+                                     {value: 689,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/5?meterType=ELEC",pointFlag: false,endDate: "2009/06/01 03:59:59"},
+                                     {value: 708,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/6?meterType=ELEC",pointFlag: false,endDate: "2009/07/01 03:59:59"},
+                                     {value: 680,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/7?meterType=ELEC",pointFlag: false,endDate: "2009/08/01 03:59:59"},
+                                     {value: 690,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/8?meterType=ELEC",pointFlag: false,endDate: "2009/09/01 03:59:59"},
+                                     {value: 682,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/9?meterType=ELEC",pointFlag: false,endDate: "2009/10/01 03:59:59"},
+                                     {value: 685,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/10?meterType=ELEC",pointFlag: false,endDate: "2009/11/01 03:59:59"},
+                                     {value: 707,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/11?meterType=ELEC",pointFlag: false,endDate: "2009/12/01 03:59:59"},
+                                     {value: 702,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/12?meterType=ELEC",pointFlag: false,endDate: "2010/01/01 03:59:59"},
+                                     {value: 653,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/1?meterType=ELEC",pointFlag: false,endDate: "2010/02/01 03:59:59"},
+                                     {value: 748,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/2?meterType=ELEC",pointFlag: false,endDate: "2010/03/01 03:59:59"},
+                                     {value: 748,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/3?meterType=ELEC",pointFlag: false,endDate: "2010/04/01 03:59:59"}
                                  ]
                              ],
                              options:
@@ -300,7 +322,7 @@
                              dupeMonth: "<p><strong>About your billing cycle</strong></p><p>You had multiple bills during the same month. Each bill covers different days of the month. Move your mouse over the graph to see the date range.</p>"
                          }
                      },
-                     labelDateFormat: "M",
+                     dates: { format: "M"},
                      errorMessage: false
                  },
                  [
@@ -346,39 +368,44 @@
                             .appendTo($('#test')),
               $singleSeriesBarGraph = $('<div/>')
                   .css({width: 900, height: 300})
-                  .appendTo($('#test')),                            
+                  .appendTo($('#test')),
+            $germanDateLabels = $('<div/>')
+                .css({width: 900, height: 300})
+                .appendTo($('#test')),                            
                testSeriesData = 
                             [
                                 [
-                                    {value: 683, endDate: "2009-05-01T03:59:59.000Z"},
-                                    {value: 689, endDate: "2009-06-01T03:59:59.000Z"},
-                                    {value: 708, endDate: "2009-07-01T03:59:59.000Z"},
-                                    {value: 680, endDate: "2009-08-01T03:59:59.000Z"},
-                                    {value: 690, endDate: "2009-09-01T03:59:59.000Z"},
-                                    {value: 682, endDate: "2009-10-01T03:59:59.000Z"},
-                                    {value: 685, endDate: "2009-11-01T03:59:59.000Z"},
-                                    {value: 707, endDate: "2009-12-01T04:59:59.000Z"},
-                                    {value: 702, endDate: "2010-01-01T04:59:59.000Z"},
-                                    {value: 653, endDate: "2010-02-01T04:59:59.000Z"},
-                                    {value: 748, endDate: "2010-03-01T04:59:59.000Z"},
-                                    {value: 748, endDate: "2010-04-01T03:59:59.000Z"}
+                                    {value: 683, endDate: "2009/05/01 03:59:59"},
+                                    {value: 689, endDate: "2009/06/01 03:59:59"},
+                                    {value: 708, endDate: "2009/07/01 03:59:59"},
+                                    {value: 680, endDate: "2009/08/01 03:59:59"},
+                                    {value: 690, endDate: "2009/09/01 03:59:59"},
+                                    {value: 682, endDate: "2009/10/01 03:59:59"},
+                                    {value: 685, endDate: "2009/11/01 03:59:59"},
+                                    {value: 707, endDate: "2009/12/01 04:59:59"},
+                                    {value: 702, endDate: "2010/01/01 04:59:59"},
+                                    {value: 653, endDate: "2010/02/01 04:59:59"},
+                                    {value: 748, endDate: "2010/03/01 04:59:59"},
+                                    {value: 748, endDate: "2010/04/01 03:59:59"}
                                 ],
                                 [
-                                    {value: 383, endDate: "2009-05-01T03:59:59.000Z"},
-                                    {value: 389, endDate: "2009-06-01T03:59:59.000Z"},
-                                    {value: 308, endDate: "2009-07-01T03:59:59.000Z"},
-                                    {value: 380, endDate: "2009-08-01T03:59:59.000Z"},
-                                    {value: 390, endDate: "2009-09-01T03:59:59.000Z"},
-                                    {value: 382, endDate: "2009-10-01T03:59:59.000Z"},
-                                    {value: 285, endDate: "2009-11-01T03:59:59.000Z"},
-                                    {value: 407, endDate: "2009-12-01T04:59:59.000Z"},
-                                    {value: 502, endDate: "2010-01-01T04:59:59.000Z"},
-                                    {value: 353, endDate: "2010-02-01T04:59:59.000Z"},
-                                    {value: 448, endDate: "2010-03-01T04:59:59.000Z"},
-                                    {value: 448, endDate: "2010-04-01T03:59:59.000Z"}
+                                    {value: 383, endDate: "2009/05/01 03:59:59"},
+                                    {value: 389, endDate: "2009/06/01 03:59:59"},
+                                    {value: 308, endDate: "2009/07/01 03:59:59"},
+                                    {value: 380, endDate: "2009/08/01 03:59:59"},
+                                    {value: 390, endDate: "2009/09/01 03:59:59"},
+                                    {value: 382, endDate: "2009/10/01 03:59:59"},
+                                    {value: 285, endDate: "2009/11/01 03:59:59"},
+                                    {value: 407, endDate: "2009/12/01 04:59:59"},
+                                    {value: 502, endDate: "2010/01/01 04:59:59"},
+                                    {value: 353, endDate: "2010/02/01 04:59:59"},
+                                    {value: 448, endDate: "2010/03/01 04:59:59"},
+                                    {value: 448, endDate: "2010/04/01 03:59:59"}
                                 ]
                             ];
-         
+            var deDayNamesShort = ['So','Mo','Di','Mi','Do','Fr','Sa'],
+                deDayNamesLong = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
+                deMonthNamesShort = ['Jan','Feb','März','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
          
              var lg = elroi(
                  $lineGraph,
@@ -388,7 +415,7 @@
              sbg = elroi(
                   $stackedBarGraph,
                   [ { series: testSeriesData, options : { type: 'stackedBar'} }],
-                  { animation: false }
+                  {  colors: ['#000', '#090'] }
               ),
               bg = elroi(
                   $barGraph,
@@ -397,15 +424,27 @@
               );
               elg = elroi($easyLineGraph, [1,3,7,8,9,2,10]);
               sslg = elroi($singleSeriesLineGraph, 
-                  [{value: 1, endDate: "2009-05-01T03:59:59.000Z"}, 
-                        {value: 2, date: "2009-06-01T03:59:59.000Z"}, 
-                        {value: 3, date: "2009-07-01T03:59:59.000Z"}, 
-                        {value: 4, date: "2009-08-01T03:59:59.000Z"}, 
-                        {value: 5, date: "2009-09-01T03:59:59.000Z"}, 
-                        {value: 6, date: "2009-10-01T03:59:59.000Z"}, 
-                        {value: 7, date: "2009-11-01T03:59:59.000Z"}]
+                  [{value: 1, endDate: "2009/05/01 03:59:59"}, 
+                        {value: 2, date: "2009/06/01 03:59:59"}, 
+                        {value: 3, date: "2009/07/01 03:59:59"}, 
+                        {value: 4, date: "2009/08/01 03:59:59"}, 
+                        {value: 5, date: "2009/09/01 03:59:59"}, 
+                        {value: 6, date: "2009/10/01 03:59:59"}, 
+                        {value: 7, date: "2009/11/01 03:59:59"}]
               );
-              ssbg = elroi($singleSeriesBarGraph, { series: [ {value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}], options: {type: 'bar'}});      
+              ssbg = elroi($singleSeriesBarGraph, { series: [ {value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}], options: {type: 'bar'}});
+              germLabLG = elroi(
+                  $germanDateLabels,
+                  [ { series: testSeriesData, options : { type: 'line'} }], 
+                  { 
+                      dates: {
+                        format: "DD M",
+                        dayNamesShort: deDayNamesShort,
+                        dayNamesLong: deDayNamesLong,
+                        monthNamesShort: deMonthNamesShort
+                      }
+                  }
+              );      
          });
     
     
