@@ -322,7 +322,66 @@
         return formattedDate;
     }
 
+    /**
+     * Strips the year component from the provided date format, including any leading or trailing separator characters
+     * which include all whitespace, ',' '/' or '-' characters.
+     *
+     * NOTE WELL: this assumes that the date format will not put the year in the middle of a format string. If you do
+     * that, it will munge separators on both sides; i.e. 'm/y/d' will become 'md'.
+     */
+    function stripYearFromDateFormat(format) {
+        return format.replace(/[,-\/]?\s*y{1,2}\s*[,-\/]?/, '');
+    }
+
+    /**
+     * Formats the start and end date of a date range as a single string, using the provided format string.
+     *
+     * @param format the date format string, as escribed in the formatDate function
+     * @param startDate the start date of the range
+     * @param endDate the end date of the range
+     * @param options object, supports the following features:
+     *     skipRepeatedYear (default true): if true, will remove the year component of the start date when
+     *         start and end date are the same year. It will match 'y' 2-digit year, 'yy' full year as well
+     *         as any leading and trailing commas, dashes or slashes used to separate.
+     */
+    function formatDateRange(format, startDate, endDate, options) {
+        var skipRepeatedYear,
+            startDateFormat,
+            endDateFormat,
+            formattedDateRange;
+
+        options = options || {};
+        startDateFormat = format;
+        endDateFormat = format;
+        skipRepeatedYear = (options.skipRepeatedYear != undefined) ? options.skipRepeatedYear : true;
+        formattedDateRange = '';
+
+        if (startDate && endDate) {
+            if (skipRepeatedYear && startDate.getFullYear() === endDate.getFullYear()
+                && startDateFormat.indexOf('y') > -1) {
+                startDateFormat = stripYearFromDateFormat(startDateFormat);
+            }
+        }
+
+        if (startDate) {
+            formattedDateRange += elroi.fn.formatDate(startDateFormat, startDate, options);
+        }
+
+        if(startDate && endDate) {
+            formattedDateRange += " &ndash;";
+        }
+
+        if(endDate) {
+            formattedDateRange += elroi.fn.formatDate(endDateFormat, endDate, options);
+            formattedDateRange = formattedDateRange.replace(/\s/g, '&nbsp;');
+        }
+
+        return formattedDateRange;
+    }
+
     elroi.fn.formatDate = formatDate;
+    elroi.fn.formatDateRange = formatDateRange;
+    elroi.fn.stripYearFromDateFormat = stripYearFromDateFormat;
 
 })(elroi, jQuery);
 (function(elroi, $) {
@@ -729,40 +788,9 @@
             var xLabels = [];
 
             $(series).each(function(){
+                var label;
 
-                var startDate,
-                    startDateFormat = dateOptions.format,
-                    endDateFormat = dateOptions.format,
-                    endDate,
-                    label = '';
-
-                if(this.startDate) {
-                    startDate = new Date(this.startDate);
-                }
-
-                if (this.endDate || this.date) {
-                    endDate = this.endDate ? new Date(this.endDate) : this.date;
-                }
-
-                if (startDate && endDate) {
-                    if (startDate.getMonth() === endDate.getMonth()) {
-                        endDateFormat = endDateFormat.replace('M', '' && startDateFormat.match('M'));
-                    }
-                    if (startDate.getFullYear() === endDate.getFullYear() && startDateFormat.match(', yy')) {
-                        startDateFormat = startDateFormat.replace(', yy', '');
-                    }
-                }
-
-                if (startDate) {
-                    label += elroi.fn.formatDate(startDateFormat, startDate, dateOptions);
-                }
-                if(startDate && endDate) {
-                    label += " &ndash;";
-                }
-                if(endDate) {
-                    label += elroi.fn.formatDate(endDateFormat, endDate, dateOptions);
-                    label = label.replace(/\s/g, '&nbsp;');
-                }
+                label = elroi.fn.formatDateRange(dateOptions.format, startDate, endDate, dateOptions);
 
                 xLabels.push(label);
             });
