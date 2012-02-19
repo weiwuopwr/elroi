@@ -353,12 +353,11 @@
         options = options || {};
         startDateFormat = format;
         endDateFormat = format;
-        skipRepeatedYear = (options.skipRepeatedYear != undefined) ? options.skipRepeatedYear : true;
+        skipRepeatedYear = (options.skipRepeatedYear !== undefined) ? options.skipRepeatedYear : true;
         formattedDateRange = '';
 
         if (startDate && endDate) {
-            if (skipRepeatedYear && startDate.getFullYear() === endDate.getFullYear()
-                && startDateFormat.indexOf('y') > -1) {
+            if (skipRepeatedYear && startDate.getFullYear() === endDate.getFullYear() && startDateFormat.indexOf('y') > -1) {
                 startDateFormat = stripYearFromDateFormat(startDateFormat);
             }
         }
@@ -788,7 +787,17 @@
             var xLabels = [];
 
             $(series).each(function(){
-                var label;
+                var label,
+                    startDate,
+                    endDate;
+
+                if(this.startDate) {
+                    startDate = new Date(this.startDate);
+                }
+
+                if (this.endDate || this.date) {
+                    endDate = this.endDate ? new Date(this.endDate) : this.date;
+                }
 
                 label = elroi.fn.formatDateRange(dateOptions.format, startDate, endDate, dateOptions);
 
