@@ -353,12 +353,11 @@
         options = options || {};
         startDateFormat = format;
         endDateFormat = format;
-        skipRepeatedYear = (options.skipRepeatedYear != undefined) ? options.skipRepeatedYear : true;
+        skipRepeatedYear = (options.skipRepeatedYear !== undefined) ? options.skipRepeatedYear : true;
         formattedDateRange = '';
 
         if (startDate && endDate) {
-            if (skipRepeatedYear && startDate.getFullYear() === endDate.getFullYear()
-                && startDateFormat.indexOf('y') > -1) {
+            if (skipRepeatedYear && startDate.getFullYear() === endDate.getFullYear() && startDateFormat.indexOf('y') > -1) {
                 startDateFormat = stripYearFromDateFormat(startDateFormat);
             }
         }
