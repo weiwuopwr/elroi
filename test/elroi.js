@@ -162,7 +162,42 @@
        
         
     });
+
+    Q.test('elroi year stripping format string', function(){
+        Q.equal(elroi.fn.stripYearFromDateFormat('M d y'), 'M d', 'Drop 2-digit year and leading space');
+        Q.equal(elroi.fn.stripYearFromDateFormat('M d yy'), 'M d', 'Drop full year and leading space');
+        Q.equal(elroi.fn.stripYearFromDateFormat('y d M'), 'd M', 'Drop 2-digit year and trailing space');
+        Q.equal(elroi.fn.stripYearFromDateFormat('yy  d M'), 'd M', 'Drop full year and trailing spaces');
+        Q.equal(elroi.fn.stripYearFromDateFormat('d/m/y'), 'd/m', 'Drop year from d/m/y');
+        Q.equal(elroi.fn.stripYearFromDateFormat('yy/mm/dd'), 'mm/dd', 'Drop year from yy/mm/dd');
+        Q.equal(elroi.fn.stripYearFromDateFormat('yy-mm-dd'), 'mm-dd', 'Drop year from yy-mm-dd');
+        Q.equal(elroi.fn.stripYearFromDateFormat('M d, yy'), 'M d', 'Drop trailing year in US format');
+        Q.equal(elroi.fn.stripYearFromDateFormat('d M yy'), 'd M', 'Drop trailing year in Euro format');
+    });
     
+    Q.test('elroi date range format', function(){
+        var marchOne2011 = new Date('2011/03/01');
+        var marchTen2011 = new Date('2011/03/10');
+        var aprilOne2011 = new Date('2011/04/01');
+        var marchEleven2012 = new Date('2012/03/11');
+
+        var parseResult = function(output) {
+            return output.replace(/\s/g, '&nbsp;');
+        };
+
+        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {}), parseResult('Mar 1 &ndash;Mar 10, 2011'), 'same month+year, year dropped');
+        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {skipRepeatedYear: true}),
+                parseResult('Mar 1 &ndash;Mar 10, 2011'), 'same month+year, year dropped, skipRepeatedYear explicit true');
+        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {skipRepeatedYear: false}),
+                parseResult('Mar 1, 2011 &ndash;Mar 10, 2011'), 'same month+year, year dropped, skipRepeatedYear explicit false');
+
+        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, aprilOne2011, {}), parseResult('Mar 1 &ndash;Apr 1, 2011'), 'different month, same year, year dropped');
+        Q.equal(elroi.fn.formatDateRange('d M y', marchOne2011, aprilOne2011, {}), parseResult('1 Mar &ndash;1 Apr 11'), 'd M y format, same year, year dropped');
+        Q.equal(elroi.fn.formatDateRange('d M yy', marchOne2011, marchEleven2012, {}), parseResult('1 Mar 2011 &ndash;11 Mar 2012'), 'd M yy format, different year');
+        Q.equal(elroi.fn.formatDateRange('d M yy', marchOne2011, marchEleven2012, {skipRepeatedYear: true}),
+                parseResult('1 Mar 2011 &ndash;11 Mar 2012'), 'd M yy format, different year, skip repeated year ignored');
+    });
+
     Q.test('elroi date range determiner', function(){
        var subDaily = 
         [ 
