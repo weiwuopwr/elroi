@@ -788,7 +788,17 @@
             var xLabels = [];
 
             $(series).each(function(){
-                var label;
+                var label,
+                    startDate,
+                    endDate;
+
+                if(this.startDate) {
+                    startDate = new Date(this.startDate);
+                }
+
+                if (this.endDate || this.date) {
+                    endDate = this.endDate ? new Date(this.endDate) : this.date;
+                }
 
                 label = elroi.fn.formatDateRange(dateOptions.format, startDate, endDate, dateOptions);
 
