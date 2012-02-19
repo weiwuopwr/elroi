@@ -135,8 +135,7 @@ There are two scripts to aid in developing elroi:
 To work with combine.sh and watch.sh, you'll need to install two ruby gems:
 
     gem install watchr
-    gem install sprockets
-
+    gem install sprockets -v 1.0.2
 ### Test
 
 Tests are written in QUnit. To run the tests, open this in any browser:
