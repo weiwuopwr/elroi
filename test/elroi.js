@@ -404,9 +404,9 @@
               $singleSeriesBarGraph = $('<div/>')
                   .css({width: 900, height: 300})
                   .appendTo($('#test')),
-            $germanDateLabels = $('<div/>')
-                .css({width: 900, height: 300})
-                .appendTo($('#test')),                            
+              $germanDateLabels = $('<div/>')
+                  .css({width: 900, height: 300})
+                  .appendTo($('#test')),                         
                testSeriesData = 
                             [
                                 [
@@ -479,8 +479,17 @@
                         monthNamesShort: deMonthNamesShort
                       }
                   }
-              );      
+              );     
          });
+         
+         Q.test('data less graphs', function() {
+             
+           $nullSeriesGraph = $('<div/>')
+               .css({width: 900, height: 300})
+               .appendTo($('#test')),
+           
+           nullSeries = elroi($nullSeriesGraph, [], {errorMessage: '<p>no data at all!</p>'});
+            });
     
     
 
