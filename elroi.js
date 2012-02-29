@@ -709,7 +709,7 @@
         sums = elroi.fn.helpers.sumSeries(dataValuesSet);
         hasData = elroi.fn.helpers.hasData(graph.allSeries);
 
-        if(graph.options.dates.format === 'auto') {
+        if(graph.options.dates.format === 'auto' && hasData) {
             graph.options.dates.format = elroi.fn.helpers.determineDateFormat(graph.allSeries);
         }
 
@@ -1555,8 +1555,7 @@
 
             var rotationAngle = wedge.startAngle - Math.abs((wedge.endAngle - wedge.startAngle)/2),
                 flagCoords = {},
-                selectedFlagOffset = wedge.flag.$el.width()/2,
-                selectedFlagCoords = {};
+                selectedFlagOffset = wedge.flag.$el.width()/2;
 
             $(wedges).each(function(i){
                 flagCoords = getFlagCoords(this.flag.$el, wedges[i].startAngle + (wedges[i].endAngle - wedges[i].startAngle)/2 - rotationAngle);
