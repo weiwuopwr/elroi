@@ -88,6 +88,20 @@
         Q.equal(shouldNotHavePointFlags, false, 'Does not have point flags');
 
     });
+    
+    Q.test('min values', function(){
+       var negValueSet = [[1, 15, 30, 78, 96, -32]],
+        positivesOnly = [[1, 15, 30, 78, 96]];
+        
+        Q.equal(elroi.fn.helpers.minValues(negValueSet, [{minYValue: 'zeroOrLess'}]), -32, "Zero or less setting goes negative if it has to");
+        Q.equal(elroi.fn.helpers.minValues(positivesOnly, [{minYValue: 'zeroOrLess'}]), 0, "Zero or less setting stays at 0 if all numbers are positive");
+        
+        Q.equal(elroi.fn.helpers.minValues(negValueSet, [{minYValue: 'auto'}]), -32, "Auto setting gives lowest number if its negative");
+        Q.equal(elroi.fn.helpers.minValues(positivesOnly, [{minYValue: 'auto'}]), 1, "Auto gives the lowest number even if all numbers are positive");
+        
+        Q.equal(elroi.fn.helpers.minValues(negValueSet, [{minYValue: 10}]), 10, "Returns what you send it if it is a hard coded number");
+        
+    });
 
     Q.test('elroi can handle an empty dataset without dying', function() {
         var expectedFormattedData = [];
@@ -406,7 +420,8 @@
                   .appendTo($('#test')),
               $germanDateLabels = $('<div/>')
                   .css({width: 900, height: 300})
-                  .appendTo($('#test')),                         
+                  .appendTo($('#test')),
+                                     
                testSeriesData = 
                             [
                                 [
@@ -479,7 +494,51 @@
                         monthNamesShort: deMonthNamesShort
                       }
                   }
-              );     
+              ); 
+                    
+         });
+         
+         Q.test('negative value graphs', function(){
+             testSeriesData = 
+                             [
+                                 [
+                                     {value: 683, endDate: "2009/05/01 03:59:59"},
+                                     {value: 689, endDate: "2009/06/01 03:59:59"},
+                                     {value: 708, endDate: "2009/07/01 03:59:59"},
+                                     {value: 680, endDate: "2009/08/01 03:59:59"},
+                                     {value: 690, endDate: "2009/09/01 03:59:59"},
+                                     {value: 682, endDate: "2009/10/01 03:59:59"},
+                                     {value: 685, endDate: "2009/11/01 03:59:59"},
+                                     {value: 707, endDate: "2009/12/01 04:59:59"},
+                                     {value: 702, endDate: "2010/01/01 04:59:59"},
+                                     {value: 653, endDate: "2010/02/01 04:59:59"},
+                                     {value: 748, endDate: "2010/03/01 04:59:59"},
+                                     {value: 748, endDate: "2010/04/01 03:59:59"}
+                                 ],
+                                 [
+                                     {value: 383, endDate: "2009/05/01 03:59:59"},
+                                     {value: 389, endDate: "2009/06/01 03:59:59"},
+                                     {value: 308, endDate: "2009/07/01 03:59:59"},
+                                     {value: 380, endDate: "2009/08/01 03:59:59"},
+                                     {value: -390, endDate: "2009/09/01 03:59:59"},
+                                     {value: 382, endDate: "2009/10/01 03:59:59"},
+                                     {value: 285, endDate: "2009/11/01 03:59:59"},
+                                     {value: 407, endDate: "2009/12/01 04:59:59"},
+                                     {value: 502, endDate: "2010/01/01 04:59:59"},
+                                     {value: 353, endDate: "2010/02/01 04:59:59"},
+                                     {value: 448, endDate: "2010/03/01 04:59:59"},
+                                     {value: 448, endDate: "2010/04/01 03:59:59"}
+                                 ]
+                             ];
+                             
+                              var $negativeValues = $('<div/>')
+                                     .css({width: 900, height: 300})
+                                     .appendTo($('#test'));
+             var negs = elroi(
+                  $negativeValues,
+                  [ { series: testSeriesData, options : { type: 'line', minYValue: 'auto'} }],
+                  { animation: false }
+              );
          });
          
          Q.test('data less graphs', function() {

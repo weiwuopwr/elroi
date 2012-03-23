@@ -82,7 +82,7 @@
                 pointStroke: true,
                 interpolateNulls : false,
                 maxYValue : 'auto',
-                minYValue : 0,
+                minYValue : 'zeroOrLess',
                 unit: '',
                 pointLabelUnits: ''
             },
@@ -500,10 +500,20 @@
          * @returns {Array} The array of minumum values to use in the scaling & axes
          */
         minValues : function(dataValuesSet, seriesOptions) {
-            var minVals = [];
+            var minVals = [],
+                temp;
 
             $(dataValuesSet).each(function(i) {
-                minVals.push(seriesOptions[i].minYValue);
+
+                if (seriesOptions[i].minYValue === 'auto') {
+                    minVals.push(Math.min.apply(Math, dataValuesSet[i]));
+                } else if (seriesOptions[i].minYValue === 'zeroOrLess') {
+                    temp = Math.min.apply(Math, dataValuesSet[i]);
+                    minVals.push(temp < 0 ? temp : 0);
+                } else {
+                    minVals.push(seriesOptions[i].minYValue);
+                }
+
             });
 
             return minVals;
@@ -1195,7 +1205,7 @@
             var isNullPoint = !(series[index].value || series[index].value === 0);
 
             var x = index * graph.xTick + graph.padding.left + pointOffset,
-                y = graph.height - ((series[index].value - seriesOptions.minYValue) * yTick) - graph.padding.bottom + graph.padding.top,
+                y = graph.height - ((series[index].value - graph.minVals[seriesIndex]) * yTick) - graph.padding.bottom + graph.padding.top,
                 pathString = "",
                 animSpeed = (window.isIE6 ? 1 : 800)/series.length,
                 isFirstPoint = !index;
