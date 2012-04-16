@@ -1356,7 +1356,7 @@
             var errorHeight = graph.options.error ? graph.options.error.height + graph.options.error.top : 0,
                 rollOverBar = graph.paper.rect(x, y + errorHeight, graph.xTick, graph.height-errorHeight).attr('fill', 'white').attr('opacity', 0);
 
-            $(rollOverBar.node).bind('mouseenter focus', function(){
+            rollOverBar.mouseover(function(){
 
                 if (graph.options.tooltip.show) {
                     var x = index * graph.xTick + graph.padding.left + pointOffset - graph.options.tooltip.width / 2;
@@ -1818,7 +1818,7 @@
             }
 
             var tallestBarHeight = isStacked ? barHeight : total * yTick + graph.options.bars.highlightBorderWidth;
-            $(rollOverTargetBar.node).hover(
+            rollOverTargetBar.hover(
                 function() {
                     rolloverBars.attr('stroke-opacity', graph.options.bars.highlightBorderOpacity);
                     if (graph.options.tooltip.show) {
