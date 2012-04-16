@@ -540,6 +540,34 @@
                   { animation: false }
               );
          });
+         Q.test('negative value tooltips', function(){
+             testSeriesData = 
+                             [
+                                 [
+                                     {value: 383, endDate: "2009/05/01 03:59:59"},
+                                     {value: 389, endDate: "2009/06/01 03:59:59"},
+                                     {value: 308, endDate: "2009/07/01 03:59:59"},
+                                     {value: 380, endDate: "2009/08/01 03:59:59"},
+                                     {value: -390, endDate: "2009/09/01 03:59:59"},
+                                     {value: 382, endDate: "2009/10/01 03:59:59"},
+                                     {value: 285, endDate: "2009/11/01 03:59:59"},
+                                     {value: 407, endDate: "2009/12/01 04:59:59"},
+                                     {value: 502, endDate: "2010/01/01 04:59:59"},
+                                     {value: 353, endDate: "2010/02/01 04:59:59"},
+                                     {value: 448, endDate: "2010/03/01 04:59:59"},
+                                     {value: 448, endDate: "2010/04/01 03:59:59"}
+                                 ]
+                             ];
+                             
+                              var $negativeValuesTT = $('<div/>')
+                                     .css({width: 900, height: 300})
+                                     .appendTo($('#test'));
+             var negs = elroi(
+                  $negativeValuesTT,
+                  [ { series: testSeriesData, options : { type: 'line', minYValue: 'auto'} }],
+                  { animation: false }
+              );
+         })
          
          Q.test('data less graphs', function() {
              
