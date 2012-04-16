@@ -1339,7 +1339,8 @@
                 if (series[i][index].value || series[i][index].value === 0) {
                     pointsInSet.push(series[i][index].value);
                     var highlightX = index * graph.xTick + graph.padding.left + pointOffset;
-                    var highlightY = graph.height - (series[i][index].value * yTick) - graph.padding.bottom + graph.padding.top;
+                    var highlightY = graph.height - ((series[i][index].value - graph.minVals[seriesIndex]) * yTick) - graph.padding.bottom + graph.padding.top;
+
                     var highlightCirc = graph.paper.circle(highlightX, highlightY, graph.options.lines.highlightRadius).attr({
                         'stroke': '#ccc',
                         'stroke-width': graph.options.lines.highlightStrokeWidth,
@@ -1351,7 +1352,7 @@
 
             });
             var topPoint = Math.max.apply(Math, pointsInSet);
-            topPoint = topPoint >= 0 ? topPoint : 0; // Pull the tooltip up to 0 if the usage is negative
+            topPoint = topPoint >= 0 ? topPoint : 0; // Pull the tooltip up to 0 if the graph drops below the x-axis
 
             var errorHeight = graph.options.error ? graph.options.error.height + graph.options.error.top : 0,
                 rollOverBar = graph.paper.rect(x, y + errorHeight, graph.xTick, graph.height-errorHeight).attr('fill', 'white').attr('opacity', 0);
@@ -1360,7 +1361,7 @@
 
                 if (graph.options.tooltip.show) {
                     var x = index * graph.xTick + graph.padding.left + pointOffset - graph.options.tooltip.width / 2;
-                    var y = (topPoint * yTick) - graph.padding.top + graph.padding.bottom + graph.options.flagOffset + graph.options.lines.pointStrokeWidth + graph.options.lines.highlightRadius;
+                    var y = ((topPoint - graph.minVals[seriesIndex]) * yTick) - graph.padding.top + graph.padding.bottom + graph.options.flagOffset + graph.options.lines.pointStrokeWidth + graph.options.lines.highlightRadius;
 
                     graph.$tooltip.stop().animate({
                         bottom: y,
