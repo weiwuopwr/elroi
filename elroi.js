@@ -1352,7 +1352,10 @@
 
             });
             var topPoint = Math.max.apply(Math, pointsInSet);
-            topPoint = topPoint >= 0 ? topPoint : 0; // Pull the tooltip up to 0 if the graph drops below the x-axis
+
+            if(topPoint - graph.minVals[seriesIndex] < 0) {
+                topPoint = graph.minVals[seriesIndex];
+            }
 
             var errorHeight = graph.options.error ? graph.options.error.height + graph.options.error.top : 0,
                 rollOverBar = graph.paper.rect(x, y + errorHeight, graph.xTick, graph.height-errorHeight).attr('fill', 'white').attr('opacity', 0);
