@@ -1352,7 +1352,7 @@
 
             });
             var topPoint = Math.max.apply(Math, pointsInSet);
-            console.log(graph);
+
             if(topPoint - graph.minVals[seriesIndex] < 0) {
                 topPoint = graph.minVals[seriesIndex];
             }
