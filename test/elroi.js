@@ -506,7 +506,7 @@
                                      {value: 689, endDate: "2009/06/01 03:59:59"},
                                      {value: 708, endDate: "2009/07/01 03:59:59"},
                                      {value: 680, endDate: "2009/08/01 03:59:59"},
-                                     {value: 690, endDate: "2009/09/01 03:59:59"},
+                                     {value: -690, endDate: "2009/09/01 03:59:59"},
                                      {value: 682, endDate: "2009/10/01 03:59:59"},
                                      {value: 685, endDate: "2009/11/01 03:59:59"},
                                      {value: 707, endDate: "2009/12/01 04:59:59"},
@@ -520,7 +520,7 @@
                                      {value: 389, endDate: "2009/06/01 03:59:59"},
                                      {value: 308, endDate: "2009/07/01 03:59:59"},
                                      {value: 380, endDate: "2009/08/01 03:59:59"},
-                                     {value: -390, endDate: "2009/09/01 03:59:59"},
+                                     {value: 390, endDate: "2009/09/01 03:59:59"},
                                      {value: 382, endDate: "2009/10/01 03:59:59"},
                                      {value: 285, endDate: "2009/11/01 03:59:59"},
                                      {value: 407, endDate: "2009/12/01 04:59:59"},
@@ -531,14 +531,59 @@
                                  ]
                              ];
                              
-                              var $negativeValues = $('<div/>')
-                                     .css({width: 900, height: 300})
-                                     .appendTo($('#test'));
-             var negs = elroi(
-                  $negativeValues,
-                  [ { series: testSeriesData, options : { type: 'line', minYValue: 'auto'} }],
-                  { animation: false }
-              );
+             testSeriesData2 = 
+                              [
+                                  [
+                                      {value: 2, endDate: "2009/05/01 03:59:59"},
+                                      {value: 3, endDate: "2009/06/01 03:59:59"},
+                                      {value: 4, endDate: "2009/07/01 03:59:59"},
+                                      {value: 5, endDate: "2009/08/01 03:59:59"},
+                                      {value: -5, endDate: "2009/09/01 03:59:59"},
+                                      {value: 3, endDate: "2009/10/01 03:59:59"}
+                                  ],
+                                  [
+                                      {value: 1, endDate: "2009/05/01 03:59:59"},
+                                      {value: 2, endDate: "2009/06/01 03:59:59"},
+                                      {value: 3, endDate: "2009/07/01 03:59:59"},
+                                      {value: 4, endDate: "2009/08/01 03:59:59"},
+                                      {value: -5, endDate: "2009/09/01 03:59:59"},
+                                      {value: 6, endDate: "2009/10/01 03:59:59"}
+                                  ]
+                              ];
+
+            var $negativeValuesLG = $('<div/>')
+                  .css({width: 900, height: 300})
+                  .appendTo($('#test'));
+
+            var $negativeValuesBG = $('<div/>')
+                   .css({width: 900, height: 300})
+                   .appendTo($('#test'));
+            var $negativeValuesSBG = $('<div/>')
+                .css({width: 900, height: 300})
+                .appendTo($('#test'));
+            var $negativeValuesSBG2 = $('<div/>')
+                .css({width: 900, height: 300})
+                .appendTo($('#test'));
+            var negsLG = elroi(
+                $negativeValuesLG,
+                [ { series: testSeriesData, options : { type: 'line', minYValue: 'auto'} }],
+                { animation: false }
+            );
+            var negsBG = elroi(
+               $negativeValuesBG,
+               [ { series: testSeriesData, options : { type: 'bar', minYValue: 'auto'} }],
+               { animation: true }
+            );
+            var negsSBG = elroi(
+               $negativeValuesSBG,
+               [ { series: testSeriesData, options : { type: 'stackedBar', minYValue: 'zeroOrLess'} }],
+               { animation: true }
+            );
+            var negsSBG2 = elroi(
+               $negativeValuesSBG2,
+               [ { series: testSeriesData2, options : { type: 'stackedBar', minYValue: 'zeroOrLess'} }],
+               { animation: true }
+            );
          });
          Q.test('negative value tooltips', function(){
              testSeriesData = 

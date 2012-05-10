@@ -428,12 +428,16 @@
             $(allSeries).each(function(i) {
 
                 var dataValues = [],
-                    series = allSeries[i].series;
+                    series = allSeries[i].series,
+                    lowestValue = 0;
 
                 $(series).each(function(j) {
                     var singleSeries = series[j];
 
                     $(singleSeries).each(function(k) {
+                        if (this.value < lowestValue) {
+                            lowestValue = dataValues[k] < 0 ? this.value + dataValues[k] : this.value;
+                        }
                         if (j === 0 || seriesOptions[i].type !== 'stackedBar') {
                             dataValues.push(+this.value);
                         }
@@ -443,6 +447,10 @@
                     });
 
                 });
+
+                if(lowestValue < 0) {
+                    dataValues.push(lowestValue);
+                }
 
                 dataValuesSet.push(dataValues);
 
@@ -1700,11 +1708,15 @@
 
                 if(series[i].value || series[i].value === 0 || series[i].pointFlag) {
                     var x = i * graph.xTick + graph.padding.left + (graph.barWhiteSpace/2),
-                        barHeight = series[i].value * yTick,
-                        y = graph.height - barHeight - (seriesSum[i] * yTick) - graph.padding.bottom + graph.padding.top,
+                        barHeight = Math.abs(series[i].value * yTick),
+                        y = graph.height - barHeight - (seriesSum[i] * yTick) - graph.padding.bottom + graph.padding.top + graph.minVals[seriesIndex]*yTick,
                         barStartHeight = graph.options.animation ? 0 : barHeight,
-                        barStartY = graph.height-graph.padding.bottom+graph.padding.top,
+                        barStartY = graph.height-graph.padding.bottom+graph.padding.top + graph.minVals[seriesIndex]*yTick,
                         bar;
+
+                    if (series[i].value < 0) {
+                        y = y + barHeight;
+                    }
                     barStartY = graph.options.animation ? barStartY : y;
 
                     bar = graph.paper.rect(x, barStartY, barWidth, barStartHeight).attr('fill', color).attr('stroke', color);
@@ -1769,12 +1781,19 @@
          * @param {int} index The index of the x-label.  Used to draw the hover target area over one x-label for all series
          */
         function barHover(series, yTick, index, isStacked) {
-
             var total = 0,
-                clickTarget;
+                clickTarget,
+                min = 0,
+                max = 0;
             if(isStacked) {
                 $(series).each(function(i) {
                     total += series[i][index].value;
+                    if(series[i][index].value < min){
+                        min = series[i][index].value;
+                    }
+                    if(series[i][index].value > max) {
+                        max = series[i][index].value;
+                    }
                     if(series[i][index].clickTarget){
                         clickTarget = series[i][index].clickTarget;
                     }
@@ -1789,15 +1808,20 @@
             var barHeight;
             var x = index * graph.xTick + graph.padding.left - (graph.options.bars.highlightBorderWidth/2) + (graph.barWhiteSpace/2);
             var y;
+            var range = max - min;
 
             var rolloverBars = graph.paper.set();
             var rolloverX;
             var rollOverTargetBar;
             for(var i = 0; i < series.length; i++) {
-
                 barHeight = isStacked ? (total * yTick) + graph.options.bars.highlightBorderWidth :
                     series[i][index].value * yTick + graph.options.bars.highlightBorderWidth;
-                y = graph.height - barHeight - graph.padding.bottom + graph.padding.top + (graph.options.bars.highlightBorderWidth/2);
+
+                barHeight = Math.abs(barHeight);
+                y = graph.height - barHeight - graph.padding.bottom + graph.padding.top + (graph.options.bars.highlightBorderWidth/2) + graph.minVals[seriesIndex]*yTick;
+                if (isStacked ? total < 0 : series[i][index].value < 0) {
+                    y = y + barHeight;
+                }
 
                 rolloverX = isStacked ? x : x + barWidth * i;
                 var rollOverBar = graph.paper
@@ -1821,7 +1845,12 @@
                         });
             }
 
-            var tallestBarHeight = isStacked ? barHeight : total * yTick + graph.options.bars.highlightBorderWidth;
+            var tallestBarHeight = isStacked ? barHeight  : total * yTick + graph.options.bars.highlightBorderWidth;
+            tallestBarHeight -= graph.minVals[seriesIndex]*yTick;
+            if (min < 0) {
+                tallestBarHeight += total * yTick
+            }
+
             rollOverTargetBar.hover(
                 function() {
                     rolloverBars.attr('stroke-opacity', graph.options.bars.highlightBorderOpacity);
@@ -1858,14 +1887,19 @@
 
         }
 
-        function drawBar(bar, barIndex, seriesIndex, yTick, color) {
+        function drawBar(bar, barIndex, subseriesIndex, yTick, color) {
 
-            var x = barIndex * graph.xTick + barWidth * seriesIndex + graph.padding.left + (graph.barWhiteSpace/2),
-                barHeight = bar.value * yTick,
-                y = graph.height - barHeight - graph.padding.bottom + graph.padding.top,
+            var x = barIndex * graph.xTick + barWidth * subseriesIndex + graph.padding.left + (graph.barWhiteSpace/2),
+                barHeight = Math.abs(bar.value * yTick),
+                y = graph.height - barHeight - graph.padding.bottom + graph.padding.top + graph.minVals[seriesIndex]*yTick,
                 barStartHeight = graph.options.animation ? 0 : barHeight,
-                barStartY = graph.height-graph.padding.bottom+graph.padding.top,
+                barStartY = graph.height - graph.padding.bottom + graph.padding.top + graph.minVals[seriesIndex]*yTick,
                 barObj;
+
+            if (bar.value < 0) {
+                y = y + barHeight;
+            }
+
             barStartY = graph.options.animation ? barStartY : y;
 
             barObj = graph.paper.rect(x, barStartY, barWidth, barStartHeight).attr('fill', color).attr('stroke', color);
