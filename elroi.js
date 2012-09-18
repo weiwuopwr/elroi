@@ -2103,11 +2103,7 @@ SUPER PIE!
         function animate(ms) {
             var start = 0;
             for (i = 0; i < series[seriesIndex].length; i++) {
-                //var val = 360 / total * series[seriesIndex][i].value;
-                //paths[i].animate({segment: [center.x, center.y, radius, start, start += val], transform:['r'+(-90)+','+CENTER_COORDINATES]}, ms || 1500, "bounce");
-                //paths[i].attrs.radius = radius;
                 paths[i].animate({radius: radius, transform:['r'+(-90)+','+CENTER_COORDINATES]}, ms || 1500, "bounce");
-
             }
             paths.transform('r'+rDeg+','+CENTER_COORDINATES);
         }
@@ -2140,28 +2136,30 @@ SUPER PIE!
             for (i = 0; i < data.length; i++) {
                 var val = 360 / total * data[i].value;
                 (function (i, val) {
-                    var path = graph.paper.path().attr({segment: [center.x, center.y, 1, start, start + val],
+                    var path = graph.paper.path().attr({
                         fill: graph.options.colors[i % graph.options.colors.length]})
                         .attr(graph.options.sliceAttributes)
                         .click(function(){ pathClick(path); })
                         .hover(function(){ pathEnter(path); }, function(){ pathExit(path); });
-                    path.attrs.radius = 1;
+
+                    if(graph.options.animation) {
+                        path.attr({segment: [center.x, center.y, 1, start, start + val]});
+                        path.attrs.radius = 1;
+                    }
+                    else{
+                        path.attr({segment: [center.x, center.y, radius, start, start + val],
+                            transform: [S11+CENTER_COORDINATES+'r'+ rDeg +','+CENTER_COORDINATES]});
+                        path.attrs.radius = radius;
+                    }
+
                     paths.push(path);
                 })(i, val);
                 start += val;
             }
-            animate(1000); return;
+
             if(graph.options.animation) {
-
+                animate(1000);
             }
-            else{
-                for (i = 0; i < series[seriesIndex].length; i++) {
-                    var val = 360 / total * series[seriesIndex][i].value;
-                    paths[i].attr({segment: [center.x, center.y, radius, start, start += val], transform:['r'+(-90)+','+CENTER_COORDINATES]});
-                    paths[i].attrs.radius = radius;
-                }
-            }
-
         }
 
         function rotate(deg, callBack){
