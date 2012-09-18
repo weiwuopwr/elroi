@@ -239,7 +239,7 @@
             monthNamesShort,
             monthNamesLong,
             merid,
-            formattedDate = "",
+            formattedDate = '',
             thisChar,
             isDoubled,
             i;
@@ -297,14 +297,14 @@
                     break;
                 case 'h':
                     if(isDoubled && date.getHours()  % 12 < 10) {
-                        formattedDate += "0";
+                        formattedDate += '0';
                     }
                     formattedDate += date.getHours() === 0 ? 12
                         : date.getHours() > 12 ? date.getHours() - 12
                         : date.getHours();
                     break;
                 case 'H':
-                    formattedDate += isDoubled && date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                    formattedDate += isDoubled && date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
                     break;
                 case 'n':
                     formattedDate += date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
@@ -368,7 +368,7 @@
         }
 
         if(startDate && endDate) {
-            formattedDateRange += " &ndash;";
+            formattedDateRange += ' &ndash;';
         }
 
         if(endDate) {
@@ -615,9 +615,9 @@
                 $(this.series).each(function(j){
                     $(this).each(function(k){
                         if(tooltips[k]) {
-                            tooltips[k] += "<br/>" + this.value;
+                            tooltips[k] += '<br/>' + this.value;
                         } else {
-                            tooltips[k] = "" + this.value;
+                            tooltips[k] = '' + this.value;
                         }
                     });
                 });
@@ -644,13 +644,13 @@
             averageGap = (lastPointDate - firstPointDate);
 
             if(averageGap <= MILLISECONDS_PER_DAY) {
-                format = "h:nna";
+                format = 'h:nna';
             } else if(averageGap < MILLISECONDS_PER_MONTH) {
-                format = "M, d";
+                format = 'M, d';
             } else if(averageGap < MILLISECONDS_PER_YEAR){
-                format = "M";
+                format = 'M';
             } else {
-                format = "yy";
+                format = 'yy';
             }
 
             return format;
@@ -661,7 +661,7 @@
                 temp,
                 i;
 
-            if(allSeries[0] !== undefined && typeof(allSeries[0]) === "number") {
+            if(allSeries[0] !== undefined && typeof(allSeries[0]) === 'number') {
                 temp = { series: [[]]};
                 for(i=0; i<allSeries.length; i++) {
                     temp.series[0].push({value: allSeries[i]});
@@ -841,14 +841,14 @@
                         i / (graph.options.grid.numYLabels - 1) * avalaibleArea -
                         graph.padding.bottom +
                         graph.padding.top;
-                    gridLine = graph.paper.path("M0" + " " + y + "L" + graph.width + " " + y).attr('stroke', '#ddd');
+                    gridLine = graph.paper.path('M0' + ' ' + y + 'L' + graph.width + ' ' + y).attr('stroke', '#ddd');
                     gridLines.push(gridLine);
                 }
             } else if (graph.options.grid.showBaseline) {
                     y = graph.height -
                         graph.padding.bottom +
                         graph.padding.top;
-                    gridLine = graph.paper.path("M0" + " " + y + "L" + graph.width + " " + y).attr('stroke', '#ddd');
+                    gridLine = graph.paper.path('M0' + ' ' + y + 'L' + graph.width + ' ' + y).attr('stroke', '#ddd');
                     gridLines.push(gridLine);
             }
 
@@ -941,7 +941,7 @@
         function drawYLabels(maxVal, minVal, axis){
 
             var $yLabels = $('<ul></ul>')
-                    .addClass("y-ticks")
+                    .addClass('y-ticks')
                     .addClass(axis.id);
 
             var precision = 0,
@@ -965,11 +965,11 @@
                 if(i === graph.options.grid.numYLabels-1) {
                     yLabel = (axis.prefixUnit ? axis.topUnit : '') +
                             yLabel +
-                            (!axis.prefixUnit ? " " + axis.topUnit : '');
+                            (!axis.prefixUnit ? ' ' + axis.topUnit : '');
                 } else {
                     yLabel = (axis.prefixUnit ? axis.unit : '') +
                             yLabel +
-                            (!axis.prefixUnit ? " " + axis.unit : '');
+                            (!axis.prefixUnit ? ' ' + axis.unit : '');
                 }
 
                 var cssPosition;
@@ -1139,10 +1139,10 @@
                  if (clickTarget) {
                      $(point.node).hover(
                              function() {
-                                 point.node.style.cursor = "pointer";
+                                 point.node.style.cursor = 'pointer';
                              },
                              function() {
-                                 point.node.style.cursor = "";
+                                 point.node.style.cursor = ' ';
                              }
                      );
                  }
@@ -1172,8 +1172,8 @@
                 isInSetToShow = pointNumber % graph.showEvery === 0;
 
             if (!isOffGraph && isInSetToShow) {
-                var pointLabel = document.createElement("span");
-                $(pointLabel).addClass('elroi-point-label').html(Math.round(value) + " " + units).css({
+                var pointLabel = document.createElement('span');
+                $(pointLabel).addClass('elroi-point-label').html(Math.round(value) + ' ' + units).css({
                     'left': x - pointOffset,
                     'bottom': graph.paper.height - y - graph.labelLineHeight - pointOffset,
                     'width': graph.labelWidth,
@@ -1215,7 +1215,7 @@
 
             var x = index * graph.xTick + graph.padding.left + pointOffset,
                 y = graph.height - ((series[index].value - graph.minVals[seriesIndex]) * yTick) - graph.padding.bottom + graph.padding.top,
-                pathString = "",
+                pathString = '',
                 animSpeed = (window.isIE6 ? 1 : 800)/series.length,
                 isFirstPoint = !index;
 
@@ -1225,13 +1225,13 @@
 
             if (!isFirstPoint && isLineStarted && !isNullPoint) {
                 pathString = seriesOptions.type === 'step' ?
-                    "L" + x + " " + prevPoint.y + "L" + x + " " + y  :
-                    "L" + x + " " + y;
+                    'L' + x + ' ' + prevPoint.y + 'L' + x + ' ' + y  :
+                    'L' + x + ' ' + y;
             } else if (isNullPoint && !isFirstPoint){
-                pathString = "";
+                pathString = '';
             }
             else {
-                pathString = "M" + x + " " + y;
+                pathString = 'M' + x + ' ' + y;
 
             }
 
@@ -1249,14 +1249,14 @@
             if(isLineFilled) {
                 if(prevPoint && !isNullPoint) {
                     var yZero = graph.height - graph.padding.bottom + graph.padding.top,
-                        fillLineStartPath = "M" + prevPoint.x + " " + yZero +
-                            "L" + prevPoint.x + " " + prevPoint.y +
-                            "L" + prevPoint.x + " " + prevPoint.y +
-                            "L" + prevPoint.x + " " + yZero,
-                        fillLinePath = "M" + prevPoint.x + " " + yZero +
-                            "L" + prevPoint.x + " " + prevPoint.y +
-                            "L" + x + " " + y +
-                            "L" + x + " " + yZero;
+                        fillLineStartPath = 'M' + prevPoint.x + ' ' + yZero +
+                            'L' + prevPoint.x + ' ' + prevPoint.y +
+                            'L' + prevPoint.x + ' ' + prevPoint.y +
+                            'L' + prevPoint.x + ' ' + yZero,
+                        fillLinePath = 'M' + prevPoint.x + ' ' + yZero +
+                            'L' + prevPoint.x + ' ' + prevPoint.y +
+                            'L' + x + ' ' + y +
+                            'L' + x + ' ' + yZero;
 
                     var fillLine = graph.paper.path(fillLineStartPath).attr({
                             'fill':color,
@@ -1401,7 +1401,7 @@
 
             for(j=0; j< series.length; j++) {
                 var color = graph.options.colors[j+seriesIndex],
-                    line = graph.paper.path("M0 0").attr({
+                    line = graph.paper.path('M0 0').attr({
                         'stroke': color,
                         'stroke-width': graph.options.lines.width,
                         'opacity': graph.options.lines.opacity
@@ -1518,7 +1518,7 @@
          * @returns {String} The path string of the wedge for use in Raphael
          */
         function getWedgePath(middle, radius, startCurve, endCurve) {
-            return ["M", middle.x, middle.y, "L", startCurve.x, startCurve.y, "A", radius, radius, 0, 0, 1, endCurve.x, endCurve.y, "z"];
+            return ['M', middle.x, middle.y, 'L', startCurve.x, startCurve.y, 'A', radius, radius, 0, 0, 1, endCurve.x, endCurve.y, 'z'];
         }
 
         /**
@@ -1643,7 +1643,7 @@
                                 'stroke' : 'white'
                             },
                             500, //500
-                            "backOut", //Animation
+                            'backOut', //Animation
                             function(){
 
                                 flags.fadeIn();
@@ -1950,10 +1950,10 @@
             if (clickTarget) {
                 $(rollOverTargetBar.node).hover(
                     function() {
-                        rollOverTargetBar.node.style.cursor = "pointer";
+                        rollOverTargetBar.node.style.cursor = 'pointer';
                     },
                     function() {
-                        rollOverTargetBar.node.style.cursor = "";
+                        rollOverTargetBar.node.style.cursor = '';
                     }
                 );
             }
@@ -2091,7 +2091,7 @@ SUPER PIE!
             a1 = (a1 % 360) * DEG2RAD;
             a2 = (a2 % 360) * DEG2RAD;
             return { //you could potentially add multiple attributes here
-                path: [["M", x, y], ["l", r * Math.cos(a1), r * Math.sin(a1)], ["A", r, r, 0, +flag, 1, x + r * Math.cos(a2), y + r * Math.sin(a2)], ["z"]]
+                path: [['M', x, y], ['l', r * Math.cos(a1), r * Math.sin(a1)], ['A', r, r, 0, +flag, 1, x + r * Math.cos(a2), y + r * Math.sin(a2)], ['z']]
                 };
         };
 
@@ -2103,7 +2103,7 @@ SUPER PIE!
         function animate(ms) {
             var start = 0;
             for (i = 0; i < series[seriesIndex].length; i++) {
-                paths[i].animate({radius: radius, transform:['r'+(-90)+','+CENTER_COORDINATES]}, ms || 1500, "bounce");
+                paths[i].animate({radius: radius, transform:['r'+(-90)+','+CENTER_COORDINATES]}, ms || 1500, 'bounce');
             }
             paths.transform('r'+rDeg+','+CENTER_COORDINATES);
         }
@@ -2146,7 +2146,7 @@ SUPER PIE!
                         path.attr({segment: [center.x, center.y, 1, start, start + val]});
                         path.attrs.radius = 1;
                     }
-                    else{
+                    else {
                         path.attr({segment: [center.x, center.y, radius, start, start + val],
                             transform: [S11+CENTER_COORDINATES+'r'+ rDeg +','+CENTER_COORDINATES]});
                         path.attrs.radius = radius;
@@ -2163,12 +2163,16 @@ SUPER PIE!
         }
 
         function rotate(deg, callBack){
-            paths.stop().transform(S11+CENTER_COORDINATES+'r'+rDeg+','+CENTER_COORDINATES);
-
             rDeg = deg;
-
-            console.log(rDeg);
-            paths.animate({transform: [S11+CENTER_COORDINATES+'r'+ rDeg +','+CENTER_COORDINATES]}, 700, "backOut", callBack);
+            if(graph.options.animation) {
+                //paths.stop().transform(S11+CENTER_COORDINATES+'r'+rDeg+','+CENTER_COORDINATES);
+                rDeg = deg;
+                paths.animate({transform: [S11+CENTER_COORDINATES+'r'+ rDeg +','+CENTER_COORDINATES]}, 700, 'backOut', callBack);
+            }
+            else{
+                paths.attr({transform: [S11+CENTER_COORDINATES+'r'+ rDeg +','+CENTER_COORDINATES]});
+                callBack();
+            }
         }
 
         function rotateCC(deg, callBack){
@@ -2177,7 +2181,7 @@ SUPER PIE!
 
         function rotateToPath(path, callBack){
             if(path == null) {
-                throw "Path cannot be null";
+                throw 'Path cannot be null';
             }
 
             if($.inArray(path,paths) != -1) {
@@ -2191,7 +2195,7 @@ SUPER PIE!
                 rotateCC(t, callBack);
             }
             else {
-                throw "Provided path is not contained in path collection";
+                throw 'Provided path is not contained in path collection';
             }
         }
 
@@ -2209,7 +2213,7 @@ SUPER PIE!
 
         function updateColors(colors){
             if(colors == null || colors.length < 1) {
-                throw "colors must be a non empty array";
+                throw 'Colors must be a non empty array';
             }
 
             for(var x = 0; x < paths.length; x+=1) {
@@ -2223,7 +2227,7 @@ SUPER PIE!
         graph.ext.rotate = rotate;
         graph.ext.rotateCC = rotateCC;
 
-        graph.ext.liveUpdatePie = updateLive;
+        graph.ext.updateLive = updateLive;
         graph.ext.updateColors = updateColors;
 
         graph.paths = paths;
