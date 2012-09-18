@@ -153,9 +153,10 @@
                 elroi.fn.grid(graph).draw();
             }
 
+
             $(graph.allSeries).each(function(i) {
 
-                if(!isGridDrawn && graph.seriesOptions[i].type !== 'pie') {
+                if(!isGridDrawn && graph.seriesOptions[i].type !== 'pie' && !isGridDrawn && graph.seriesOptions[i].type !== 'newpie') {
                     elroi.fn.grid(graph).draw();
                     isGridDrawn = true;
                 }
@@ -191,11 +192,11 @@
 
         draw();
 
-        return {
+        return $.extend({},{
             graph: graph,
             draw: draw,
             update: update
-        };
+        }, graph.ext);
     }
 
 
@@ -1454,13 +1455,13 @@
                 x : (graph.width + graph.padding.left - graph.padding.right)/2,
                 y : (graph.height - graph.padding.bottom + graph.padding.top)/2
             },
-            radius = (graph.height - graph.padding.bottom + graph.padding.top)/2,
+            radius = graph.options.radius ||  (graph.height - graph.padding.bottom + graph.padding.top)/ 2, //original: (graph.height - graph.padding.bottom + graph.padding.top)/2,
             angle = 90,
             wedges = [],
             wedgeRobjs = graph.paper.set(),
             selectedWedge,
             FLAGMARGIN = 15,
-            BUMPOUT = 15,
+            BUMPOUT = 5, //old value: 15,
             flags;
 
         /**
@@ -1478,7 +1479,7 @@
         }
 
         /**
-         * Gets the x and y coordinates of a flag for a particulat wedge
+         * Gets the x and y coordinates of a flag for a particular wedge
          * @param {jQuery} $flag The flag that labels a given wedge
          * @param angle The angle of the wedge
          */
@@ -1526,8 +1527,8 @@
          * @param {int} sliceNum The index of this wedge relative to the full data set
          * @return {Raphael} wedge The raphael object for the wedge
          */
-        function drawWedge(value, sliceNum){
-
+        //old version: function drawWedge(value, sliceNum){
+        function drawWedge(value, sliceNum, skipAppend){
             var startAngle = angle,
                 endAngle = angle - 360 * value/total,
 
@@ -1535,10 +1536,17 @@
                 endPoint = getCoords(center, radius, endAngle),
                 path = getWedgePath(center, radius, startPoint, endPoint),
 
+                /*OLD
                 animStartPoint = getCoords(center, BUMPOUT, startAngle + (endAngle - startAngle)/2),
                 animStartCurvePoint = getCoords(animStartPoint, radius, startAngle),
                 animEndCurvePoint = getCoords(animStartPoint, radius, endAngle),
-                animPath = getWedgePath(animStartPoint, radius, animStartCurvePoint, animEndCurvePoint),
+                animPath = getWedgePath(animStartPoint, radius, animStartCurvePoint, animEndCurvePoint),*/
+
+                //NEW
+                //animStartPoint = getCoords(center, BUMPOUT, startAngle + (endAngle - startAngle)/2),
+                animStartCurvePoint = getCoords(center, radius+BUMPOUT, startAngle),
+                animEndCurvePoint = getCoords(center, radius+BUMPOUT, endAngle),
+                animPath = getWedgePath(center, radius, animStartCurvePoint, animEndCurvePoint),
 
                 $valFlag = $('<div>').addClass('elroi-point-flag').html(value);
 
@@ -1549,14 +1557,18 @@
 
             angle = endAngle;
 
+            if(!skipAppend)
             var rObj = graph.paper.path(path).attr({
                 'fill': graph.options.colors[sliceNum % graph.options.colors.length],
-                'stroke-width': 0
+                'stroke-width': 2, //old value: 0
+                'stroke' : 'white'
             });
 
             var wedge =  {
                 startAngle : startAngle,
                 endAngle: endAngle,
+                //startPoint: animStartPoint,
+                sliceNum: sliceNum,
                 rObj: rObj,
                 flag : {
                     $el : $valFlag,
@@ -1569,13 +1581,40 @@
             return wedge;
         }
 
+        var hoverWedge = null;
+        function enterWedge(wedge){
+            if(graph.options.animation) {
+                if(wedge == selectedWedge)
+                    return;
+                else
+                    wedge.rObj.animate(
+                        {path: wedge.animPath,
+                        fill: graph.options.hoverColors[wedge.sliceNum % graph.options.hoverColors.length]},
+                        25);
+            } else {
+                /* There needs to be code here */
+            }
+        }
+        function leaveWedge(wedge){
+            if(graph.options.animation) {
+                if(wedge == selectedWedge)
+                    return;
+                else
+                    wedge.rObj.animate(
+                        {path: wedge.path,
+                            fill: graph.options.colors[wedge.sliceNum % graph.options.colors.length]},
+                        25);
+            } else {
+                /* There needs to be code here */
+            }
+        }
+
         /**
          * Rotates the graph and highlights a particular wedge
          * @param {Raphael} wedge The clicked wedge object
          */
         function selectWedge(wedge) {
-
-            var rotationAngle = wedge.startAngle - Math.abs((wedge.endAngle - wedge.startAngle)/2),
+             var rotationAngle = wedge.startAngle - Math.abs((wedge.endAngle - wedge.startAngle)/2),
                 flagCoords = {},
                 selectedFlagOffset = wedge.flag.$el.width()/2;
 
@@ -1600,9 +1639,11 @@
                         wedgeRobjs.animate(
                             {
                                 'rotation': rotationAngle + ' ' + center.x + ' ' + center.y,
-                                'stroke-width': 0
+                                'stroke-width': 3, //old value: 0
+                                'stroke' : 'white'
                             },
-                            500,
+                            500, //500
+                            "backOut", //Animation
                             function(){
 
                                 flags.fadeIn();
@@ -1624,6 +1665,25 @@
             }
 
             selectedWedge = wedge;
+        }
+
+
+        function updatePie(){
+                var singleSeries = [35,30,20,10,2,3];
+                angle = 90; //reset the angle
+                $(singleSeries).each(function(j){
+                    total = 100;
+                    var wedge = drawWedge(singleSeries[j], j, true);
+                    wedges[j].rObj.animate({
+                            path: (wedge == selectedWedge) ? wedge.animPath : wedge.path
+                        },1000, function(){
+                            wedges[j].startAngle = wedge.startAngle;
+                            wedges[j].endAngle = wedge.endAngle;
+                            wedges[j].path = wedge.path;
+                            wedges[j].animPath = wedge.animPath;
+                        });
+                });
+
         }
 
         /**
@@ -1664,10 +1724,18 @@
                 var wedge = this;
 
                 wedge.rObj.click(function(){
-                    selectWedge(wedge);
+                    //selectWedge(wedge);
+                    updatePie();
                 });
 
+                wedge.rObj.hover(function(){enterWedge(wedge);},
+                    function(){leaveWedge(wedge);});
+
+
             });
+
+            graph.paper.circle(center.x, center.y, radius/2).attr('fill', '#eeeeee').attr('stroke', 'white').attr('stroke-width', 3);
+
 
         }
 
@@ -1679,7 +1747,12 @@
 
     elroi.fn.pie = pie;
 
-})(elroi, jQuery);
+})(elroi, jQuery);        //pie
+
+
+
+
+
 (function(elroi, $) {
 
     /**
@@ -1963,5 +2036,203 @@
 
     elroi.fn.stackedBar = bars;
     elroi.fn.bar = bars;
+
+})(elroi, jQuery);
+
+
+
+
+/*
+SUPER PIE!
+ */
+
+(function(elroi, $) {
+
+    /**
+     * Draws a stacked bar graph for a given data series
+     * @param graph The graph object defined in elroi
+     * @param series The series of data
+     * @param {int} seriesIndex The index of the pie graph data in the graph's allSeries array
+     * @return wedges A set of all of the wedges
+     * @return {function} draw The function to draw the pie graph
+     */
+    function newpie(graph, series, seriesIndex) {
+        /* Attempt to configure graph using provided options, otherwise fallback to defaults.*/
+        graph.options.center = graph.options.center || {
+            x : (graph.width + graph.padding.left - graph.padding.right)/2,
+            y : (graph.height - graph.padding.bottom + graph.padding.top)/2
+        };
+        graph.options.radius = graph.options.radius ||  (graph.height - graph.padding.bottom + graph.padding.top)/ 2;
+        graph.options.sliceAttributes = graph.options.sliceAttributes || {};
+        graph.ext = new Object();
+
+        /**/
+        var center = graph.options.center,
+            radius = graph.options.radius;
+
+        /* Mathematical constants */
+        var DEG2RAD = Math.PI / 180;
+
+        /* Raphael Transform Constants */
+        var CENTER_COORDINATES = center.x+','+center.y,
+            S11 = 's1,1';
+
+        var total = graph.sums[seriesIndex], //sum of all values
+            rDeg = -90,
+            paths = graph.paper.set();
+
+        //x,y - center
+        //r - radius
+        //a1 - first angle of wedge in degrees
+        //a2 - second angle of wedge in degrees
+        graph.paper.customAttributes.segment = function (x, y, r, a1, a2) {
+            var flag = (a2 - a1) > 180,
+                clr = (a2 - a1) / 360;
+            a1 = (a1 % 360) * DEG2RAD;
+            a2 = (a2 % 360) * DEG2RAD;
+            return { //you could potentially add multiple attributes here
+                path: [["M", x, y], ["l", r * Math.cos(a1), r * Math.sin(a1)], ["A", r, r, 0, +flag, 1, x + r * Math.cos(a2), y + r * Math.sin(a2)], ["z"]]
+                };
+        };
+
+        graph.paper.customAttributes.radius = function (r) {
+            var segment = this.attrs.segment;
+            return graph.paper.customAttributes.segment(segment[0], segment[1], r, segment[3],segment[4]);
+        };
+
+        function animate(ms) {
+            var start = 0;
+            for (i = 0; i < series[seriesIndex].length; i++) {
+                //var val = 360 / total * series[seriesIndex][i].value;
+                //paths[i].animate({segment: [center.x, center.y, radius, start, start += val], transform:['r'+(-90)+','+CENTER_COORDINATES]}, ms || 1500, "bounce");
+                //paths[i].attrs.radius = radius;
+                paths[i].animate({radius: radius, transform:['r'+(-90)+','+CENTER_COORDINATES]}, ms || 1500, "bounce");
+
+            }
+            paths.transform('r'+rDeg+','+CENTER_COORDINATES);
+        }
+
+        function drawPie() {
+
+            function pathClick(path){
+                    if(graph.options.pathClick) {
+                        graph.options.pathClick(path);
+                    }
+                    else {
+                        rotateToPath(path);
+                    }
+                }
+
+            function pathEnter(path){
+                if(graph.options.hoverEvents && graph.options.hoverEvents.pathHoverIn) {
+                    graph.options.hoverEvents.pathHoverIn(path);
+                }
+            }
+
+            function pathExit(path){
+                if(graph.options.hoverEvents && graph.options.hoverEvents.pathHoverOut) {
+                    graph.options.hoverEvents.pathHoverOut(path);
+                }
+            }
+
+            var start = 0,
+                data = series[seriesIndex];
+            for (i = 0; i < data.length; i++) {
+                var val = 360 / total * data[i].value;
+                (function (i, val) {
+                    var path = graph.paper.path().attr({segment: [center.x, center.y, 1, start, start + val],
+                        fill: graph.options.colors[i % graph.options.colors.length]})
+                        .attr(graph.options.sliceAttributes)
+                        .click(function(){ pathClick(path); })
+                        .hover(function(){ pathEnter(path); }, function(){ pathExit(path); });
+                    path.attrs.radius = 1;
+                    paths.push(path);
+                })(i, val);
+                start += val;
+            }
+            animate(1000); return;
+            if(graph.options.animation) {
+
+            }
+            else{
+                for (i = 0; i < series[seriesIndex].length; i++) {
+                    var val = 360 / total * series[seriesIndex][i].value;
+                    paths[i].attr({segment: [center.x, center.y, radius, start, start += val], transform:['r'+(-90)+','+CENTER_COORDINATES]});
+                    paths[i].attrs.radius = radius;
+                }
+            }
+
+        }
+
+        function rotate(deg, callBack){
+            paths.stop().transform(S11+CENTER_COORDINATES+'r'+rDeg+','+CENTER_COORDINATES);
+
+            rDeg = deg;
+
+            console.log(rDeg);
+            paths.animate({transform: [S11+CENTER_COORDINATES+'r'+ rDeg +','+CENTER_COORDINATES]}, 700, "backOut", callBack);
+        }
+
+        function rotateCC(deg, callBack){
+            rotate(-deg, callBack);
+        }
+
+        function rotateToPath(path, callBack){
+            if(path == null) {
+                throw "Path cannot be null";
+            }
+
+            if($.inArray(path,paths) != -1) {
+                paths.stop().transform(S11+CENTER_COORDINATES+'r'+rDeg+','+CENTER_COORDINATES);
+
+                //// get the right rotation of the pie, based on what was clicked
+                var a1 = path.attr('segment')[3],
+                    a2 = path.attr('segment')[4];
+                var t = a2-((a2-a1)/2); //If you calculate this new each time by setting var in front you get a super funky effect
+
+                rotateCC(t, callBack);
+            }
+            else {
+                throw "Provided path is not contained in path collection";
+            }
+        }
+
+        function updateLive(newSeries, newSeriesIndex){
+            series = graph.allSeries.series = graph.allSeries[0].series = newSeries; //series / graph options pair
+            seriesIndex = newSeriesIndex;
+
+            graph.sums = elroi.fn.helpers.sumSeries(elroi.fn.helpers.getDataValues(graph.allSeries));
+            graph.hasData = elroi.fn.helpers.hasData(graph.allSeries);
+
+            total = graph.sums[newSeriesIndex];
+
+            animate();
+        }
+
+        function updateColors(colors){
+            if(colors == null || colors.length < 1) {
+                throw "colors must be a non empty array";
+            }
+
+            for(var x = 0; x < paths.length; x+=1) {
+                paths[x].attr({fill: colors[x % colors.length] });
+            }
+
+            graph.options.colors = colors;
+        }
+
+        graph.ext.rotateToPath = rotateToPath;
+        graph.ext.rotate = rotate;
+        graph.ext.rotateCC = rotateCC;
+
+        graph.ext.liveUpdatePie = updateLive;
+        graph.ext.updateColors = updateColors;
+
+        graph.paths = paths;
+
+        return {draw: drawPie};
+    }
+
+    elroi.fn.newpie = newpie;
 
 })(elroi, jQuery);
