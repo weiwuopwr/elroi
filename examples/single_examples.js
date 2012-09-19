@@ -90,6 +90,16 @@ $(document).ready(function(){
             {value: 248, endDate: "2010-04-01T03:59:59.000Z"}
         ]
     ];
+
+    var pieTestSeries = [
+        [
+            {value: 3},
+            {value: 5},
+            {value: 12},
+            {value: 30},
+            {value: 50}
+        ]
+    ];
     
     var tooltips = ['tip 1', 'tip 2', 'tip 3', 'tip 4', 'tip 5', 'tip 6', 'tip 7', 'tip 8', 'tip', 'tip', 'tip', 'tip'];
     var tipFormat = function(tip) {
@@ -131,7 +141,8 @@ $(document).ready(function(){
         tooltips
         
     );
-    var pie = elroi($('#pie').find('.graph'), [{series:testSeries, options: {type:'pie'}}]);
+    var pie = elroi($('#pie').find('.graph'), [{series:pieTestSeries, options: {type:'pie'}}]);
+    var advancedPie = elroi($('#advancedPie').find('.graph'), [{series:pieTestSeries, options: {type:'advancedPie'}}]);
     var bar = elroi($('#bar').find('.graph'), [{series:testSeries, options: {type:'bar'}}],
         {
             tooltip : {
