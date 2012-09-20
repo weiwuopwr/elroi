@@ -579,8 +579,11 @@
 
             var scaleDistortion = distortMaxValuesBy();
 
-            maxVals = $.map(maxVals, function(val){
-                return !!val ? val * scaleDistortion : 1;
+            maxVals = $.map(maxVals, function(val, i){
+
+                return seriesOptions[i].dontDistortAxis ? val
+                        : !!val ? val * scaleDistortion
+                        : 1;
             });
 
             return maxVals;
@@ -1702,7 +1705,7 @@
         graph.options.wedgeAttributes = graph.options.wedgeAttributes || {};
 
         /*Ext holds extension functions specific to the advancedPie.  They are merged into the parent namespace making
-         them publicly accessible at the level of the elroi object. */
+        them publicly accessible at the level of the elroi object. */
         graph.ext = {};
 
         /* Pie attributes */
@@ -1756,7 +1759,7 @@
             return {
                 path: [['M', x, y], ['l', r * Math.cos(a1), r * Math.sin(a1)], ['A', r, r, 0, +flag, 1, x
                     + r * Math.cos(a2), y + r * Math.sin(a2)], ['z']]
-            };
+                };
         };
 
         /**
@@ -1768,7 +1771,7 @@
         graph.paper.customAttributes.radius = function (r) {
             /* Unit Testing */
             if(!this.attrs || !this.attrs.segment) {
-                throw "segment attribute must be set on wedge prior to setting r attribute.";
+               throw "segment attribute must be set on wedge prior to setting r attribute.";
             } else if(isNaN(r) || r < 0) {
                 throw "Parameter r must be a number.";
             }
@@ -1833,12 +1836,12 @@
              * @param wedge {object} Raphael element for the clicked wedge
              */
             function wedgeClick(wedge){
-                if(graph.options.wedgeClick) {
-                    graph.options.wedgeClick(wedge);
-                } else {
-                    rotateToWedge(wedge);
+                    if(graph.options.wedgeClick) {
+                        graph.options.wedgeClick(wedge);
+                    } else {
+                        rotateToWedge(wedge);
+                    }
                 }
-            }
 
             /**
              * Wrapper function that calls a user provided method (if one is provided) for a hover entered event on a
