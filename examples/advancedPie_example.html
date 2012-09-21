@@ -45,15 +45,15 @@
         {value: 10, name: 'Lighting', color: '#65D9C5'},
         {value: 5, name:'Other', color: '#8FC740'}]];
 
-    var testSeries2 = [[{value: 15, name: 'Cooling'},
-        {value: 15, name: 'Heating'},
-        {value: 15, name: 'Hot Water'},
-        {value: 15, name: 'Appliances'},
-        {value: 15, name: 'Water'},
-        {value: 15, name:'Other'}]];
+    var testSeries2 = [[{value: 15, name: 'Cooling', color: '#1087C9'},
+        {value: 15, name: 'Heating', color: '#AB3E2C'},
+        {value: 15, name: 'Hot Water', color: '#663366'},
+        {value: 15, name: 'Appliances', color: '#C2B59B'},
+        {value: 15, name: 'Lighting', color: '#65D9C5'},
+        {value: 15, name:'Other', color: '#8FC740'}]];
 
 
-    var astroSpinningPie = (function(){
+    var astroSpinningPie = (function($){
             var ns = {};
 
             /* Mode enumeration*/
@@ -359,10 +359,52 @@
                 wedges = pie.graph.wedges;
                 //context = pie.graph.context;
 
+                var csWedge = null;
+                var containerOffsetLeft = $($container).offset().left;
+                var containerOffsetTop = $($container).offset().top;
+                var mpi180 = Math.PI / 180;
                 circle = graph.paper
                         .circle(graph.options.center.x, graph.options.center.y, graph.options.radius /2)
                         .attr({fill: '#F5F5F5', stroke: 'white', 'stroke-width':3, opacity:0, cursor: 'pointer'})
-                        .hover(function(){circle.attr({opacity: 1});currentText.attr({opacity: 1});},function(){});
+                        .hover(function(){
+                            circle.attr({opacity: 1});
+                            currentText.attr({opacity: 1});},
+                        function(){})
+                        .mousemove(function(e){
+                            var posx = e.clientX - $(document).scrollLeft() - containerOffsetLeft; //vs offset
+                            var posy = e.clientY - $(document).scrollTop() - containerOffsetTop;
+
+                            var ox = posx, oy = posy;
+
+                            var a = wedges[0].attrs.transform[0][1];
+                            var cx = wedges[0].attrs.transform[0][2];
+                            var cy = wedges[0].attrs.transform[0][3];
+
+                            var tx = posx - cx;
+                            var ty = posy - cy;
+                            var ampi180 = -a * mpi180;
+                            var cosampi180 = Math.cos(ampi180);
+                            var sinampi180 = Math.sin(ampi180);
+
+                            posx = cosampi180*(tx) - sinampi180*ty + cx;
+                            posy = sinampi180*(tx) + cosampi180*ty + cy;
+
+                            var newWedge = graph.paper.getElementsByPoint(posx, posy)[0];
+
+                            if(newWedge !== csWedge) //i != -1 &&
+                            {
+                                console.log(Raphael.isPointInsidePath(
+                                        Raphael.transformPath(wedges[0].attrs.path.toString(), wedges[0].attrs.transform[0].toString()),
+                                        ox,oy
+                                        ));
+                               //newWedge.isPointInside(ox, oy));
+                                wedgeHoverOut(csWedge);
+                                csWedge = newWedge;
+                                wedgeHoverIn(newWedge);
+                            }
+                        });
+
+
 
 
             }
@@ -378,7 +420,7 @@
             }
 
            return ns;
-        })();
+        })(jQuery);
 
 
 
@@ -387,8 +429,8 @@
 
             $('#deselect,#finish').click(function(){astroSpinningPie.changeMode(astroSpinningPie.Mode.COMPLETE);});
 
-            $('#cooling1').click(function(){ astroSpinningPie.resetRotation(); astroSpinningPie.changeSection(0); });
-            $('#heating1').click(function(){ astroSpinningPie.resetRotation(); astroSpinningPie.changeSection(1); });
+            $('#cooling1,#cooling2,#cooling3,#cooling4').click(function(){ astroSpinningPie.resetRotation(); astroSpinningPie.changeSection(0); });
+            $('#heating1, #heating2').click(function(){ astroSpinningPie.resetRotation(); astroSpinningPie.changeSection(1); });
             $('#hotwater1').click(function(){ astroSpinningPie.resetRotation(); astroSpinningPie.changeSection(2); });
             $('#appliances1').click(function(){ astroSpinningPie.resetRotation(); astroSpinningPie.changeSection(3); });
             $('#lighting1').click(function(){ astroSpinningPie.resetRotation(); astroSpinningPie.changeSection(4); });
@@ -408,7 +450,7 @@
         .sample pre { float: left; border: 1px solid #000; background: #ccc; margin-left: 20px; padding: 20px;}
     </style>
 </head>
-<body style='background: url(bg-moduleInner.png) 0 0 repeat;'>
+<body>
 <h1>Disaggregated Spinning Pie Harness</h1>
 
 
