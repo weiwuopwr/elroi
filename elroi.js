@@ -368,7 +368,7 @@
         }
 
         if(startDate && endDate) {
-            formattedDateRange += " &ndash;";
+            formattedDateRange += " &ndash; ";
         }
 
         if(endDate) {
