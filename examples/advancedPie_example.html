@@ -148,6 +148,7 @@
              * @param show {boolean} indicates whether or not to display the message circle.
              */
             function showMessage(show){
+                if(!show) csWedge = null;
                 circle.attr({opacity: show ? 1 : 0});
             }
 
@@ -191,6 +192,7 @@
                             wedges[x].animate({opacity: 1}, 25);
                         }
                     }
+                    regenerateTransformedWedgePaths();
                 }
 
                 mode = Mode.SELECTED;
@@ -342,6 +344,17 @@
                 });
             }
 
+        var csWedge = null;
+        var updatedWedgePaths = new Array();
+        function regenerateTransformedWedgePaths() {
+            for(var x=0; x < wedges.length; x+=1) {
+                var path = wedges[x].attrs.path.toString();
+                for(var t = 0; t < wedges[x].attrs.transform.length; t+=1)
+                    path = Raphael.transformPath(path, wedges[x].attrs.transform[t].toString());
+                updatedWedgePaths[x] = path.toString();
+            }
+        }
+
             /**
              * Creates and initalizes an astroSpinningPie.
              * @param $container {object} jQuery object to place the elroi graph into
@@ -359,10 +372,12 @@
                 wedges = pie.graph.wedges;
                 //context = pie.graph.context;
 
-                var csWedge = null;
+
                 var containerOffsetLeft = $($container).offset().left;
                 var containerOffsetTop = $($container).offset().top;
-                var mpi180 = Math.PI / 180;
+
+                //var mpi180 = Math.PI / 180;
+
                 circle = graph.paper
                         .circle(graph.options.center.x, graph.options.center.y, graph.options.radius /2)
                         .attr({fill: '#F5F5F5', stroke: 'white', 'stroke-width':3, opacity:0, cursor: 'pointer'})
@@ -371,38 +386,65 @@
                             currentText.attr({opacity: 1});},
                         function(){})
                         .mousemove(function(e){
-                            var posx = e.clientX - $(document).scrollLeft() - containerOffsetLeft; //vs offset
-                            var posy = e.clientY - $(document).scrollTop() - containerOffsetTop;
+                            var posx = e.clientX + $(document).scrollLeft() - $($container).offset().left;
+                            var posy = e.clientY + $(document).scrollTop() - $($container).offset().top;
 
-                            var ox = posx, oy = posy;
+                            //console.log('POS:' + posx + ',' + posy);
+                            //console.log('Scroll:' + $(document).scrollLeft() + ',' + $(document).scrollTop());
+                            //console.log('Container:' + $($container).offset().left + ',' + $($container).offset().top);
 
-                            var a = wedges[0].attrs.transform[0][1];
-                            var cx = wedges[0].attrs.transform[0][2];
-                            var cy = wedges[0].attrs.transform[0][3];
 
-                            var tx = posx - cx;
-                            var ty = posy - cy;
-                            var ampi180 = -a * mpi180;
-                            var cosampi180 = Math.cos(ampi180);
-                            var sinampi180 = Math.sin(ampi180);
+                            /*
 
-                            posx = cosampi180*(tx) - sinampi180*ty + cx;
-                            posy = sinampi180*(tx) + cosampi180*ty + cy;
+                            bs
+                            cs2 3
+                            int x = 0;
 
-                            var newWedge = graph.paper.getElementsByPoint(posx, posy)[0];
 
-                            if(newWedge !== csWedge) //i != -1 &&
+                            bs.P()
+
+                            x++;
+                            if(x == 3){
+                              x = 0;
+                              cs2.V(); cs.V();
+                              }
+                            else
+                              cs2.P();
+
+                            bs.V()
+
+
+
+
+
+                             */
+
+                            var newWedge = null;
+
+                            if(updatedWedgePaths.length === 0)
+                                regenerateTransformedWedgePaths();
+
+                            for(var x=0; x < wedges.length; x+=1){
+                                if(csWedge != null && newWedge === csWedge) {
+                                   continue;
+                                }
+                                if(Raphael.isPointInsidePath(updatedWedgePaths[x],posx,posy)) {
+                                    newWedge = wedges[x];
+                                    break;
+                                }
+                            }
+
+                            if(newWedge == null) console.log('no match');
+                            if(newWedge === csWedge) console.log('same as before!');
+
+                            if(newWedge != null && newWedge !== csWedge) //i != -1 &&
                             {
-                                console.log(Raphael.isPointInsidePath(
-                                        Raphael.transformPath(wedges[0].attrs.path.toString(), wedges[0].attrs.transform[0].toString()),
-                                        ox,oy
-                                        ));
-                               //newWedge.isPointInside(ox, oy));
-                                wedgeHoverOut(csWedge);
+                                console.log('changing wedge');
+                                if(csWedge) wedgeHoverOut(csWedge);
                                 csWedge = newWedge;
                                 wedgeHoverIn(newWedge);
                             }
-                        });
+                        }).click(function(){if(csWedge) wedgeClick(csWedge); });
 
 
 
@@ -412,7 +454,7 @@
             /* CUT THESE HOOKS */
 
             ns.resetRotation = function(){
-                pie.rotate(-90);
+                pie.rotate(-90, function(){regenerateTransformedWedgePaths();});
             }
 
             ns.resizeLive = function (){
