@@ -156,7 +156,7 @@
 
             $(graph.allSeries).each(function(i) {
 
-                if(!isGridDrawn && graph.seriesOptions[i].type !== 'pie' && !isGridDrawn && graph.seriesOptions[i].type !== 'advancedPie') {
+                if(!isGridDrawn && graph.seriesOptions[i].type !== 'pie' && graph.seriesOptions[i].type !== 'advancedPie') {
                     elroi.fn.grid(graph).draw();
                     isGridDrawn = true;
                 }
@@ -1694,20 +1694,21 @@
      */
     function advancedPie(graph, series, seriesIndex) {
         /* Attempt to configure graph using provided options, otherwise fallback to defaults.*/
-        graph.options.center = graph.options.center || {
+        graph.options.pie = graph.options.pie || {};
+        graph.options.pie.center = graph.options.pie.center || {
             x : (graph.width + graph.padding.left - graph.padding.right)/2,
             y : (graph.height - graph.padding.bottom + graph.padding.top)/2
         };
-        graph.options.radius = graph.options.radius ||  (graph.height - graph.padding.bottom + graph.padding.top)/ 2;
-        graph.options.wedgeAttributes = graph.options.wedgeAttributes || {};
+        graph.options.pie.radius = graph.options.pie.radius ||  (graph.height - graph.padding.bottom + graph.padding.top)/ 2;
+        graph.options.pie.wedgeAttributes = graph.options.pie.wedgeAttributes || {};
 
         /*Ext holds extension functions specific to the advancedPie.  They are merged into the parent namespace making
          them publicly accessible at the level of the elroi object. */
         graph.ext = {};
 
         /* Pie attributes */
-        var center = graph.options.center,
-            radius = graph.options.radius,
+        var center = graph.options.pie.center,
+            radius = graph.options.pie.radius,
             degreesRotated = -90; //current rotation of the pie
 
         /* Set to store wedge paths */
@@ -1742,20 +1743,20 @@
 
             /* Mathematical constants */
             var DEGREES_TO_RADIANS = Math.PI / 180;
+            var flag = (a2 - a1) > 180;
 
             /* Update the r attribute on our path so it's consistent with the new radius */
             if(this.attrs) {
                 this.attrs.radius = r;
             }
 
-            var flag = (a2 - a1) > 180,
-                clr = (a2 - a1) / 360;
+
             a1 = (a1 % 360) * DEGREES_TO_RADIANS;
             a2 = (a2 % 360) * DEGREES_TO_RADIANS;
 
             return {
-                path: [['M', x, y], ['l', r * Math.cos(a1), r * Math.sin(a1)], ['A', r, r, 0, +flag, 1, x
-                    + r * Math.cos(a2), y + r * Math.sin(a2)], ['z']]
+                path: [['M', x, y], ['l', r * Math.cos(a1), r * Math.sin(a1)], ['A', r, r, 0, +flag, 1,
+                    x + r * Math.cos(a2), y + r * Math.sin(a2)], ['z']]
             };
         };
 
@@ -1789,6 +1790,8 @@
                 throw "Parameter ms must be a number.";
             }
 
+            var i;
+
             for (i = 0; i < series[seriesIndex].length; i++) {
                 wedges[i].animate({radius: radius, transform:['r'+(-90)+','+CENTER_COORDINATES]}, ms || 1500, 'bounce');
             }
@@ -1804,20 +1807,28 @@
                 throw "Parameter ms must be a number.";
             }
 
-            var start = 0,
+            var start = 0, // current angle offset
                 total = graph.sums[seriesIndex],
                 data = series[seriesIndex];
-            for (i = 0; i < data.length; i++) {
-                var val = 360 / total * data[i].value;
-                var newAttr = {segment: [center.x, center.y, radius, start, start += val],
+
+            var i, //current index of data for traversal of data
+                dataLength = data.length; //length of data for traversal of data
+
+            var wedgeSize, //In degrees
+                newAttributes; //New segment and transform attributes for Raphael
+
+
+            for (i = 0; i < dataLength; i++) {
+                wedgeSize = 360 / total * data[i].value;
+                newAttributes = {segment: [center.x, center.y, radius, start, start += wedgeSize],
                     transform:['r'+(-90)+','+CENTER_COORDINATES]};
 
                 wedges[i].data = data[i]; //update data tied to each wedge
 
                 if(graph.options.animation) {  //either animate transition of flatly update
-                    wedges[i].animate(newAttr, ms || 1500, 'bounce');
+                    wedges[i].animate(newAttributes, ms || 1500, 'bounce');
                 } else {
-                    wedges[i].attr(newAttr);
+                    wedges[i].attr(newAttributes);
                 }
             }
         }
@@ -1833,8 +1844,8 @@
              * @param wedge {object} Raphael element for the clicked wedge
              */
             function wedgeClick(wedge){
-                if(graph.options.wedgeClick) {
-                    graph.options.wedgeClick(wedge);
+                if(graph.options.pie.wedgeClick) {
+                    graph.options.pie.wedgeClick(wedge);
                 } else {
                     rotateToWedge(wedge);
                 }
@@ -1846,8 +1857,8 @@
              * @param wedge {object} Raphael element for the entered wedge
              */
             function wedgeEnter(wedge){
-                if(graph.options.hoverEvents && graph.options.hoverEvents.wedgeHoverIn) {
-                    graph.options.hoverEvents.wedgeHoverIn(wedge);
+                if(graph.options.pie.wedgeHoverIn) {
+                    graph.options.pie.wedgeHoverIn(wedge);
                 }
             }
 
@@ -1857,35 +1868,44 @@
              * @param wedge {object} Raphael element for the exited wedge
              */
             function wedgeExit(wedge){
-                if(graph.options.hoverEvents && graph.options.hoverEvents.wedgeHoverOut) {
-                    graph.options.hoverEvents.wedgeHoverOut(wedge);
+                if(graph.options.pie.wedgeHoverOut) {
+                    graph.options.pie.wedgeHoverOut(wedge);
                 }
+            }
+
+            function generateWedge() {
+                var wedge = graph.paper.path()
+                    .click(function(){ wedgeClick(wedge); })
+                    .hover(function(){ wedgeEnter(wedge); },
+                    function(){ wedgeExit(wedge); });
+                return wedge;
             }
 
             var start = 0,
                 total = graph.sums[seriesIndex],
-                data = series[seriesIndex];
-            for (i = 0; i < data.length; i++) {
-                var val = 360 / total * data[i].value;
+                data = series[seriesIndex],
+                dataLength = data.length,
+                i,
+                wedge,
+                val; //current index of data for traversal of data
 
-                (function (i, val) {
-                    var wedge = graph.paper.path()
-                        .attr({fill: graph.options.colors[i % graph.options.colors.length]})
-                        .attr(graph.options.wedgeAttributes)
-                        .click(function(){ wedgeClick(wedge); })
-                        .hover(function(){ wedgeEnter(wedge); }, function(){ wedgeExit(wedge); });
+            for (i = 0; i < dataLength; i++) {
+                val = 360 / total * data[i].value;
 
-                    wedge.data = data[i];
+                wedge = generateWedge()
+                    .attr({fill: graph.options.colors[i % graph.options.colors.length]})
+                    .attr(graph.options.pie.wedgeAttributes);
 
-                    if(graph.options.animation) {
-                        wedge.attr({segment: [center.x, center.y, 1, start, start + val]});
-                    } else {
-                        wedge.attr({segment: [center.x, center.y, radius, start, start + val],
-                            transform: [S11+CENTER_COORDINATES+'r'+ degreesRotated +','+CENTER_COORDINATES]});
-                    }
+                wedge.data = data[i];
 
-                    wedges.push(wedge);
-                })(i, val);
+                if(graph.options.animation) {
+                    wedge.attr({segment: [center.x, center.y, 1, start, start + val]});
+                } else {
+                    wedge.attr({segment: [center.x, center.y, radius, start, start + val],
+                        transform: [S11+CENTER_COORDINATES+'r'+ degreesRotated +','+CENTER_COORDINATES]});
+                }
+
+                wedges.push(wedge);
 
                 start += val;
             }
@@ -1905,14 +1925,14 @@
                 throw "Parameter deg must be a number.";
             }
 
-            callback = callback || function(){};
-
             degreesRotated = deg;
             if(graph.options.animation) {
                 wedges.animate({transform: [S11+CENTER_COORDINATES+'r'+ degreesRotated +','+CENTER_COORDINATES]}, 700, 'backOut', callback);
             } else {
                 wedges.attr({transform: [S11+CENTER_COORDINATES+'r'+ degreesRotated+','+CENTER_COORDINATES]});
-                callback();
+                if(callback){
+                    callback();
+                }
             }
         }
 
@@ -1922,20 +1942,18 @@
          * @param [callback] {void} Function to execute on completion of rotation.
          */
         function rotateToWedge(wedge, callback) {
-            callback = callback || function(){};
-
-            if($.inArray(wedge,wedges) != -1) {
-                wedges.stop().transform(S11+CENTER_COORDINATES+'r'+ degreesRotated+','+CENTER_COORDINATES);
-
-                var a1 = wedge.attr('segment')[3],
-                    a2 = wedge.attr('segment')[4];
-                var t = a2-((a2-a1)/2); //If you calculate this new each time by setting var in front you get a super funky effect
-
-                rotate(-t, callback);
-            }
-            else {
+            if($.inArray(wedge,wedges) === -1){
                 throw 'Provided path is not contained in path collection';
             }
+
+            callback = callback || function(){};
+            var a1 = wedge.attr('segment')[3],
+                a2 = wedge.attr('segment')[4],
+                t = a2-((a2-a1)/2);
+
+            wedges.stop().transform(S11+CENTER_COORDINATES+'r'+ degreesRotated+','+CENTER_COORDINATES);
+
+            rotate(-t, callback);
         }
 
         /**
@@ -1958,12 +1976,16 @@
          * @param colors {array} New color data.
          */
         function updateColors(colors) {
-            if(colors == null || colors.length < 1) {
+            var i,
+                wedgesLength = wedges.length,
+                colorsLength = colors.length;
+
+            if(colors === null || colors.length < 1) {
                 throw 'Parameter colors must be a non empty array';
             }
 
-            for(var x = 0; x < wedges.length; x+=1) {
-                wedges[x].attr({fill: colors[x % colors.length] });
+            for(i = 0; i < wedgesLength; i+=1) {
+                wedges[i].attr({fill: colors[i % colorsLength] });
             }
 
             graph.options.colors = colors;
