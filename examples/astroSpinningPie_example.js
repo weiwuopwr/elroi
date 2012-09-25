@@ -254,7 +254,6 @@ var astroSpinningPie = (function($){
         return -1;
     }
 
-
     /**
      * Hover enter hook to provide to pie elroi graph.  Calls a handler determined by the provided
      * descriptors for the current mode.
@@ -274,8 +273,6 @@ var astroSpinningPie = (function($){
             wedge.data
         );
 
-
-
         if(wedge===selectedWedge){
             return;
         }
@@ -288,9 +285,13 @@ var astroSpinningPie = (function($){
      * descriptors for the current mode.
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
-    function wedgeHoverOut(wedge) {
+    function wedgeHoverOut(e, wedge) {
+
+        if(!isMouseInElement(e, circle)) {
+            showMessage(false);
+        }
+
         currentText.attr({opacity: 0});
-        showMessage(false);
 
         if(wedge===selectedWedge){
             return;
@@ -347,20 +348,32 @@ var astroSpinningPie = (function($){
         }
     }
 
+    var containerOffsetLeft;
+    var containerOffsetTop;
+    function isMouseInPath(e, path){
+        var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft,
+            posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
+        return Raphael.isPointInsidePath(path, posx, posy);
+    }
+    function isMouseInElement(e, element){
+        var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft,
+            posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
+        return element.isPointInside(posx, posy);
+    }
+
     /**
      * Creates and initalizes an astroSpinningPie.
      * @param $container {object} jQuery object to place the elroi graph into
      */
     ns.initialize = function($container){
-        var containerOffsetLeft = $($container).offset().left;
-        var containerOffsetTop = $($container).offset().top;
+        containerOffsetLeft = $($container).offset().left;
+        containerOffsetTop = $($container).offset().top;
 
         function circleMouseMove(e){
-            var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft;
-            var posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
-            var newWedge; //used to store new wedge if it is detected the passthroughWedge has changed
-            var i;
-            var wedgesLength = wedges.length;
+
+            var newWedge, //used to store new wedge if it is detected the passthroughWedge has changed
+                i,
+                wedgesLength = wedges.length;
 
             if(transformedWedgePaths.length === 0){
                 regenerateTransformedWedgePaths();
@@ -371,7 +384,7 @@ var astroSpinningPie = (function($){
                 if(passthroughWedge !== null && newWedge === passthroughWedge) {
                     continue;
                 }
-                if(Raphael.isPointInsidePath(transformedWedgePaths[i],posx,posy)) {
+                if(isMouseInPath(e,transformedWedgePaths[i])) {
                     newWedge = wedges[i];
                     break;
                 }
@@ -381,7 +394,7 @@ var astroSpinningPie = (function($){
             if(newWedge !== null && newWedge !== passthroughWedge)
             {
                 if(passthroughWedge){
-                    wedgeHoverOut(passthroughWedge);
+                    wedgeHoverOut(e,passthroughWedge);
                 }
                 passthroughWedge = newWedge;
                 wedgeHoverIn(newWedge);
@@ -392,11 +405,6 @@ var astroSpinningPie = (function($){
             if(passthroughWedge){
                 wedgeClick(passthroughWedge);
             }
-        }
-
-        function circleMouseEnter(){
-            circle.attr({opacity: 1});
-            currentText.attr({opacity: 1});
         }
 
         pie = elroi($container, [{series:testSeries, options: {type:'pie'}}],
@@ -416,7 +424,6 @@ var astroSpinningPie = (function($){
         circle = graph.paper
             .circle(graph.options.pie.center.x, graph.options.pie.center.y, graph.options.pie.radius /2)
             .attr({fill: '#F5F5F5', stroke: 'white', 'stroke-width':3, opacity:0, cursor: 'pointer'})
-            .hover(circleMouseEnter,null)
             .mousemove(circleMouseMove)
             .click(circleClick);
     };
@@ -428,7 +435,7 @@ var astroSpinningPie = (function($){
     };
 
     ns.resizeLive = function (){
-        pie.updateLive(testSeries2,0);
+        pie.updateLive(testSeries2,0,regenerateTransformedWedgePaths);
     };
 
     return ns;

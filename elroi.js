@@ -1484,18 +1484,6 @@
          * @return {object} Path attribute for attachment to a Raphael object.
          */
         graph.paper.customAttributes.segment = function (x, y, r, a1, a2) {
-            /* Unit Testing */
-            if(isNaN(x)) {
-                throw "Parameter x must be a number.";
-            } else if (isNaN(y)) {
-                throw "Parameter y must be a number.";
-            } else if (isNaN(r) || r < 0) {
-                throw "Parameter r must be a non-negative number.";
-            } else if (isNaN(a1)) {
-                throw "Parameter a1 must be a number.";
-            } else if (isNaN(a2)) {
-                throw "Parameter a2 must be a number.";
-            }
 
             /* Mathematical constants */
             var DEGREES_TO_RADIANS = Math.PI / 180;
@@ -1523,12 +1511,6 @@
          * @return {object} Path attribute for attachment to a Raphael object.
          */
         graph.paper.customAttributes.radius = function (r) {
-            /* Unit Testing */
-            if(!this.attrs || !this.attrs.segment) {
-                throw "segment attribute must be set on wedge prior to setting r attribute.";
-            } else if(isNaN(r) || r < 0) {
-                throw "Parameter r must be a number.";
-            }
 
             var segment = this.attrs.segment;
             segment[2] = r; // Update the segment attribute (segment[2]) so it's consistent with the new radius
@@ -1541,11 +1523,6 @@
          * @param [ms] {number} The duration of tha Raphael animation
          */
         function animate(ms) {
-            /* Unit Testing */
-            if(ms && (isNaN(ms) || ms < 0)) {
-                throw "Parameter ms must be a number.";
-            }
-
             var i;
 
             for (i = 0; i < series[seriesIndex].length; i++) {
@@ -1557,12 +1534,7 @@
          * Recalculates wedge sizes and animates (if enabled) pie to new proportion.  Run after updating series data.
          * @param [ms] {number} The duration of tha Raphael animation
          */
-        function resize(ms){
-            /* Unit Testing */
-            if(ms && (isNaN(ms) || ms < 0)) {
-                throw "Parameter ms must be a number.";
-            }
-
+        function resize(ms, callback){
             var start = 0, // current angle offset
                 total = graph.sums[seriesIndex],
                 data = series[seriesIndex];
@@ -1582,9 +1554,12 @@
                 wedges[i].data = data[i]; //update data tied to each wedge
 
                 if(graph.options.animation) {  //either animate transition of flatly update
-                    wedges[i].animate(newAttributes, ms || 1500, 'bounce');
+                    wedges[i].animate(newAttributes, ms || 1500, 'bounce', callback);
                 } else {
                     wedges[i].attr(newAttributes);
+                    if(callback){
+                        callback();
+                    }
                 }
             }
         }
@@ -1623,17 +1598,17 @@
              * wedge.
              * @param wedge {object} Raphael element for the exited wedge
              */
-            function wedgeExit(wedge){
+            function wedgeExit(e,wedge){
                 if(graph.options.pie.wedgeHoverOut) {
-                    graph.options.pie.wedgeHoverOut(wedge);
+                    graph.options.pie.wedgeHoverOut(e,wedge);
                 }
             }
 
             function generateWedge() {
                 var wedge = graph.paper.path()
                     .click(function(){ wedgeClick(wedge); })
-                    .hover(function(){ wedgeEnter(wedge); },
-                    function(){ wedgeExit(wedge); });
+                    .hover(function(e){ wedgeEnter(wedge); },
+                    function(e){ wedgeExit(e,wedge); });
                 return wedge;
             }
 
@@ -1677,9 +1652,6 @@
          * @param [callback] {void} Function to execute on completion of rotation.
          */
         function rotate(deg, callback) {
-            if(isNaN(deg)) {
-                throw "Parameter deg must be a number.";
-            }
 
             degreesRotated = deg;
             if(graph.options.animation) {
@@ -1698,10 +1670,6 @@
          * @param [callback] {void} Function to execute on completion of rotation.
          */
         function rotateToWedge(wedge, callback) {
-            if($.inArray(wedge,wedges) === -1){
-                throw 'Provided path is not contained in path collection';
-            }
-
             callback = callback || function(){};
             var a1 = wedge.attr('segment')[3],
                 a2 = wedge.attr('segment')[4],
@@ -1717,15 +1685,22 @@
          * @param newSeries {object} New data to base pie off of.
          * @param newSeriesIndex {number} Index to use in the newSeries.
          */
-        function updateLive(newSeries, newSeriesIndex) {
+        function updateLive(newSeries, newSeriesIndex, callback) {
             series = graph.allSeries.series = graph.allSeries[0].series = newSeries;
             seriesIndex = newSeriesIndex;
 
             graph.sums = elroi.fn.helpers.sumSeries(elroi.fn.helpers.getDataValues(graph.allSeries));
             graph.hasData = elroi.fn.helpers.hasData(graph.allSeries);
 
-            resize();
+            resize(1500, callback);
         }
+
+        /**
+         * Returns set that will be used for message box.  Provides set to custom user plugs
+         */
+
+
+
 
         /**
          * Update the color of each slice of the pie graph and update the graph options.
