@@ -213,7 +213,7 @@ var astroSpinningPie = (function($){
     /* Elroi event callbacks */
 
     /**
-     * Click hook to provide to advancedPie elroi graph.  Calls a handler determined by the provided
+     * Click hook to provide to pie elroi graph.  Calls a handler determined by the provided
      * descriptors for the current mode.
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
@@ -256,7 +256,7 @@ var astroSpinningPie = (function($){
 
 
     /**
-     * Hover enter hook to provide to advancedPie elroi graph.  Calls a handler determined by the provided
+     * Hover enter hook to provide to pie elroi graph.  Calls a handler determined by the provided
      * descriptors for the current mode.
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
@@ -284,7 +284,7 @@ var astroSpinningPie = (function($){
     }
 
     /**
-     * Hover exit hook to provide to advancedPie elroi graph.  Calls a handler determined by the provided
+     * Hover exit hook to provide to pie elroi graph.  Calls a handler determined by the provided
      * descriptors for the current mode.
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
@@ -399,7 +399,7 @@ var astroSpinningPie = (function($){
             currentText.attr({opacity: 1});
         }
 
-        pie = elroi($container, [{series:testSeries, options: {type:'advancedPie'}}],
+        pie = elroi($container, [{series:testSeries, options: {type:'pie'}}],
             {colors: ['#dddddd','#dddddd','#dddddd','#dddddd','#dddddd','#dddddd'],
                 //animation: false,
                 pie: {

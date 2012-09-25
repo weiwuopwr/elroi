@@ -142,7 +142,6 @@ $(document).ready(function(){
         
     );
     var pie = elroi($('#pie').find('.graph'), [{series:pieTestSeries, options: {type:'pie'}}]);
-    var advancedPie = elroi($('#advancedPie').find('.graph'), [{series:pieTestSeries, options: {type:'advancedPie'}}]);
     var bar = elroi($('#bar').find('.graph'), [{series:testSeries, options: {type:'bar'}}],
         {
             tooltip : {
