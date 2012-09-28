@@ -1492,8 +1492,9 @@
         var CENTER_COORDINATES = center.x+','+center.y,
             S11 = 's1,1';
 
-        var messageBoxSet;
-        var messageTextSet;
+        var messageBoxSet, //Static part of message, in default case under circle and over hit circle for mouse detection.
+            messageTextSet; //Dynamic part of message, the text and other elements sandwiched between the messageBoxSet
+        var selectedWedge; //The selected wedge, a selection change is triggered by clicking a wedge
 
         /**
          * Custom attribute for raphael that will create a pie wedge based on the following attributes.
@@ -1555,6 +1556,7 @@
         /**
          * Recalculates wedge sizes and animates (if enabled) pie to new proportion.  Run after updating series data.
          * @param [ms] {number} The duration of tha Raphael animation
+         * @param [callback] {callback} callback function to execute after resize animation
          */
         function resize(ms, callback){
             var start = 0, // current angle offset
@@ -1585,7 +1587,10 @@
             }
         }
 
-        var selectedWedge;
+        /**
+         * Either clears the selectedWedge or sets it to a new value.  Does not cause wedgeSelectionChanged event!
+         * @param [wedge] {object} Raphael wedge from the current pie to update the selectedWedge to.
+         */
         function resetSelectedWedge(wedge){
             if(wedge) {
                 selectedWedge = wedge;
@@ -1593,10 +1598,19 @@
                 selectedWedge = null;
             }
         }
+        /**
+         * Returns whether or not a wedge is the selected wedge.
+         * @param wedge {object} Raphael object of the wedge to compare to the selectedWedge
+         * @return {boolean} true if the selectedWedge is the same object as wedge
+         */
         function isSelectedWedge(wedge){
             return (wedge === selectedWedge);
         }
-
+        /**
+         * Checks whether or not a clicked on wedge is different than the wedge that was previously the selectedWedge.
+         * Triggers a wedgeSelectionChanged event if one was provided.
+         * @param [wedge] {object} Raphael wedge from the current pie that is the new selectedWedge.
+         */
         function updateSelectedWedge(wedge){
             var previouslySelectedWedge;
 
@@ -1615,8 +1629,7 @@
                 }
             }
         }
-        graph.ext.resetSelectedWedge = resetSelectedWedge;
-        graph.ext.isSelectedWedge = isSelectedWedge;
+
         /**
          * Draws an advandedPie and provides appropriate styling and callback hooks.
          */
@@ -1670,7 +1683,7 @@
                     }
 
                     /* Don't need to do anything if entering the inner circle */
-                    if(e.toElement !== messageBoxSet[1].node) {
+                    if(e.toElement === messageBoxSet[1].node) {
                         return;
                     }
 
@@ -1773,8 +1786,6 @@
             resize(1500, callback);
         }
 
-
-
         /**
          * Returns set that will be used for message box.  Provides set to custom user plugs
          */
@@ -1793,19 +1804,28 @@
 
             );
         }
+
+        /**
+         * Get the set of elements used as the message box.  The message box is the part of the message that is
+         * static, versus the dynamic text.  In the default case this is the white inner 'donut' and the invisible
+         * hit circle that covers it.
+         * @return {object} Raphael set with the elements currently comprising the the current message box.
+         */
         function getMessageBoxSet(){
             return messageBoxSet;
         }
+        /**
+         * Shows (or hides) the under layer (not the hit circle) which sits on top.
+         * @param {boolean} show true to show lower layers of messageBoxSet, otherwise false.  Always hides the hit circle.
+         */
         function showMessageBoxSet(show){
             messageBoxSet[0].attr({opacity: show ? 1 : 0});
         }
 
-        graph.ext.showMessageBoxSet = showMessageBoxSet;
-        graph.ext.getMessageBoxSet = getMessageBoxSet;
-
-
         /**
-         * Removes the current message text and creates a new Raphael set for the next message.
+         * Removes the current message text set and all of its elements.  Creates a new Raphael set for the next message
+         * text.
+         * @param [element] {Array} list of elements to add after resetting the set.
          */
         function resetMessageTextSet(elements) {
             var i,
@@ -1821,19 +1841,24 @@
                     messageTextSet.push(elements[i]);
                 }
             }
-            messageTextSet.insertAfter(messageBoxSet[0]);
+            messageTextSet.insertAfter(messageBoxSet[0]); //Insert after the bottom pie slice, this is BEFORE the top layer
 
-            console.log("redraw complete");
         }
+        /**
+         * Get the set of text elements for the current message.  Unused, may depricate.
+         * @return {object} Raphael set with the elements currently comprising the the current messageTextSet.
+         */
         function getMessageTextSet(){
             return messageTextSet;
         }
+        /**
+         * Helper to show or hide the current text in the message box (donut)
+         * @param {boolean} show - true to show, false otherwise
+         */
         function showMessageTextSet(show){
             messageTextSet.attr({opacity: show ? 1 : 0});
         }
-        graph.ext.showMessageTextSet = showMessageTextSet;
-        graph.ext.resetMessageTextSet = resetMessageTextSet;
-        graph.ext.getMessageTextSet = getMessageTextSet;
+
 
         /**
          * Update the color of each slice of the pie graph and update the graph options.
@@ -1870,6 +1895,16 @@
             }
             return -1;
         }
+
+        graph.ext.resetSelectedWedge = resetSelectedWedge;
+        graph.ext.isSelectedWedge = isSelectedWedge;
+
+        graph.ext.showMessageBoxSet = showMessageBoxSet;
+        graph.ext.getMessageBoxSet = getMessageBoxSet;
+
+        graph.ext.showMessageTextSet = showMessageTextSet;
+        graph.ext.resetMessageTextSet = resetMessageTextSet;
+        graph.ext.getMessageTextSet = getMessageTextSet;
 
         graph.ext.rotateToWedge = rotateToWedge;
         graph.ext.getWedgeIndex = getWedgeIndex;

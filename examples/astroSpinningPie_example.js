@@ -185,7 +185,7 @@ var astroSpinningPie = (function($){
     /**
      * Helper function to show or hide the message circle.  If the circle is hidden the passthroughWedge needs to
      * be reset!
-     * @param show {boolean} indicates whether or not to display the message circle.
+     * @param [show] {boolean} indicates whether or not to display the message circle.
      */
     function showMessageBoxSet(show) {
         if(!show) {
@@ -293,8 +293,7 @@ var astroSpinningPie = (function($){
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
     function wedgeHoverIn(e, wedge) {
-
-        console.log("wedge hover in");
+        //console.log("wedge hover in");
 
         /* Deemphasize the previous hovered over wedge.  If hoverWedge is null, deemphasizedWedge will
         * return immediately*/
@@ -341,7 +340,7 @@ var astroSpinningPie = (function($){
      */
     function wedgeHoverOut(e, wedge) {
         var i;
-        console.log("wedge hover out");
+        //console.log("wedge hover out");
 
         /* We are exiting into the circle, update the passthrough wedge and do nothing else */
         if(circle.node === e.toElement){
@@ -476,11 +475,11 @@ var astroSpinningPie = (function($){
             .mousemove(circleMouseMove)
             .click(circleClick)
             .hover(function(){
-                console.log("circle hover in");
+                //console.log("circle hover in");
             },
             function(e){
                 wedgeHoverOut(e, passthroughWedge); //security against skipping out event
-                console.log("circle hover out");
+                //console.log("circle hover out");
             });
 
     };
