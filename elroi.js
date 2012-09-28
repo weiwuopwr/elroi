@@ -115,6 +115,19 @@
         var width = $paper.width() || $el.width(),
             height = $paper.height() || $el.height();
 
+        var containerOffsetLeft = $(element).offset().left;
+        var containerOffsetTop = $(element).offset().top;
+        function isMouseInPath(e, path){
+            var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft,
+                posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
+            return Raphael.isPointInsidePath(path, posx, posy);
+        }
+        function isMouseInElement(e, element){
+            var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft,
+                posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
+            return element.isPointInside(posx, posy);
+        }
+
         var graph = elroi.fn.init({
             padding : options.padding,
             labelLineHeight: 12,
@@ -124,7 +137,9 @@
             $el: $el,
             paper: Raphael($paper.get(0), width, height),
             options: options,
-            tooltips: tooltips
+            tooltips: tooltips,
+            isMouseInPath: isMouseInPath,
+            isMouseInElement: isMouseInElement
         });
 
         var html = '<div class="elroi-tooltip"><div class="elroi-tooltip-content"></div></div>';
@@ -1457,9 +1472,10 @@
         };
         graph.options.pie.radius = graph.options.pie.radius ||  (graph.height - graph.padding.bottom + graph.padding.top)/ 2;
         graph.options.pie.wedgeAttributes = graph.options.pie.wedgeAttributes || {};
+        graph.options.pie.messageSetAttributes = graph.options.pie.messageSetAttributes || {};
 
-        /*Ext holds extension functions specific to the pie.  They are merged into the parent namespace making
-         them publicly accessible at the level of the elroi object. */
+            /*Ext holds extension functions specific to the pie.  They are merged into the parent namespace making
+  them publicly accessible at the level of the elroi object. */
         graph.ext = {};
 
         /* Pie attributes */
@@ -1473,6 +1489,9 @@
         /* Raphael transform constants */
         var CENTER_COORDINATES = center.x+','+center.y,
             S11 = 's1,1';
+
+        var messageSet;
+        var messageTextSet;
 
         /**
          * Custom attribute for raphael that will create a pie wedge based on the following attributes.
@@ -1564,6 +1583,38 @@
             }
         }
 
+        var selectedWedge;
+        function resetSelectedWedge(wedge){
+            if(wedge) {
+                selectedWedge = wedge;
+            } else {
+                selectedWedge = null;
+            }
+        }
+        function isSelectedWedge(wedge){
+            return (wedge === selectedWedge);
+        }
+
+        function updateSelectedWedge(wedge){
+            var previouslySelectedWedge;
+
+            if(selectedWedge === wedge) {
+                return;
+            } else {
+                previouslySelectedWedge = selectedWedge;
+                selectedWedge = wedge;
+
+                if(graph.options.pie.wedgeSelectionChanged) {
+                    graph.options.pie.wedgeSelectionChanged(previouslySelectedWedge, selectedWedge);
+                } else {
+                    showMessageTextSet(false);
+                    showMessageSet(false);
+                    rotateToWedge(wedge);
+                }
+            }
+        }
+        graph.ext.resetSelectedWedge = resetSelectedWedge;
+        graph.ext.isSelectedWedge = isSelectedWedge;
         /**
          * Draws an advandedPie and provides appropriate styling and callback hooks.
          */
@@ -1575,10 +1626,11 @@
              * @param wedge {object} Raphael element for the clicked wedge
              */
             function wedgeClick(wedge){
+
+                updateSelectedWedge(wedge);
+
                 if(graph.options.pie.wedgeClick) {
                     graph.options.pie.wedgeClick(wedge);
-                } else {
-                    rotateToWedge(wedge);
                 }
             }
 
@@ -1590,6 +1642,9 @@
             function wedgeEnter(wedge){
                 if(graph.options.pie.wedgeHoverIn) {
                     graph.options.pie.wedgeHoverIn(wedge);
+                } else {
+                    resetMessageTextSet([graph.paper.text(center.x, center.y, wedge.data.value).attr({'font-size':40})]);
+                    showMessageSet(true);
                 }
             }
 
@@ -1601,12 +1656,17 @@
             function wedgeExit(e,wedge){
                 if(graph.options.pie.wedgeHoverOut) {
                     graph.options.pie.wedgeHoverOut(e,wedge);
+                } else {
+                    if(!graph.isMouseInElement(e, messageSet[0])) {
+                        showMessageSet(false);
+                        showMessageTextSet(false);
+                    }
                 }
             }
 
             function generateWedge() {
                 var wedge = graph.paper.path()
-                    .click(function(){ wedgeClick(wedge); })
+                    .click(function(e){ wedgeClick(wedge); })
                     .hover(function(e){ wedgeEnter(wedge); },
                     function(e){ wedgeExit(e,wedge); });
                 return wedge;
@@ -1644,6 +1704,8 @@
             if(graph.options.animation) {
                 animate(1000);
             }
+
+            generateMessageSet();
         }
 
         /**
@@ -1695,12 +1757,64 @@
             resize(1500, callback);
         }
 
+
+
         /**
          * Returns set that will be used for message box.  Provides set to custom user plugs
          */
+        function generateMessageSet(){
+            messageSet = graph.paper.set();
+            messageSet.push(
+                graph.paper
+                    .circle(center.x, center.y, radius /2)
+                    .attr({fill: 'white'})
+                    .attr(graph.options.pie.messageSetAttributes),
+                graph.paper
+                    .circle(center.x, center.y, radius /2+3)
+                    .attr(graph.options.pie.messageSetAttributes)
+                    .attr({fill: 'yellow', 'stroke-width':0})
+                    .attr({opacity: 0})
+
+            );
+        }
+        function getMessageSet(){
+            return messageSet;
+        }
+        function showMessageSet(show){
+            messageSet[0].attr({opacity: show ? 1 : 0});
+        }
+        graph.ext.showMessageSet = showMessageSet;
+        graph.ext.getMessageSet = getMessageSet;
 
 
+        /**
+         * Removes the current message text and creates a new Raphael set for the next message.
+         */
+        function resetMessageTextSet(elements) {
+            var i,
+                elementsLength = elements.length;
 
+            if(messageTextSet){
+                messageTextSet.remove();
+            }
+            messageTextSet = graph.paper.set();
+
+            if(elementsLength > 0) { //We only need to do the remaining pieces if there are elements, moreover insertAfter crashes on an empty set
+                for(i = 0; i < elementsLength; i+=1){
+                    messageSet[1].insertAfter(elements[i]);
+                    messageTextSet.push(elements[i]);
+                }
+            }
+        }
+        function getMessageTextSet(){
+            return messageTextSet;
+        }
+        function showMessageTextSet(show){
+            messageTextSet.attr({opacity: show ? 1 : 0});
+        }
+        graph.ext.showMessageTextSet = showMessageTextSet;
+        graph.ext.resetMessageTextSet = resetMessageTextSet;
+        graph.ext.getMessageTextSet = getMessageTextSet;
 
         /**
          * Update the color of each slice of the pie graph and update the graph options.
@@ -1722,7 +1836,24 @@
             graph.options.colors = colors;
         }
 
+        /**
+         * Gets the index of a wedge in the wedges array.
+         * @param wedge {object} the wedge that is to be found
+         * @return {number} index of the wedge if found, otherwise -1
+         */
+        function getWedgeIndex(wedge){
+            var i, //index of wedge for traversal
+                wedgesLength = wedges.length; //length of wedges for traversal
+            for(i=0; i < wedgesLength; i+=1) {
+                if(wedge === wedges[i]) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         graph.ext.rotateToWedge = rotateToWedge;
+        graph.ext.getWedgeIndex = getWedgeIndex;
         graph.ext.rotate = rotate;
 
         graph.ext.updateLive = updateLive;
