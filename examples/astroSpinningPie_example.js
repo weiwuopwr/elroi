@@ -98,7 +98,29 @@ var astroSpinningPie = (function($){
 
     /* Message helper methods */
 
+    /**
+     * Apply standard attributes to a wedge of the pie per workflow descriptors.
+     * @param wedge {boolean} wedge from pie to act on
+     */
+    function deemphasizeWedge(wedge) {
+        /* Return if wedge is null */
+        if(!wedge) {
+            return;
+        }
 
+        /* Mode specific stylings */
+        if(mode === Mode.SELECTED){
+            if(pie.isSelectedWedge(wedge)) {
+                return;
+            }
+        } else if (mode === Mode.SURVEY){
+            if(wedge === wedges[sectionsCompleted]) {
+                return;
+            }
+        }
+
+        wedge.animate(descriptors[mode].attr,150, 'bounce');
+    }
 
     /**
      * Helper function to show or hide the message circle.
@@ -146,6 +168,7 @@ var astroSpinningPie = (function($){
         if((mode !== Mode.COMPLETE && mode !== Mode.SELECTED) || previousSelectedWedge === selectedWedge) {
             return;
         }
+
         /**
          * Highlight the newly selected wedge by changing its opacity to 1 and lowering the opacity of
          * nonselected wedges.
@@ -193,7 +216,7 @@ var astroSpinningPie = (function($){
         {
             hover: {handles: true, attr: {radius: BUMP_OUT_RADIUS}},
             click: {handles: true},
-            selected: {selectionChanged: selectedWedgeChanged},
+            selectionChanged: selectedWedgeChanged,
             attr: {radius: STANDARD_RADIUS, opacity: 1},
             init: completeInitialize,
             text: completeMessage
@@ -202,7 +225,7 @@ var astroSpinningPie = (function($){
         {
             hover: {handles: true, attr: {radius: BUMP_OUT_RADIUS}},
             click: {handles: true},
-            selected: {selectionChanged: selectedWedgeChanged, showTextAsDefault: true},
+            selectionChanged: selectedWedgeChanged,
             highlighAttr: {radius: BUMP_OUT_RADIUS},
             attr: {radius: STANDARD_RADIUS, opacity:0.5},
             text: completeMessage
@@ -216,7 +239,7 @@ var astroSpinningPie = (function($){
      * descriptors for the current mode.
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
-    var wedgeClick = function(wedge){
+    function wedgeClick(wedge){
 
         if(!descriptors[mode].click) {
             return;
@@ -226,18 +249,23 @@ var astroSpinningPie = (function($){
             pie.showMessageTextSet(false);
             pie.showMessageSet(false);
         }
-    };
+    }
 
-    var wedgeSelectionChanged = function(previouslySelectedWedge, selectedWedge){
-        if(descriptors[mode].selected && descriptors[mode].selected.selectionChanged){
-            descriptors[mode].selected.selectionChanged(previouslySelectedWedge, selectedWedge);
+    /**
+     * Selected wedge changed hook provided to elroi graph.
+     * @param previouslySelectedWedge {object} the previously selected wedge, null if no previously selected wedge
+     * @param selectedWedge {object} the wedge which is now the selected wedge
+     */
+    function wedgeSelectionChanged(previouslySelectedWedge, selectedWedge){
+        if(descriptors[mode].selectionChanged){
+            descriptors[mode].selectionChanged(previouslySelectedWedge, selectedWedge);
         }
-    };
+    }
 
     /**
      * Hover enter hook to provide to pie elroi graph.  Calls a handler determined by the provided
      * descriptors for the current mode.
-     * @param e {object} click event pertaining to this hover event
+     * @param e {object} mouse event pertaining to this hover event
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
     function wedgeHoverIn(e, wedge) {
@@ -273,7 +301,7 @@ var astroSpinningPie = (function($){
         showMessageSet(true);
 
         /* Emphasize wedge if it's not already by virtue of being selected in a selectable mode*/
-        if(pie.isSelectedWedge(wedge) && mode === Mode.SELECTED){
+        if(mode === Mode.SELECTED && pie.isSelectedWedge(wedge)) {
             return;
         }  else {
             wedge.animate(descriptors[mode].hover.attr, 150, 'bounce');
@@ -281,30 +309,10 @@ var astroSpinningPie = (function($){
 
     }
 
-    function deemphasizeWedge(wedge){
-        /* Return if wedge is null */
-        if(!wedge) {
-            return;
-        }
-
-        /*  */
-        if(mode === Mode.SELECTED){
-          if(pie.isSelectedWedge(wedge)) {
-              return;
-          }
-        } else if (mode === Mode.SURVEY){
-            if(wedge === wedges[sectionsCompleted]) {
-               return;
-            }
-        }
-
-        wedge.animate(descriptors[mode].attr,150, 'bounce');
-    }
-
-
     /**
      * Hover exit hook to provide to pie elroi graph.  Calls a handler determined by the provided
      * descriptors for the current mode.
+     * @param e {object} mouse event pertaining to this hover event
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
     function wedgeHoverOut(e, wedge) {
@@ -338,10 +346,6 @@ var astroSpinningPie = (function($){
      * @param section {number} the number of sections to indicate as being completed.
      */
     ns.changeSection = function(section) {
-        if(isNaN(section)) {
-            throw "Parameter section must be a number.";
-        }
-
         sectionsCompleted = section;
         pie.resetSelectedWedge(wedges[sectionsCompleted]);
         ns.changeMode(Mode.SURVEY);
@@ -356,13 +360,17 @@ var astroSpinningPie = (function($){
         pie.resetSelectedWedge();
         mode = newMode;
         wedges.animate(descriptors[mode].attr, 25, function(){
-            if(descriptors[mode].init){
+            if(descriptors[mode].init) {
                 descriptors[mode].init();
             }
         });
     };
 
-
+    /**
+     * Caches the path for each wedge after a transformation occurs.
+     * This is important as a lot of Raphael's collision detection does not take into account the current
+     * transformations applied to an element.
+     */
     function regenerateTransformedWedgePaths() {
         var i, //index of wedge
             wedgesLength = wedges.length, //length of wedges
@@ -388,21 +396,27 @@ var astroSpinningPie = (function($){
     ns.initialize = function($container){
 
         function circleMouseMove(e){
-            //console.log("mouse moved");
+
             var newWedge, //used to store new wedge if it is detected the passthroughWedge has changed
                 i,
-                wedgesLength = wedges.length;
+                wedgesLength = wedges.length,
+                passthoughWedgeIndex = (passthroughWedge !== null) ? pie.getWedgeIndex(passthroughWedge) : -1;
 
+            /* If we haven't previously generated the transformed paths, do so now */
             if(transformedWedgePaths.length === 0){
                 regenerateTransformedWedgePaths();
             }
 
+            //Most likely we are in the same wedge, so check that first and skip the rest of the heavy lifting
+            if(passthoughWedgeIndex !== -1 && graph.isMouseInPath(e, transformedWedgePaths[passthoughWedgeIndex])) {
+                       return;
+            }
+
+            console.log('mouse moved FULL');
+
             //Detect which wedge the mouse is currently hovering over
-            for(i=0; i < wedgesLength; i+=1){
-                if(passthroughWedge !== null && newWedge === passthroughWedge) {
-                    continue;
-                }
-                if(graph.isMouseInPath(e,transformedWedgePaths[i])) {
+            for(i=0; i < wedgesLength; i+=1) {
+                if(i !== passthoughWedgeIndex &&  graph.isMouseInPath(e,transformedWedgePaths[i])) {
                     newWedge = wedges[i];
                     break;
                 }
@@ -415,7 +429,6 @@ var astroSpinningPie = (function($){
                 if(newWedge !== hoverWedge){
                     wedgeHoverIn(e,newWedge);
                 }
-
             }
         }
 
@@ -460,11 +473,11 @@ var astroSpinningPie = (function($){
 
     };
 
-    //var c1, c2; //DELETE ME
     /* CUT THESE HOOKS */
 
     ns.resetRotation = function(){
-        pie.rotate(-90, function(){regenerateTransformedWedgePaths();});
+        regenerateTransformedWedgePaths();
+        //pie.rotate(-90, regenerateTransformedWedgePaths);
     };
 
     ns.resizeLive = function (){
