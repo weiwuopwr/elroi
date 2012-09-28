@@ -239,7 +239,7 @@ var astroSpinningPie = (function($){
      * descriptors for the current mode.
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
-    function wedgeHoverIn(wedge){
+    function wedgeHoverIn(e, wedge) {
 
         console.log("wedge hover in");
         var fromInsideCircle = (hoverWedge) ? true : false;
@@ -247,18 +247,20 @@ var astroSpinningPie = (function($){
         hoverWedge = wedge;
 
         /* RESET TEXT */
-        var wedgeIndex = pie.getWedgeIndex(wedge);
-        pie.resetMessageTextSet(
-            descriptors[mode].text(graph.paper,
-                graph.options.pie.center.x,
-                graph.options.pie.center.y,
-                wedgeIndex,
-                wedge.data
-            )
-        );
+        if(circle.node !== e.fromElement){
+            var wedgeIndex = pie.getWedgeIndex(wedge);
+            pie.resetMessageTextSet(
+                descriptors[mode].text(graph.paper,
+                    graph.options.pie.center.x,
+                    graph.options.pie.center.y,
+                    wedgeIndex,
+                    wedge.data
+                )
+            );
+        }
 
         /* Show Message Box if we Aren't Already */
-        if(!fromInsideCircle)
+        //if(!fromInsideCircle)
             showMessageSet(true); //We don't need to do this if we are already showing it!
 
         /* Emphasize wedge if it's not already by virtue of being selected in a selectable mode*/
@@ -271,14 +273,27 @@ var astroSpinningPie = (function($){
     }
 
     function deemph(wedge){
-        if(!wedge) return;
-
-        if(pie.isSelectedWedge(wedge) && mode === Mode.SELECTED) {
+        /* Return if wedge is null */
+        if(!wedge) {
             return;
-        } else {
-            wedge.animate(descriptors[mode].attr,150, 'bounce');
         }
+
+        /**/
+        if(mode === Mode.SELECTED){
+          if(pie.isSelectedWedge(wedge)) {
+              return;
+          }
+        } else if (mode === Mode.SURVEY){
+            if(wedge === wedges[sectionsCompleted]) {
+               return;
+            }
+        }
+
+        wedge.animate(descriptors[mode].attr,150, 'bounce');
+
+
     }
+
 
     /**
      * Hover exit hook to provide to pie elroi graph.  Calls a handler determined by the provided
@@ -288,7 +303,7 @@ var astroSpinningPie = (function($){
     function wedgeHoverOut(e, wedge) {
         console.log("wedge hover out");
 
-        if(c1[0] === e.toElement || c2[0] === e.toElement){
+        if(circle.node === e.toElement){
             passthroughWedge = hoverWedge;
             return;
         }
@@ -331,6 +346,7 @@ var astroSpinningPie = (function($){
      * @param newMode {enum} new mode from Mode enum to switch to.
      */
     ns.changeMode = function(newMode){
+        pie.resetSelectedWedge();
         mode = newMode;
         wedges.animate(descriptors[mode].attr, 25, function(){
             if(descriptors[mode].init){
@@ -390,7 +406,7 @@ var astroSpinningPie = (function($){
 
                 passthroughWedge = newWedge;
                 if(newWedge !== hoverWedge){
-                    wedgeHoverIn(newWedge);
+                    wedgeHoverIn(e,newWedge);
                 }
 
             }
@@ -424,8 +440,9 @@ var astroSpinningPie = (function($){
         graph = pie.graph;
         wedges = pie.graph.wedges;
 
-        c1 =  pie.getMessageSet()[0];
-        c2 = pie.getMessageSet()[1];
+        //DELETE
+        //c1 =  pie.getMessageSet()[0];
+        //c2 = pie.getMessageSet()[1];
 
         circle = (pie.getMessageSet()[1])
             .mousemove(circleMouseMove)
@@ -433,7 +450,6 @@ var astroSpinningPie = (function($){
             .hover(function(){console.log("circle hover in");
             },
             function(e){
-
                 wedgeHoverOut(e, passthroughWedge); //security against skipping out event
                 console.log("circle hover out");
             });
@@ -441,7 +457,7 @@ var astroSpinningPie = (function($){
 
     };
 
-    var c1, c2;
+    //var c1, c2; //DELETE ME
     /* CUT THESE HOOKS */
 
     ns.resetRotation = function(){

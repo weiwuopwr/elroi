@@ -1282,6 +1282,9 @@
 
                     fillLine.animate({path: fillLinePath}, animSpeed);
                     fillLine.insertAfter(graph.grid.lines);
+
+
+
                 }
             }
 
@@ -1627,11 +1630,13 @@
              */
             function wedgeClick(wedge){
 
-                updateSelectedWedge(wedge);
-
                 if(graph.options.pie.wedgeClick) {
                     graph.options.pie.wedgeClick(wedge);
                 }
+
+                updateSelectedWedge(wedge);
+
+
             }
 
             /**
@@ -1639,9 +1644,9 @@
              * wedge.
              * @param wedge {object} Raphael element for the entered wedge
              */
-            function wedgeEnter(wedge){
+            function wedgeEnter(e,wedge){
                 if(graph.options.pie.wedgeHoverIn) {
-                    graph.options.pie.wedgeHoverIn(wedge);
+                    graph.options.pie.wedgeHoverIn(e,wedge);
                 } else {
                     resetMessageTextSet([graph.paper.text(center.x, center.y, wedge.data.value).attr({'font-size':40})]);
                     showMessageSet(true);
@@ -1667,7 +1672,7 @@
             function generateWedge() {
                 var wedge = graph.paper.path()
                     .click(function(e){ wedgeClick(wedge); })
-                    .hover(function(e){ wedgeEnter(wedge); },
+                    .hover(function(e){ wedgeEnter(e,wedge); },
                     function(e){ wedgeExit(e,wedge); });
                 return wedge;
             }
@@ -1783,6 +1788,7 @@
         function showMessageSet(show){
             messageSet[0].attr({opacity: show ? 1 : 0});
         }
+
         graph.ext.showMessageSet = showMessageSet;
         graph.ext.getMessageSet = getMessageSet;
 
@@ -1805,6 +1811,8 @@
                 }
             }
             messageTextSet.insertAfter(messageSet[0]);
+
+            console.log("redraw complete");
         }
         function getMessageTextSet(){
             return messageTextSet;
