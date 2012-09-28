@@ -58,19 +58,16 @@ var astroSpinningPie = (function($){
      */
     /* Mode.COMPLETE text generator */
     function completeMessage (paper,centerX,centerY,wedgeIndex,wedgeData) {
-        return [];
         return [
             paper.text(centerX,centerY-20,wedgeData.value+'%')
                 .attr(BASE_FONT).attr({'font-size':55}),
             paper.text(centerX,centerY+20,wedgeData.name)
                 .attr(BASE_FONT).attr({'font-size':25,'fill': wedges[wedgeIndex].attrs.fill})
         ];
-
     }
 
     /* Mode.INITIAL text generator */
     function initialMessage(paper,centerX,centerY,wedgeIndex,wedgeData) {
-        return [];
         return [
             paper.text(centerX,centerY-20,wedgeData.name)
                 .attr(BASE_FONT).attr({'font-size':25}),
@@ -81,7 +78,6 @@ var astroSpinningPie = (function($){
 
     /* Mode.SURVEY text generator */
     function surveyMessage(paper,centerX,centerY,wedgeIndex,wedgeData) {
-        return [];
 
         if(wedgeIndex < sectionsCompleted) {
             return completeMessage(paper,centerX,centerY,wedgeIndex,wedgeData);
@@ -290,6 +286,8 @@ var astroSpinningPie = (function($){
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
     function wedgeHoverOut(e, wedge) {
+        console.log("wedge hover out");
+
         if(c1[0] === e.toElement || c2[0] === e.toElement){
             passthroughWedge = hoverWedge;
             return;

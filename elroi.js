@@ -1801,10 +1801,10 @@
 
             if(elementsLength > 0) { //We only need to do the remaining pieces if there are elements, moreover insertAfter crashes on an empty set
                 for(i = 0; i < elementsLength; i+=1){
-                    messageSet[1].insertAfter(elements[i]);
                     messageTextSet.push(elements[i]);
                 }
             }
+            messageTextSet.insertAfter(messageSet[0]);
         }
         function getMessageTextSet(){
             return messageTextSet;
