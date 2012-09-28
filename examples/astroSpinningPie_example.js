@@ -423,8 +423,7 @@ var astroSpinningPie = (function($){
             }
 
             //Check if we actually had a change and update the passthroughWedge accordingly and simulate events.
-            if(newWedge !== null && newWedge !== passthroughWedge) {
-
+            if(newWedge !== null) {
                 passthroughWedge = newWedge;
                 if(newWedge !== hoverWedge){
                     wedgeHoverIn(e,newWedge);
