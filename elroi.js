@@ -1570,9 +1570,7 @@
 
             for (i = 0; i < dataLength; i++) {
                 wedgeSize = 360 / total * data[i].value;
-                newAttributes = {segment: [center.x, center.y, wedges[i].attr('radius'), start, start += wedgeSize]
-                    //, transform:['r'+(-90)+','+CENTER_COORDINATES]
-                };
+                newAttributes = {segment: [center.x, center.y, wedges[i].attr('radius'), start, start += wedgeSize]};
 
                 wedges[i].data = data[i]; //update data tied to each wedge
 

@@ -48,6 +48,8 @@ var astroSpinningPie = (function($){
         BASE_COLORS = ['#1087C9','#AB3E2C','#663366','#C2B59B','#65D9C5','#8FC740'],
         BASE_FONT = {'font-family':'proxima','font-weight':'bold','fill': 'black'};
 
+    var hoverWedge; //variable to keep track of which wedge is currently being hovered over, otherwise null
+
     /* Message methods
      * Generates message text for a specific wedge based on Mode.
      * @param paper {object} Raphael paper that our graph is drawn on
@@ -232,21 +234,25 @@ var astroSpinningPie = (function($){
         }
     };
 
-
-    var hoverWedge;
     /**
      * Hover enter hook to provide to pie elroi graph.  Calls a handler determined by the provided
      * descriptors for the current mode.
+     * @param e {object} click event pertaining to this hover event
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
     function wedgeHoverIn(e, wedge) {
 
         console.log("wedge hover in");
-        var fromInsideCircle = (hoverWedge) ? true : false;
-        deemph(hoverWedge);
+
+        /* Deemphasize the previous hovered over wedge.  If hoverWedge is null, deemphasizedWedge will
+        * return immediately*/
+        deemphasizeWedge(hoverWedge);
+
+        //Update the currently hovered over wedge
         hoverWedge = wedge;
 
-        /* RESET TEXT */
+        /* Reset text as long as we aren't coming from the circle.  In that case we're in the right
+         * wedge already! */
         if(circle.node !== e.fromElement){
             var wedgeIndex = pie.getWedgeIndex(wedge);
             pie.resetMessageTextSet(
@@ -259,9 +265,12 @@ var astroSpinningPie = (function($){
             );
         }
 
-        /* Show Message Box if we Aren't Already */
-        //if(!fromInsideCircle)
-            showMessageSet(true); //We don't need to do this if we are already showing it!
+        /* Show Message Box if we Aren't Already ;
+        We could prevent it if we know we are coming from inside the circle but it is safer to show
+        it in any case.
+         var fromInsideCircle = (hoverWedge) ? true : false; ... if(!fromInsideCircle)
+         */
+        showMessageSet(true);
 
         /* Emphasize wedge if it's not already by virtue of being selected in a selectable mode*/
         if(pie.isSelectedWedge(wedge) && mode === Mode.SELECTED){
@@ -272,13 +281,13 @@ var astroSpinningPie = (function($){
 
     }
 
-    function deemph(wedge){
+    function deemphasizeWedge(wedge){
         /* Return if wedge is null */
         if(!wedge) {
             return;
         }
 
-        /**/
+        /*  */
         if(mode === Mode.SELECTED){
           if(pie.isSelectedWedge(wedge)) {
               return;
@@ -290,8 +299,6 @@ var astroSpinningPie = (function($){
         }
 
         wedge.animate(descriptors[mode].attr,150, 'bounce');
-
-
     }
 
 
@@ -315,7 +322,7 @@ var astroSpinningPie = (function($){
             if(wedges[x].node === e.toElement)
                 return;
 
-        deemph(wedge);
+        deemphasizeWedge(wedge);
 
         showMessageSet(false);
         pie.showMessageTextSet(false);
@@ -439,10 +446,6 @@ var astroSpinningPie = (function($){
 
         graph = pie.graph;
         wedges = pie.graph.wedges;
-
-        //DELETE
-        //c1 =  pie.getMessageSet()[0];
-        //c2 = pie.getMessageSet()[1];
 
         circle = (pie.getMessageSet()[1])
             .mousemove(circleMouseMove)
