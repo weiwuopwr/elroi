@@ -15,8 +15,7 @@
      *          data - An array of series objects containing series data, and series options
      *          options - options for the graph
      * @return graph The graph object
-     * @return {function} draw Method to draw the graph
-     * @return {function} update Updates the graph with new data
+     * @return {object} object containing method for draw and method for update
      */
     function e(element, dataSeries, graphOptions, tooltips) {
         var defaults = {
@@ -406,7 +405,7 @@
         /**
          * Checks and sees if the graph has any data to actually display
          * @param {Array} allSeries An array of all of the series in the graph
-         * @returns {Boolean} hasData Does the graph have data
+         * @return {Boolean} hasData Does the graph have data
          */
         hasData : function(allSeries){
             var hasData = true;
@@ -498,7 +497,7 @@
         /**
          * Goes through each data point in every series and figures out if any of them have point flags
          * @param {Array} allSeries All of the series to be shown on the graph
-         * @returns {Boolean} hasPointFlags
+         * @return {Boolean} hasPointFlags
          */
         hasPointFlags: function(allSeries){
 
@@ -521,7 +520,7 @@
          * Determines minimum values for each datavalues set
          * @param {Object} dataValuesSet
          * @param {Object} seriesOptions
-         * @returns {Array} The array of minumum values to use in the scaling & axes
+         * @return {Array} The array of minumum values to use in the scaling & axes
          */
         minValues : function(dataValuesSet, seriesOptions) {
             var minVals = [],
@@ -548,7 +547,7 @@
          * @param {Array} dataValuesSet
          * @param {Array} seriesOptions
          * @param {Object} graph
-         * @returns {Array} The array of each values to use for scales & axes
+         * @return {Array} The array of each values to use for scales & axes
          */
         maxValues : function(dataValuesSet, seriesOptions, graph) {
             var maxVals = [];
@@ -564,7 +563,7 @@
 
             /**
              * Helper function to figure out of we should distort the maximum values to make room for flags, messages, et
-             * @returns {Number} The scale to multiply against each of the max values to make some room
+             * @return {Number} The scale to multiply against each of the max values to make some room
              */
             function distortMaxValuesBy() {
 
@@ -607,7 +606,7 @@
          * Sets up an array of series specific options for each series to graph
          * @param {Array} allSeries An array of series, each with their own options
          * @param defaults Default options to merge in
-         * @returns {Array} seriesOptions
+         * @return {Array} seriesOptions
          */
         seriesOptions : function(allSeries, defaults) {
 
@@ -927,7 +926,7 @@
          * Takes in a maximum value and a precision level, and returns an array of numbers for use in the y label
          * @param {number} maxVal The maximum value in a dataset
          * @param {number} precision The number of digits to show
-         * @returns {Array} yLabels A set of labels for the y axis
+         * @return {Array} yLabels A set of labels for the y axis
          */
         function getYLabels(maxVal, minVal, precision){
             var yLabels = [],
@@ -1463,8 +1462,8 @@
      * @param series The series of data
      * @param {int} seriesIndex The index of the pie graph data in the graph's allSeries array.  Multiple series don't
      *              make sense in this case.  Any multi-series data sets may provide unexpected results.
-     * @return wedges A set of all of the wedges
-     * @return {function} draw The function to draw the pie graph
+     * @return {object} edges - the collection of wedges that make up this pie
+     *                  draw -  the method to draw the pie graph.
      */
     function pie(graph, series, seriesIndex) {
         /* Attempt to configure graph using provided options, otherwise fallback to defaults.*/
@@ -1475,7 +1474,7 @@
         };
         graph.options.pie.radius = graph.options.pie.radius ||  (graph.height - graph.padding.bottom + graph.padding.top)/ 2;
         graph.options.pie.wedgeAttributes = graph.options.pie.wedgeAttributes || {};
-        graph.options.pie.messageSetAttributes = graph.options.pie.messageSetAttributes || {};
+        graph.options.pie.messageBoxSetAttributes = graph.options.pie.messageBoxSetAttributes || {};
 
             /*Ext holds extension functions specific to the pie.  They are merged into the parent namespace making
   them publicly accessible at the level of the elroi object. */
@@ -1493,7 +1492,7 @@
         var CENTER_COORDINATES = center.x+','+center.y,
             S11 = 's1,1';
 
-        var messageSet;
+        var messageBoxSet;
         var messageTextSet;
 
         /**
@@ -1516,13 +1515,14 @@
                 this.attrs.radius = r;
             }
 
-
             a1 = (a1 % 360) * DEGREES_TO_RADIANS;
             a2 = (a2 % 360) * DEGREES_TO_RADIANS;
 
             return {
-                path: [['M', x, y], ['l', r * Math.cos(a1), r * Math.sin(a1)], ['A', r, r, 0, +flag, 1,
-                    x + r * Math.cos(a2), y + r * Math.sin(a2)], ['z']]
+                path: [['M', x, y],
+                    ['l', r * Math.cos(a1), r * Math.sin(a1)],
+                    ['A', r, r, 0, +flag, 1, x + r * Math.cos(a2), y + r * Math.sin(a2)],
+                    ['z']]
             };
         };
 
@@ -1610,7 +1610,7 @@
                     graph.options.pie.wedgeSelectionChanged(previouslySelectedWedge, selectedWedge);
                 } else {
                     showMessageTextSet(false);
-                    showMessageSet(false);
+                    showMessageBoxSet(false);
                     rotateToWedge(wedge);
                 }
             }
@@ -1648,7 +1648,7 @@
                     graph.options.pie.wedgeHoverIn(e,wedge);
                 } else {
                     resetMessageTextSet([graph.paper.text(center.x, center.y, wedge.data.value).attr({'font-size':40})]);
-                    showMessageSet(true);
+                    showMessageBoxSet(true);
                 }
             }
 
@@ -1658,13 +1658,25 @@
              * @param wedge {object} Raphael element for the exited wedge
              */
             function wedgeExit(e,wedge){
+                var i;
                 if(graph.options.pie.wedgeHoverOut) {
                     graph.options.pie.wedgeHoverOut(e,wedge);
                 } else {
-                    if(!graph.isMouseInElement(e, messageSet[0])) {
-                        showMessageSet(false);
-                        showMessageTextSet(false);
+                    /* Don't need to do anything if entering another wedge */
+                    for(i = 0; i < wedges.length; i+=1) {
+                        if(wedges[i].node === e.toElement) {
+                            return;
+                        }
                     }
+
+                    /* Don't need to do anything if entering the inner circle */
+                    if(e.toElement !== messageBoxSet[1].node) {
+                        return;
+                    }
+
+                    showMessageBoxSet(false);
+                    showMessageTextSet(false);
+
                 }
             }
 
@@ -1709,7 +1721,7 @@
                 animate(1000);
             }
 
-            generateMessageSet();
+            generateMessageBoxSet();
         }
 
         /**
@@ -1766,30 +1778,30 @@
         /**
          * Returns set that will be used for message box.  Provides set to custom user plugs
          */
-        function generateMessageSet(){
-            messageSet = graph.paper.set();
-            messageSet.push(
+        function generateMessageBoxSet(){
+            messageBoxSet = graph.paper.set();
+            messageBoxSet.push(
                 graph.paper
                     .circle(center.x, center.y, radius /2)
-                    .attr({fill: 'white'})
-                    .attr(graph.options.pie.messageSetAttributes),
+                    .attr({fill: 'white', opacity: 0.0})
+                    .attr(graph.options.pie.messageBoxSetAttributes),
                 graph.paper
                     .circle(center.x, center.y, radius /2+3)
-                    .attr(graph.options.pie.messageSetAttributes)
-                    .attr({fill: 'yellow', 'stroke-width':0})
+                    .attr(graph.options.pie.messageBoxSetAttributes)
+                    .attr({fill: 'red', 'stroke-width':0})
                     .attr({opacity: 0})
 
             );
         }
-        function getMessageSet(){
-            return messageSet;
+        function getMessageBoxSet(){
+            return messageBoxSet;
         }
-        function showMessageSet(show){
-            messageSet[0].attr({opacity: show ? 1 : 0});
+        function showMessageBoxSet(show){
+            messageBoxSet[0].attr({opacity: show ? 1 : 0});
         }
 
-        graph.ext.showMessageSet = showMessageSet;
-        graph.ext.getMessageSet = getMessageSet;
+        graph.ext.showMessageBoxSet = showMessageBoxSet;
+        graph.ext.getMessageBoxSet = getMessageBoxSet;
 
 
         /**
@@ -1809,7 +1821,7 @@
                     messageTextSet.push(elements[i]);
                 }
             }
-            messageTextSet.insertAfter(messageSet[0]);
+            messageTextSet.insertAfter(messageBoxSet[0]);
 
             console.log("redraw complete");
         }
