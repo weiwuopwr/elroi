@@ -116,11 +116,24 @@
 
         var containerOffsetLeft = $(element).offset().left;
         var containerOffsetTop = $(element).offset().top;
+        /**
+         * Helper function to determine whether a mouse is in a Raphael path.
+         * @param e {Object} Mouse event object
+         * @param path {string} Raphael path string
+         * @return {boolean} true if the mouse is in the path, false otherwise
+         */
         function isMouseInPath(e, path){
             var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft,
                 posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
             return Raphael.isPointInsidePath(path, posx, posy);
         }
+        /**
+         * Helper function to determine whether a mouse is in an object across browser and taking into account the
+         * offset of the graph container.
+         * @param e {Object} Mouse event object
+         * @param element {Object} Raphael element
+         * @return {boolean} true if the mouse is in the element, false otherwise
+         */
         function isMouseInElement(e, element){
             var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft,
                 posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
@@ -214,8 +227,7 @@
     }
 
 
-})(jQuery);
-(function(elroi, $) {
+})(jQuery);(function(elroi, $) {
 
     /**
      *
@@ -236,7 +248,7 @@
         H  - hour (military, no leading zero)
         HH  - hour (military, two digit)
         nn - minutes (two digit)
-        a - am/pm
+        a - am/pm 
      * @param value The date to format
      * @param options Options for the date format; includes ignore zero minutes, and am/pm
      * @return {String} The formatted date
@@ -271,7 +283,7 @@
         for(i = 0; i < format.length; i++) {
             thisChar = format.charAt(i);
             isDoubled = i < format.length && format.charAt(i + 1) === thisChar;
-
+                
             switch (thisChar) {
                 case 'd':
                     if(isDoubled) {
@@ -313,7 +325,7 @@
                     if(isDoubled && date.getHours()  % 12 < 10) {
                         formattedDate += "0";
                     }
-                    formattedDate += date.getHours() === 0 ? 12
+                    formattedDate += date.getHours() === 0 ? 12 
                         : date.getHours() > 12 ? date.getHours() - 12
                         : date.getHours();
                     break;
@@ -333,7 +345,7 @@
                 i++;
             }
         }
-
+        
         return formattedDate;
     }
 
@@ -372,6 +384,7 @@
         formattedDateRange = '';
 
         if (startDate && endDate) {
+            // Scrape out duplicate years from startDate and endDate
             if (skipRepeatedYear && startDate.getFullYear() === endDate.getFullYear() && startDateFormat.indexOf('y') > -1) {
                 startDateFormat = stripYearFromDateFormat(startDateFormat);
             }
@@ -382,7 +395,7 @@
         }
 
         if(startDate && endDate) {
-            formattedDateRange += " &ndash;";
+            formattedDateRange += " &ndash; ";
         }
 
         if(endDate) {
@@ -397,8 +410,7 @@
     elroi.fn.formatDateRange = formatDateRange;
     elroi.fn.stripYearFromDateFormat = stripYearFromDateFormat;
 
-})(elroi, jQuery);
-(function(elroi, $) {
+})(elroi, jQuery);(function(elroi, $) {
 
     var helpers = {
 
@@ -417,6 +429,7 @@
                     allSeries[0].series.length;
 
 
+            // Does this graph actually have data?
             $(allSeries).each(function(i) {
                 if(!this || !this.series[0]) {
                     hasData = false;
@@ -436,6 +449,7 @@
 
             var dataValuesSet = [];
 
+            // If there is no actual data, build a dummy set so elroi won't choke
             if(!elroi.fn.helpers.hasData(allSeries)){
                 return [[0]];
             }
@@ -462,7 +476,7 @@
                     });
 
                 });
-
+                
                 if(lowestValue < 0) {
                     dataValues.push(lowestValue);
                 }
@@ -501,6 +515,7 @@
          */
         hasPointFlags: function(allSeries){
 
+            // Figure out of any of the data points have flags to show
             var hasPointFlags = false;
 
             $(allSeries).each(function(i){
@@ -527,7 +542,7 @@
                 temp;
 
             $(dataValuesSet).each(function(i) {
-
+                
                 if (seriesOptions[i].minYValue === 'auto') {
                     minVals.push(Math.min.apply(Math, dataValuesSet[i]));
                 } else if (seriesOptions[i].minYValue === 'zeroOrLess') {
@@ -536,7 +551,7 @@
                 } else {
                     minVals.push(seriesOptions[i].minYValue);
                 }
-
+                
             });
 
             return minVals;
@@ -552,6 +567,7 @@
         maxValues : function(dataValuesSet, seriesOptions, graph) {
             var maxVals = [];
 
+             // Get the max value for each series
             $(dataValuesSet).each(function(i) {
                 if (seriesOptions[i].maxYValue === 'auto') {
                     maxVals.push(Math.max.apply(Math, dataValuesSet[i]));
@@ -569,12 +585,14 @@
 
                 var pixelsNeeded = 0;
 
+                // Error messaging
                 if(graph.options.errorMessage) {
                     var $errorMsg = $('<div id="graph-error">' + graph.options.errorMessage + '</div>').addClass('alert box').appendTo(graph.$el.find('.paper'));
                     pixelsNeeded += $errorMsg.outerHeight() + $errorMsg.position().top * 2;
                     $errorMsg.remove();
                 }
 
+                // Point flags
                 var hasPointFlags = elroi.fn.helpers.hasPointFlags(graph.allSeries);
                 if (hasPointFlags && graph.options.bars.flagPosition !== 'interior') {
                      var $pointFlag = $('<div class="point-flag"><div class="flag-content">Test flag</div></div>').appendTo(graph.$el.find('.paper'));
@@ -582,6 +600,7 @@
                      $pointFlag.remove();
                 }
 
+                // x-2 axis
                 if(graph.options.axes.x2.show) {
                     var $x2 = $('<ul class="x-ticks x2"><li>test axis</li></ul>').appendTo(graph.$el);
                     pixelsNeeded += $x2.find('li').outerHeight() + graph.labelLineHeight;
@@ -591,10 +610,17 @@
                 return 1 + pixelsNeeded/graph.height;
             }
 
+            // Figure out how much we need to distort these by
             var scaleDistortion = distortMaxValuesBy();
 
-            maxVals = $.map(maxVals, function(val){
-                return !!val ? val * scaleDistortion : 1;
+            maxVals = $.map(maxVals, function(val, i){
+                // Distort the max values if necessary to make room; if the maxval of a series is 0, we need to set it to 1 so gridlines will show up
+
+                // Don't distort weather axis otherwise max value becomes 350 deg F.
+                // This is done by setting dontDistortAxis = true in the series option.
+                return seriesOptions[i].dontDistortAxis ? val
+                    : !!val ? val * scaleDistortion
+                    : 1;
             });
 
             return maxVals;
@@ -612,17 +638,19 @@
 
             var seriesOptions = [];
 
+            // If there are no series, just send back the defaults
             if(! allSeries.length) {
                 return [defaults];
             }
 
             $(allSeries).each(function(i) {
+                // Merge the individual series options with the default series settings
                 seriesOptions.push($.extend({}, true, defaults, allSeries[i].options));
             });
 
             return seriesOptions;
         },
-
+        
         buildDefaultTooltips : function(allSeries) {
             var tooltips = [];
             $(allSeries).each(function(i) {
@@ -635,28 +663,28 @@
                         }
                     });
                 });
-            });
-            return tooltips;
+            });  
+            return tooltips;  
         },
-
+        
         determineDateFormat : function(allSeries){
-            var firstPoint,
-                lastPoint,
-                firstPointDate,
+            var firstPoint, 
+                lastPoint, 
+                firstPointDate, 
                 lastPointDate,
                 numPoints = allSeries[0].series[0].length,
                 MILLISECONDS_PER_DAY = 86400000,
                 MILLISECONDS_PER_MONTH = 2678400000, // 31 day month
                 MILLISECONDS_PER_YEAR = 31536000000,
                 averageGap,
-                format;
-
+                format;                
+            
             firstPoint = allSeries[0].series[0][0];
             firstPointDate = new Date(firstPoint.endDate || firstPoint.date);
             lastPoint = allSeries[0].series[0][numPoints-1];
             lastPointDate = new Date(lastPoint.endDate || lastPoint.date);
             averageGap = (lastPointDate - firstPointDate);
-
+            
             if(averageGap <= MILLISECONDS_PER_DAY) {
                 format = "h:nna";
             } else if(averageGap < MILLISECONDS_PER_MONTH) {
@@ -666,24 +694,28 @@
             } else {
                 format = "yy";
             }
-
+        
             return format;
         },
-
+        
         dataCleaner : function(allSeries) {
             var cleanData = [],
                 temp,
                 i;
-
+            
             if(allSeries[0] !== undefined && typeof(allSeries[0]) === "number") {
+                // This is a single, flat array of data.  turn it into an elroi friendly object
                 temp = { series: [[]]};
                 for(i=0; i<allSeries.length; i++) {
                     temp.series[0].push({value: allSeries[i]});
                 }
-                cleanData.push(temp);
+                cleanData.push(temp);    
             } else {
+                // Shit just got complicated
                 if(!(allSeries instanceof Array)) {
+                    // We have a single series passed in an object
                     if(!(allSeries.series[0] instanceof Array)) {
+                        // this guy just has a single subseries
                         temp = { series: [], options: {}};
                         temp.series.push(allSeries.series);
                         temp.options = allSeries.options || {};
@@ -693,6 +725,7 @@
                     }
                 } else if (allSeries[0] !== undefined && !(allSeries[0] instanceof Array)){
                     if(allSeries[0].series === undefined) {
+                        // Looks like we got an array of value objects
                         temp = { series: [] };
                         temp.series.push(allSeries);
                         cleanData.push(temp);
@@ -703,11 +736,11 @@
                     cleanData = allSeries;
                 }
             }
-
+            
             return cleanData;
         }
     };
-
+    
 
     /**
      * Goes over the data series passed in, and sets things up for use by other elroi functions.
@@ -732,22 +765,24 @@
             dataValuesSet,
             sums,
             hasData;
-
-        graph.allSeries = elroi.fn.helpers.dataCleaner(graph.allSeries);
-
+        
+        graph.allSeries = elroi.fn.helpers.dataCleaner(graph.allSeries);    
+        
         seriesOptions = elroi.fn.helpers.seriesOptions(graph.allSeries, graph.options.seriesDefaults);
         maxVals = [];
         minVals = [];
         dataValuesSet = elroi.fn.helpers.getDataValues(graph.allSeries, seriesOptions);
-        sums = elroi.fn.helpers.sumSeries(dataValuesSet);
+        sums = elroi.fn.helpers.sumSeries(dataValuesSet); 
         hasData = elroi.fn.helpers.hasData(graph.allSeries);
-
+        
         if(graph.options.dates.format === 'auto' && hasData) {
             graph.options.dates.format = elroi.fn.helpers.determineDateFormat(graph.allSeries);
         }
 
+        // number of points comes from the first series - if there is no data, there are no points
         var numPoints = !hasData ? 1 : graph.allSeries[0].series[0].length;
 
+        // start skipping points if we need to
         var showEvery = graph.options.showEvery ||
                 ((numPoints > graph.options.skipPointThreshhold) ? Math.round(numPoints / graph.options.skipPointThreshhold) : 1);
 
@@ -757,6 +792,7 @@
         maxVals = elroi.fn.helpers.maxValues(dataValuesSet, seriesOptions, graph);
         minVals = elroi.fn.helpers.minValues(dataValuesSet, seriesOptions);
 
+        // Get the yTick per pixel of each series
         $(dataValuesSet).each(function(i) {
             var avalaibleArea = graph.height - graph.padding.top - graph.padding.bottom,
                 dataRange = maxVals[i] + Math.abs(minVals[i]);
@@ -764,15 +800,18 @@
             yTicks.push(avalaibleArea/dataRange);
         });
 
+        // Figure out the label width
         var labelWidth =
             graph.options.labelWidth === 'auto' ?
                 (graph.width - graph.padding.left - graph.padding.right) / (numPoints/showEvery) - 2  :  //padding of 2px between labels
                 graph.options.labelWidth;
 
+        // Figure out bar width
         var barWidth = xTick * 2/3; // 2/3 is magic number for padding between bars
 
         var barWhiteSpace = (xTick * 1/3) / 2;
 
+        // Merge new graph object with the default graph object
         $.extend(graph, {
             hasData : hasData,
             seriesOptions: seriesOptions,
@@ -788,7 +827,7 @@
             barWidth: barWidth,
             barWhiteSpace: barWhiteSpace
         });
-
+        
         if(graph.options.tooltip.show && graph.tooltips === undefined) {
             graph.tooltips = elroi.fn.helpers.buildDefaultTooltips(graph.allSeries);
         }
@@ -844,6 +883,7 @@
          * Draws the gridlines based on graph.grid.numYLabels
          */
         function drawGrid(){
+            //draw the gridlines
             var i, y,
                 gridLine,
                 gridLines = graph.paper.set(),
@@ -907,6 +947,7 @@
             }
 
 
+            // Get those labels centered relative to their bar
             $labels.find('li').each(function(){
                 var $label = $(this);
                 var x = parseInt($label.css('left'), 10) + ($label.width())/2;
@@ -954,6 +995,7 @@
          */
         function drawYLabels(maxVal, minVal, axis){
 
+            // Draw the y labels
             var $yLabels = $('<ul></ul>')
                     .addClass("y-ticks")
                     .addClass(axis.id);
@@ -961,7 +1003,7 @@
             var precision = 0,
                 yLabels = getYLabels(maxVal, minVal, precision),
                 avalaibleArea = graph.height - graph.padding.top - graph.padding.bottom;
-
+                
             while(containsDupes(yLabels)) {
                 precision++;
                 yLabels = getYLabels(maxVal, minVal, precision);
@@ -970,12 +1012,13 @@
             $(yLabels).each(function(i){
                 var yLabel = commaFormat(yLabels[i], precision);
 
-                var y = graph.height -
+                var y = graph.height - 
                         i / (graph.options.grid.numYLabels - 1) * avalaibleArea -
                         graph.padding.bottom +
                         graph.padding.top -
                         graph.labelLineHeight;
 
+                // Topmost ylabel gets a different unit
                 if(i === graph.options.grid.numYLabels-1) {
                     yLabel = (axis.prefixUnit ? axis.topUnit : '') +
                             yLabel +
@@ -986,6 +1029,7 @@
                             (!axis.prefixUnit ? " " + axis.unit : '');
                 }
 
+                // y1 labels go on the left, y2 labels go on the right
                 var cssPosition;
                 if (axis.id === 'y1') {
                     cssPosition = { 'top' : y, 'left' : 0 };
@@ -1011,6 +1055,7 @@
             drawGrid();
             var seriesIndex;
 
+            // Can't get any axes if we don't have any data
             if(!graph.hasData) {
                 return;
             }
@@ -1064,6 +1109,7 @@
             num = precision === 'round' ? Math.round(num) : num.toFixed(precision);
         }
 
+        // stringify it
         num += '';
 
         var preDecimal,
@@ -1096,6 +1142,7 @@
      */
     function lines(graph, series, seriesIndex){
 
+        // points on the graph are centered horizontally relative to their labels
         var pointOffset = 0.5 * graph.labelWidth,
             yTick = graph.yTicks[seriesIndex],
             seriesOptions = graph.seriesOptions[seriesIndex];
@@ -1119,8 +1166,9 @@
                      point.attr({fill: color});
                  }
              }
-
+            
              if(stroke) {
+                 // Draw point with stroke and other features, optionally animating it.
 
                  var pointAttributes = {
                      'stroke': color,
@@ -1130,6 +1178,7 @@
 
                  if(animate) {
 
+                     // Draw the point
                      point = graph.paper.circle(x, y, 0).attr(pointAttributes);
 
                      conditionallyFillPoint();
@@ -1138,6 +1187,7 @@
                  }
                  else {
 
+                     // Draw the point
                      point = graph.paper.circle(x, y, graph.options.lines.pointRadius).attr(pointAttributes);
 
                      conditionallyFillPoint();
@@ -1163,6 +1213,7 @@
 
              }
              else {
+                 // Draw simple point
 
                  graph.paper.circle(x, y, graph.options.lines.width).attr({
                              stroke: 'none',
@@ -1221,6 +1272,7 @@
                 units=args.units;
 
 
+            // End recursion once you've hit the last point
             if(index === series.length) {
                 return true;
             }
@@ -1233,10 +1285,12 @@
                 animSpeed = (window.isIE6 ? 1 : 800)/series.length,
                 isFirstPoint = !index;
 
+            // If we aren't interpolating nulls, don't draw from the previous null point
             if(!prevPoint && !(seriesOptions.interpolateNulls || seriesOptions.type === 'step')) {
                 isLineStarted = false;
             }
 
+            // If the startpoint is at the left edge, pick up the pen and move there.  Otherwise, draw, skipping null points
             if (!isFirstPoint && isLineStarted && !isNullPoint) {
                 pathString = seriesOptions.type === 'step' ?
                     "L" + x + " " + prevPoint.y + "L" + x + " " + y  :
@@ -1249,6 +1303,7 @@
 
             }
 
+            // The line is started once we hit our first non-null point
             if(!isLineStarted && !isNullPoint) {
                 isLineStarted = true;
             }
@@ -1261,6 +1316,7 @@
             }
 
             if(isLineFilled) {
+            // Fill in this segment if there aren't nulls
                 if(prevPoint && !isNullPoint) {
                     var yZero = graph.height - graph.padding.bottom + graph.padding.top,
                         fillLineStartPath = "M" + prevPoint.x + " " + yZero +
@@ -1281,13 +1337,10 @@
 
                     fillLine.animate({path: fillLinePath}, animSpeed);
                     fillLine.insertAfter(graph.grid.lines);
-
-
-
                 }
             }
-
-
+            
+            
             function pointsAndLabels(){
                 if (!isNullPoint) {
                     if (seriesOptions.showPoints) {
@@ -1306,7 +1359,7 @@
                     }
                 }
             }
-
+            
             if(graph.options.animation) {
                 line.animate({
                     path: currentPath + pathString
@@ -1344,6 +1397,7 @@
 
         var currentHighlights = graph.paper.set(); // A set of raphael objects for highlighting hovers
         graph.$el.mouseleave(function(){
+            // Hide the highlights if the mouse leaves the graph
             currentHighlights.attr('opacity', 0);
         });
 
@@ -1362,11 +1416,12 @@
                 highlights = graph.paper.set();
 
             $(series).each(function(i){
+                // skip any null points
                 if (series[i][index].value || series[i][index].value === 0) {
                     pointsInSet.push(series[i][index].value);
                     var highlightX = index * graph.xTick + graph.padding.left + pointOffset;
                     var highlightY = graph.height - ((series[i][index].value - graph.minVals[seriesIndex]) * yTick) - graph.padding.bottom + graph.padding.top;
-
+                    
                     var highlightCirc = graph.paper.circle(highlightX, highlightY, graph.options.lines.highlightRadius).attr({
                         'stroke': '#ccc',
                         'stroke-width': graph.options.lines.highlightStrokeWidth,
@@ -1378,9 +1433,10 @@
 
             });
             var topPoint = Math.max.apply(Math, pointsInSet);
-
+            
+            // Pull the tooltip up to 0 if the graph drops below the x-axis
             if(topPoint - graph.minVals[seriesIndex] < 0) {
-                topPoint = graph.minVals[seriesIndex];
+                topPoint = graph.minVals[seriesIndex]; 
             }
 
             var errorHeight = graph.options.error ? graph.options.error.height + graph.options.error.top : 0,
@@ -1388,6 +1444,7 @@
 
             rollOverBar.mouseover(function(){
 
+                // Show the tooltip
                 if (graph.options.tooltip.show) {
                     var x = index * graph.xTick + graph.padding.left + pointOffset - graph.options.tooltip.width / 2;
                     var y = ((topPoint - graph.minVals[seriesIndex]) * yTick) - graph.padding.top + graph.padding.bottom + graph.options.flagOffset + graph.options.lines.pointStrokeWidth + graph.options.lines.highlightRadius;
@@ -1435,6 +1492,7 @@
 
             }
 
+            // Add rollovers
             var rollOvers = graph.paper.set();
             for(j=0; j< graph.numPoints; j++) {
                 if (graph.tooltips && graph.tooltips[j]) {
@@ -1453,7 +1511,6 @@
     elroi.fn.step = lines;
 
 })(elroi);
-
 (function(elroi, $) {
 
     /**
@@ -1476,8 +1533,8 @@
         graph.options.pie.wedgeAttributes = graph.options.pie.wedgeAttributes || {};
         graph.options.pie.messageBoxSetAttributes = graph.options.pie.messageBoxSetAttributes || {};
 
-            /*Ext holds extension functions specific to the pie.  They are merged into the parent namespace making
-  them publicly accessible at the level of the elroi object. */
+        /*Ext holds extension functions specific to the pie.  They are merged into the parent namespace making
+         them publicly accessible at the level of the elroi object. */
         graph.ext = {};
 
         /* Pie attributes */
@@ -1923,8 +1980,7 @@
 
     elroi.fn.pie = pie;
 
-})(elroi, jQuery);
-(function(elroi, $) {
+})(elroi, jQuery);(function(elroi, $) {
 
     /**
      * Draws a stacked bar graph for a given data series
@@ -1934,6 +1990,7 @@
      */
     function bars(graph, series, seriesIndex) {
 
+        // If the bar width is not defined, set it automatically
         var barWidth = graph.barWidth + graph.options.bars.highlightBorderWidth;
 
          /**
@@ -1957,14 +2014,14 @@
                         barStartHeight = graph.options.animation ? 0 : barHeight,
                         barStartY = graph.height-graph.padding.bottom+graph.padding.top + graph.minVals[seriesIndex]*yTick,
                         bar;
-
+                        
                     if (series[i].value < 0) {
                         y = y + barHeight;
                     }
                     barStartY = graph.options.animation ? barStartY : y;
 
                     bar = graph.paper.rect(x, barStartY, barWidth, barStartHeight).attr('fill', color).attr('stroke', color);
-
+                    
                     if(graph.options.animation){
                         bar.animate({y:y, height: barHeight}, 550, function(){
                             $(graph.$el).trigger('barDrawn');
@@ -2000,6 +2057,7 @@
                             var $pointFlag = series[i].pointFlag;
                             $pointFlag.addClass('elroi-point-flag').appendTo(graph.$el.find('.paper'));
 
+                            // Show the labels inside the bars
                             var pointFlagY;
                             if (graph.options.bars.flagPosition === 'interior' && $pointFlag.outerHeight() < totalBarHeights) {
                                 pointFlagY = graph.height - y - $pointFlag.outerHeight() - graph.options.flagOffset;
@@ -2045,7 +2103,7 @@
             } else {
                 var set = [];
                 $(series).each(function(i) {
-                    set.push(series[i][index].value);
+                    set.push(series[i][index].value); 
                 });
                 total = Math.max.apply(Math, set);
             }
@@ -2053,20 +2111,20 @@
             var x = index * graph.xTick + graph.padding.left - (graph.options.bars.highlightBorderWidth/2) + (graph.barWhiteSpace/2);
             var y;
             var range = max - min;
-
+            
             var rolloverBars = graph.paper.set();
             var rolloverX;
             var rollOverTargetBar;
             for(var i = 0; i < series.length; i++) {
                 barHeight = isStacked ? (total * yTick) + graph.options.bars.highlightBorderWidth :
                     series[i][index].value * yTick + graph.options.bars.highlightBorderWidth;
-
+                    
                 barHeight = Math.abs(barHeight);
                 y = graph.height - barHeight - graph.padding.bottom + graph.padding.top + (graph.options.bars.highlightBorderWidth/2) + graph.minVals[seriesIndex]*yTick;
                 if (isStacked ? total < 0 : series[i][index].value < 0) {
                     y = y + barHeight;
                 }
-
+ 
                 rolloverX = isStacked ? x : x + barWidth * i;
                 var rollOverBar = graph.paper
                         .rect(rolloverX, y, barWidth, barHeight)
@@ -2088,13 +2146,13 @@
                             'stroke' : 'none'
                         });
             }
-
+            
             var tallestBarHeight = isStacked ? barHeight  : total * yTick + graph.options.bars.highlightBorderWidth;
             tallestBarHeight -= graph.minVals[seriesIndex]*yTick;
             if (min < 0) {
                 tallestBarHeight += total * yTick
             }
-
+ 
             rollOverTargetBar.hover(
                 function() {
                     rolloverBars.attr('stroke-opacity', graph.options.bars.highlightBorderOpacity);
@@ -2112,6 +2170,7 @@
                     rolloverBars.attr('stroke-opacity', 0);
                 });
 
+            // Attach the click behavior, if we have a target
             $(rollOverTargetBar.node).click(function(){
                 if (clickTarget) {
                     document.location = clickTarget;
@@ -2128,22 +2187,22 @@
                     }
                 );
             }
-
+            
         }
-
+        
         function drawBar(bar, barIndex, subseriesIndex, yTick, color) {
-
+            
             var x = barIndex * graph.xTick + barWidth * subseriesIndex + graph.padding.left + (graph.barWhiteSpace/2),
                 barHeight = Math.abs(bar.value * yTick),
                 y = graph.height - barHeight - graph.padding.bottom + graph.padding.top + graph.minVals[seriesIndex]*yTick,
                 barStartHeight = graph.options.animation ? 0 : barHeight,
                 barStartY = graph.height - graph.padding.bottom + graph.padding.top + graph.minVals[seriesIndex]*yTick,
                 barObj;
-
+                
             if (bar.value < 0) {
                 y = y + barHeight;
             }
-
+            
             barStartY = graph.options.animation ? barStartY : y;
 
             barObj = graph.paper.rect(x, barStartY, barWidth, barStartHeight).attr('fill', color).attr('stroke', color);
@@ -2165,7 +2224,7 @@
                 color,
                 i=0,
                 j = 0;
-
+                   
             if(isStacked) {
                 for (j = 0; j < graph.numPoints; j++) {
                     seriesSum.push(0);
@@ -2175,8 +2234,9 @@
                     seriesSum = drawStackedBar(series[j], seriesSum, j+1, graph.yTicks[seriesIndex], color);
                 }
             } else {
+                // This isn't a stacked bar; change up the bar width
                 barWidth = barWidth/series.length;
-
+                
                 for (i = 0; i < graph.numPoints; i++) {
                     for(j=0; j < series.length; j++) {
                         color = graph.options.colors[j];
@@ -2185,6 +2245,7 @@
                 }
             }
 
+            // draw in the point flags
             graph.$el.bind('barDrawn', function(){$('.elroi-point-flag').fadeIn();});
             for (j = 0; j < series.length; j++) {
                 drawPointFlags(series[j], seriesSum, j+1, graph.yTicks[seriesIndex]);

@@ -46,7 +46,7 @@ var astroSpinningPie = (function($){
     var BUMP_OUT_RADIUS = 210,
         STANDARD_RADIUS = 200,
         BASE_COLORS = ['#1087C9','#AB3E2C','#663366','#C2B59B','#65D9C5','#8FC740'],
-        BASE_FONT = {'font-family':'proxima','font-weight':'bold','fill': 'black'};
+        BASE_FONT = {'font-weight':'bold','fill': 'black'};
 
     var hoverWedge; //variable to keep track of which wedge is currently being hovered over, otherwise null
 
