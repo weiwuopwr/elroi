@@ -50,7 +50,9 @@ var astroSpinningPie = (function($){
 
     var hoverWedge; //variable to keep track of which wedge is currently being hovered over, otherwise null
 
-
+    /* Animation configuration */
+    var wedgeAnimationDuration = 150,
+        wedgeAnimationEasing = ">";
 
     /* Workflow descriptors that correspond to each mode */
     var descriptors = {
@@ -157,7 +159,7 @@ var astroSpinningPie = (function($){
             }
         }
 
-        wedge.animate(descriptors[mode].attr,150, 'bounce');
+        wedge.animate(descriptors[mode].attr, wedgeAnimationDuration, wedgeAnimationEasing);
     }
 
     /**
@@ -197,24 +199,33 @@ var astroSpinningPie = (function($){
     /* Section initialization methods */
 
     /* Mode.SURVEY specific initialization, called by changeMode */
-    function surveyInitialize(){
+    function surveyInitialize(callback) {
+        //debugger;
+        pie.rotate(-90, function(){
+
         var i;
-        for(i = sectionsCompleted-1; i >= 0; i--){
+        for(i = sectionsCompleted-1; i >= 0; i--) {
             wedges[i].attr({fill: BASE_COLORS[i]});
         }
 
-        for(i = sectionsCompleted+1; i < wedges.length; i++){
+        for(i = sectionsCompleted+1; i < wedges.length; i++) {
             wedges[i].attr({fill: '#dddddd'});
         }
 
-        wedges[sectionsCompleted].attr(descriptors[Mode.SURVEY].highlightAttr);
+        wedges[sectionsCompleted].animate(descriptors[Mode.SURVEY].highlightAttr,
+            wedgeAnimationDuration,
+            wedgeAnimationEasing,
+            callback);
+        });
     }
 
     /* Mode.COMPLETE specific initialization, called by changeMode */
-    function completeInitialize(){
-        //selectedWedge = null;
+    function completeInitialize(callback) {
         pie.resetSelectedWedge();
         pie.updateColors(BASE_COLORS);
+        if(callback) {
+            callback();
+        }
     }
 
     /* Elroi event callbacks */
@@ -241,10 +252,10 @@ var astroSpinningPie = (function($){
 
             for(i = 0; i < wedgesLength; i+=1) {
                 if(selectedWedge !== null && wedges[i] !== selectedWedge){
-                    wedges[i].animate({opacity:0.5}, 25);
+                    wedges[i].animate({opacity:0.5}, wedgeAnimationDuration, wedgeAnimationEasing);
                 }
                 else {
-                    wedges[i].animate({opacity: 1}, 25);
+                    wedges[i].animate({opacity: 1}, wedgeAnimationDuration, wedgeAnimationEasing);
                 }
             }
             regenerateTransformedWedgePaths();
@@ -293,7 +304,6 @@ var astroSpinningPie = (function($){
      * @param wedge {object} the wedge that is the target of the event, provided by elroi
      */
     function wedgeHoverIn(e, wedge) {
-        //console.log("wedge hover in");
 
         /* Deemphasize the previous hovered over wedge.  If hoverWedge is null, deemphasizedWedge will
         * return immediately*/
@@ -327,7 +337,7 @@ var astroSpinningPie = (function($){
         if(mode === Mode.SELECTED && pie.isSelectedWedge(wedge)) {
             return;
         }  else {
-            wedge.animate(descriptors[mode].hover.attr, 150, 'bounce');
+            wedge.animate(descriptors[mode].hover.attr, wedgeAnimationDuration, wedgeAnimationEasing);
         }
 
     }
@@ -340,7 +350,6 @@ var astroSpinningPie = (function($){
      */
     function wedgeHoverOut(e, wedge) {
         var i;
-        //console.log("wedge hover out");
 
         /* We are exiting into the circle, update the passthrough wedge and do nothing else */
         if(circle.node === e.toElement){
@@ -368,38 +377,52 @@ var astroSpinningPie = (function($){
     /* Public workflow and initialization */
 
     /**
+     * @param series {object} elroi data series to update pie with
+     */
+    function updateSeries (series){
+        pie.updateLive(series,
+            0, //selects the first series, this is practically vestigial, but is consistent with other elroi charts
+            regenerateTransformedWedgePaths); //need to regenerate wedge paths for passthrough
+    }
+    ns.updateSeries = updateSeries;
+
+    /**
      * Change the mode to Mode.SURVEY and to the selected section.
      * @param section {number} the number of sections to indicate as being completed.
+     * @param [series] {object} elroi data series to update pie with
      */
-    ns.changeSection = function(section) {
+    ns.changeSection = function(section,series) {
         sectionsCompleted = section;
         pie.resetSelectedWedge(wedges[sectionsCompleted]);
-        ns.changeMode(Mode.SURVEY);
+        ns.changeMode(Mode.SURVEY,series);
     };
 
     /**
      * Change the mode of the workflow to a different descriptor state.  Make mode specific styling changes
      * and trigger mode specific init events.
      * @param newMode {enum} new mode from Mode enum to switch to.
+     * @param [series] {object} elroi data series to update pie with
      */
-    ns.changeMode = function(newMode){
+    ns.changeMode = function(newMode, series){
+        var callback = (series) ? function (){ updateSeries(series); } : null;
         pie.resetSelectedWedge();
         mode = newMode;
-        wedges.animate(descriptors[mode].attr, 25, function(){
+        wedges.stop() //clear any other animations
+            .animate(descriptors[mode].attr, wedgeAnimationDuration, wedgeAnimationEasing, function(){
             if(descriptors[mode].init) {
-                descriptors[mode].init();
+                descriptors[mode].init(callback);
+            }else if (callback) {
+                callback();
             }
         });
     };
 
-
-
-
     /**
      * Creates and initalizes an astroSpinningPie.
      * @param $container {object} jQuery object to place the elroi graph into
+     * @param series {object} elroi data series to initialize pie with
      */
-    ns.initialize = function($container) {
+    ns.initialize = function($container, series) {
 
         /**
          *  Handles determination of which wedge is under the donut hole so that events can be passed to that wedge.
@@ -455,9 +478,8 @@ var astroSpinningPie = (function($){
             }
         }
 
-        pie = elroi($container, [{series:testSeries, options: {type:'pie'}}],
+        pie = elroi($container, [{series: series, options: {type:'pie'}}],
             {colors: ['#dddddd','#dddddd','#dddddd','#dddddd','#dddddd','#dddddd'],
-                //animation: false,
                 pie: {
                     wedgeAttributes: {stroke: 'white', 'stroke-width': 3, cursor: 'pointer'},
                     wedgeClick: wedgeClick,
@@ -465,7 +487,7 @@ var astroSpinningPie = (function($){
                     wedgeHoverOut: wedgeHoverOut,
                     wedgeSelectionChanged: wedgeSelectionChanged,
                     messageBoxSetAttributes: {fill: '#F5F5F5', stroke: 'white', 'stroke-width':3, opacity:0, cursor: 'pointer'},
-                    radius: 200}
+                    radius: STANDARD_RADIUS}
             });
 
         graph = pie.graph;
@@ -474,12 +496,9 @@ var astroSpinningPie = (function($){
         circle = (pie.getMessageBoxSet()[1])
             .mousemove(circleMouseMove)
             .click(circleClick)
-            .hover(function(){
-                //console.log("circle hover in");
-            },
+            .hover(function(){},
             function(e){
                 wedgeHoverOut(e, passthroughWedge); //security against skipping out event
-                //console.log("circle hover out");
             });
 
     };
@@ -487,12 +506,7 @@ var astroSpinningPie = (function($){
     /* CUT THESE HOOKS */
 
     ns.resetRotation = function(){
-        regenerateTransformedWedgePaths();
-        //pie.rotate(-90, regenerateTransformedWedgePaths);
-    };
-
-    ns.resizeLive = function (){
-        pie.updateLive(testSeries2,0,regenerateTransformedWedgePaths);
+        pie.rotate(-90, regenerateTransformedWedgePaths);
     };
 
     return ns;
@@ -501,7 +515,7 @@ var astroSpinningPie = (function($){
 
 
 $(document).ready(function(){
-    astroSpinningPie.initialize($('#pie').find('.graph'));
+    astroSpinningPie.initialize($('#pie').find('.graph'), testSeries);
 
     $('#deselect,#finish').click(function(){astroSpinningPie.changeMode(astroSpinningPie.Mode.COMPLETE);});
 
@@ -514,5 +528,5 @@ $(document).ready(function(){
 
     $('#rotateTo0').click(function(){ astroSpinningPie.resetRotation();  });
 
-    $('#resize1').click(function(){ astroSpinningPie.resizeLive();  });
+    $('#resize1').click(function(){ astroSpinningPie.updateSeries(testSeries2);  });
 });

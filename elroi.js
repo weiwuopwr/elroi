@@ -1530,6 +1530,7 @@
             y : (graph.height - graph.padding.bottom + graph.padding.top)/2
         };
         graph.options.pie.radius = graph.options.pie.radius ||  (graph.height - graph.padding.bottom + graph.padding.top)/ 2;
+        graph.options.pie.innerRadius = graph.options.pie.innerRadius || graph.options.pie.radius/2;
         graph.options.pie.wedgeAttributes = graph.options.pie.wedgeAttributes || {};
         graph.options.pie.messageBoxSetAttributes = graph.options.pie.messageBoxSetAttributes || {};
 
@@ -1540,7 +1541,7 @@
         /* Pie attributes */
         var center = graph.options.pie.center,
             radius = graph.options.pie.radius,
-            degreesRotated = -90; //current rotation of the pie
+            defaultRotation = -90; //current rotation of the pie
 
         /* Set to store wedge paths */
         var wedges = graph.paper.set();
@@ -1602,12 +1603,11 @@
          * Animation pie from initial radius of 1 to full value.  May eventually provide this as a callback instead.
          * @param [ms] {number} The duration of tha Raphael animation
          */
-        function animate(ms) {
-            var i;
+        function loadAnimation(ms) {
+            wedges.animate({radius: radius,
+                    transform: [S11+CENTER_COORDINATES+'r'+ defaultRotation +','+CENTER_COORDINATES]},
+                ms || 1500, 'bounce');
 
-            for (i = 0; i < series[seriesIndex].length; i++) {
-                wedges[i].animate({radius: radius, transform:['r'+(-90)+','+CENTER_COORDINATES]}, ms || 1500, 'bounce');
-            }
         }
 
         /**
@@ -1711,6 +1711,7 @@
             /**
              * Wrapper function that calls a user provided method (if one is provided) for a hover entered event on a
              * wedge.
+             * @param e {Object} Mouse event object
              * @param wedge {object} Raphael element for the entered wedge
              */
             function wedgeEnter(e,wedge){
@@ -1725,6 +1726,7 @@
             /**
              * Wrapper function that calls a user provided method (if one is provided) for a hover exit event on a
              * wedge.
+             * @param e {Object} Mouse event object
              * @param wedge {object} Raphael element for the exited wedge
              */
             function wedgeExit(e,wedge){
@@ -1779,7 +1781,7 @@
                     wedge.attr({segment: [center.x, center.y, 1, start, start + val]});
                 } else {
                     wedge.attr({segment: [center.x, center.y, radius, start, start + val],
-                        transform: [S11+CENTER_COORDINATES+'r'+ degreesRotated +','+CENTER_COORDINATES]});
+                        transform: [S11+CENTER_COORDINATES+'r'+ defaultRotation +','+CENTER_COORDINATES]});
                 }
 
                 wedges.push(wedge);
@@ -1788,7 +1790,7 @@
             }
 
             if(graph.options.animation) {
-                animate(1000);
+                loadAnimation(1000);
             }
 
             generateMessageBoxSet();
@@ -1800,18 +1802,26 @@
          * @param [callback] {void} Function to execute on completion of rotation.
          */
         function rotate(deg, callback) {
-
-            degreesRotated = deg;
             if(graph.options.animation) {
-                wedges.animate({transform: [S11+CENTER_COORDINATES+'r'+ degreesRotated +','+CENTER_COORDINATES]}, 700, 'backOut', callback);
+                //Do not waste time animating a non event, if we're at the rotation angle, cut out early.
+                if(getDegreesRotated() === deg) {
+                    if(callback){
+                        callback();
+                    }
+                    return;
+                } else {
+                    wedges.animate({transform: [S11+CENTER_COORDINATES+'r'+ deg +','+CENTER_COORDINATES]},
+                        675,
+                        'backOut',
+                        callback);
+                }
             } else {
-                wedges.attr({transform: [S11+CENTER_COORDINATES+'r'+ degreesRotated+','+CENTER_COORDINATES]});
+                wedges.attr({transform: [S11+CENTER_COORDINATES+'r'+ deg+','+CENTER_COORDINATES]});
                 if(callback){
                     callback();
                 }
             }
         }
-
         /**
          * Rotate the center of a pie wedge to 0 degrees.
          * @param wedge {object} Wedge to rotate to, must be in pie's wedges set.
@@ -1823,9 +1833,14 @@
                 a2 = wedge.attr('segment')[4],
                 t = a2-((a2-a1)/2);
 
-            wedges.stop().transform(S11+CENTER_COORDINATES+'r'+ degreesRotated+','+CENTER_COORDINATES);
-
             rotate(-t, callback);
+        }
+
+        /**
+         * @return {number} number of degrees the pie is currently rotated
+         */
+        function getDegreesRotated(){
+            return wedges[0].attr("transform")[1][1];
         }
 
         /**
@@ -1848,17 +1863,23 @@
          */
         function generateMessageBoxSet(){
             messageBoxSet = graph.paper.set();
+
+            /* strokeWidth is to ensure that the hit circle detects mouse events on the outline of the
+             * visible under circle */
+            var strokeWidth = (graph.options.pie.messageBoxSetAttributes['stroke-width']) ?
+                graph.options.pie.messageBoxSetAttributes['stroke-width']
+                : 0;
+
             messageBoxSet.push(
                 graph.paper
-                    .circle(center.x, center.y, radius /2)
+                    .circle(center.x, center.y, graph.options.pie.innerRadius)
                     .attr({fill: 'white', opacity: 0.0})
                     .attr(graph.options.pie.messageBoxSetAttributes),
                 graph.paper
-                    .circle(center.x, center.y, radius /2+3)
+                    .circle(center.x, center.y, graph.options.pie.innerRadius+strokeWidth)
                     .attr(graph.options.pie.messageBoxSetAttributes)
                     .attr({fill: 'red', 'stroke-width':0})
                     .attr({opacity: 0})
-
             );
         }
 
