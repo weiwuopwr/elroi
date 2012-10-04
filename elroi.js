@@ -1606,7 +1606,7 @@
         function loadAnimation(ms) {
             wedges.animate({radius: radius,
                     transform: [S11+CENTER_COORDINATES+'r'+ defaultRotation +','+CENTER_COORDINATES]},
-                ms || 1500, 'bounce');
+                ms || 1500, 'backOut');
 
         }
 
@@ -1634,7 +1634,7 @@
                 wedges[i].data = data[i]; //update data tied to each wedge
 
                 if(graph.options.animation) {  //either animate transition of flatly update
-                    wedges[i].animate(newAttributes, ms || 1500, 'bounce', callback);
+                    wedges[i].animate(newAttributes, ms || 750, 'backOut', callback);
                 } else {
                     wedges[i].attr(newAttributes);
                     if(callback){
@@ -1855,7 +1855,7 @@
             graph.sums = elroi.fn.helpers.sumSeries(elroi.fn.helpers.getDataValues(graph.allSeries));
             graph.hasData = elroi.fn.helpers.hasData(graph.allSeries);
 
-            resize(1500, callback);
+            resize(500, callback);
         }
 
         /**
