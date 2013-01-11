@@ -622,6 +622,18 @@
            
            nullSeries = elroi($nullSeriesGraph, [], {errorMessage: '<p>no data at all!</p>'});
             });
+
+    Q.test('reports duplicates when they exist', function() {
+        Q.equal(elroi.fn.helpers.containsDuplicateLabels(["-1", "-1", "0", "1"]), true);
+    });
+
+    Q.test('does not report duplicates when they do not exist', function() {
+        Q.equal(elroi.fn.helpers.containsDuplicateLabels(["-1", "0", "1"]), false);
+    });
+
+    Q.test('detects 0 and -0 as duplicates', function() {
+        Q.equal(elroi.fn.helpers.containsDuplicateLabels(["-0", "0"]), true);
+    });
     
     
 
