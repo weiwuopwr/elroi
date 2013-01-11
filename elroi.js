@@ -666,6 +666,8 @@
             });  
             return tooltips;  
         },
+
+
         
         determineDateFormat : function(allSeries){
             var firstPoint, 
@@ -1004,7 +1006,7 @@
                 yLabels = getYLabels(maxVal, minVal, precision),
                 avalaibleArea = graph.height - graph.padding.top - graph.padding.bottom;
                 
-            while(containsDupes(yLabels)) {
+            while(containsDuplicateLabels(yLabels)) {
                 precision++;
                 yLabels = getYLabels(maxVal, minVal, precision);
             }
@@ -1088,19 +1090,22 @@
         };
     }
 
-    function containsDupes(arr){
+    function containsDuplicateLabels(arr){
         var i, j, n;
         n= arr.length;
 
         for (i=0; i<n; i++) {
             for (j=i+1; j<n; j++) {
-                if (arr[i] === arr[j]) {
+                if (arr[i] === arr[j] || (arr[i] === '-0' && arr[j] === '0')) {
                     return true;
                 }
             }
         }
         return false;
     }
+
+    // visible for testing
+    elroi.fn.helpers.containsDuplicateLabels = containsDuplicateLabels;
 
     function commaFormat (num, precision) {
 
