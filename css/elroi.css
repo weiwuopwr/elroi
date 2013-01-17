@@ -2,14 +2,14 @@
 /* graph needs to have an explicitly height & width - set it in the page specific css */
 .elroi {
   position: relative;
-  z-index: 2; 
+  z-index: 2;
 }
 
 .elroi .paper {
   position: relative;
   width: 620px;
   height: 270px;
-  z-index: 2; 
+  z-index: 2;
 }
 
 .elroi .elroi-tooltip {
@@ -18,18 +18,43 @@
   left: -1000px;
   position: absolute;
   width: 120px;
-  z-index: 4; 
+  z-index: 4;
 }
 
 .elroi .elroi-tooltip .elroi-tooltip-content {
-    background: #fff;
+  background: #fff;
   border: 4px solid #ccc;
   font-size: 12px;
   line-height: 15px;
   padding: 5px;
-  text-align: center; 
+  text-align: center;
 }
 
+
+/* Pie chart
+------------------------------ */
+.elroi.piechart .paper {
+  position: absolute;
+  z-index: 0;
+}
+
+.elroi.piechart .text-container {
+  position: absolute;
+  z-index: 50;
+}
+
+.elroi.piechart .hit-shield {
+  position: absolute;
+  z-index: 100;
+}
+
+.elroi.piechart .label {
+  font-size: 14px;
+}
+
+.elroi.piechart .label.selected {
+    font-weight: bold;
+}
 
 /* Graph error
 ------------------------------ */
@@ -40,22 +65,22 @@
   text-align: center;
   top: 25px;
   width: 540px;
-  z-index: 3; 
+  z-index: 3;
 }
 
 .elroi .elroi-tooltip .elroi-flag {
   font-weight: bold;
   padding: 4px;
-  text-align: center; 
+  text-align: center;
 }
 
 .elroi .x-ticks, .elroi .y-ticks {
   z-index: 1;
-  list-style-type: none; 
+  list-style-type: none;
 }
 
 .elroi .x-ticks li {
-  padding-top: 5px; 
+  padding-top: 5px;
 }
 
 .elroi .y-ticks li,
@@ -69,7 +94,7 @@
   z-index: 1; }
 
 .elroi .point-label {
-  font-size: 10px; 
+  font-size: 10px;
 }
 
 .elroi .x-ticks.x2 li {
