@@ -70,7 +70,7 @@
                 }
             },
             tooltip: {
-                formatter : function(tip){return tip;},
+                formatter : function(tip) {return tip;},
                 show: true,
                 width: 120
             },
@@ -125,7 +125,7 @@
          * @param path {string} Raphael path string
          * @return {boolean} true if the mouse is in the path, false otherwise
          */
-        function isMouseInPath(e, path){
+        function isMouseInPath(e, path) {
             var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft,
                 posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
             return Raphael.isPointInsidePath(path, posx, posy);
@@ -138,7 +138,7 @@
          * @param element {Object} Raphael element
          * @return {boolean} true if the mouse is in the element, false otherwise
          */
-        function isMouseInElement(e, element){
+        function isMouseInElement(e, element) {
             var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft,
                 posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
             return element.isPointInside(posx, posy);
@@ -249,7 +249,8 @@
     }
 
 
-})(jQuery);(function(elroi, $) {
+})(jQuery);
+(function(elroi, $) {
 
     /**
      *
@@ -337,7 +338,7 @@
                     if (isDoubled) {
                         formattedDate += date.getFullYear();
                     } else {
-                        if (date.getFullYear() % 100 < 10){
+                        if (date.getFullYear() % 100 < 10) {
                             formattedDate += 0;
                         }
                         formattedDate += date.getFullYear() % 100;
@@ -432,7 +433,8 @@
     elroi.fn.formatDateRange = formatDateRange;
     elroi.fn.stripYearFromDateFormat = stripYearFromDateFormat;
 
-})(elroi, jQuery);(function(elroi, $) {
+})(elroi, jQuery);
+(function(elroi, $) {
 
     var helpers = {
 
@@ -441,7 +443,7 @@
          * @param {Array} allSeries An array of all of the series in the graph
          * @return {Boolean} hasData Does the graph have data
          */
-        hasData : function(allSeries){
+        hasData : function(allSeries) {
             var hasData = true;
 
             hasData = allSeries !== undefined &&
@@ -472,7 +474,7 @@
             var dataValuesSet = [];
 
             // If there is no actual data, build a dummy set so elroi won't choke
-            if (!elroi.fn.helpers.hasData(allSeries)){
+            if (!elroi.fn.helpers.hasData(allSeries)) {
                 return [[0]];
             }
 
@@ -519,10 +521,10 @@
 
             var sums = [];
 
-            $(allData).each(function(i){
+            $(allData).each(function(i) {
                 var singleSeries = this,
                     sum = 0;
-                $(singleSeries).each(function (j){
+                $(singleSeries).each(function (j) {
                     sum += this;
                 });
                 sums.push(sum);
@@ -535,14 +537,14 @@
          * @param {Array} allSeries All of the series to be shown on the graph
          * @return {Boolean} hasPointFlags
          */
-        hasPointFlags: function(allSeries){
+        hasPointFlags: function(allSeries) {
 
             // Figure out if any of the data points have flags to show
             var hasPointFlags = false;
 
-            $(allSeries).each(function(i){
-                $(allSeries[i].series).each(function(j){
-                    $(allSeries[i].series[j]).each(function(k){
+            $(allSeries).each(function(i) {
+                $(allSeries[i].series).each(function(j) {
+                    $(allSeries[i].series[j]).each(function(k) {
                         if (allSeries[i].series[j][k].pointFlag) {
                             hasPointFlags = true;
                         }
@@ -635,7 +637,7 @@
             // Figure out how much we need to distort these by
             var scaleDistortion = distortMaxValuesBy();
 
-            maxVals = $.map(maxVals, function(val, i){
+            maxVals = $.map(maxVals, function(val, i) {
                 // Distort the max values if necessary to make room; if the maxval of a series is 0, we need to set it to 1 so gridlines will show up
 
                 // Don't distort weather axis otherwise max value becomes 350 deg F.
@@ -676,8 +678,8 @@
         buildDefaultTooltips : function(allSeries) {
             var tooltips = [];
             $(allSeries).each(function(i) {
-                $(this.series).each(function(j){
-                    $(this).each(function(k){
+                $(this.series).each(function(j) {
+                    $(this).each(function(k) {
                         if (tooltips[k]) {
                             tooltips[k] += "<br/>" + this.value;
                         } else {
@@ -713,7 +715,7 @@
                 format = "h:nna";
             } else if (averageGap < MILLISECONDS_PER_MONTH) {
                 format = "M, d";
-            } else if (averageGap < MILLISECONDS_PER_YEAR){
+            } else if (averageGap < MILLISECONDS_PER_YEAR) {
                 format = "M";
             } else {
                 format = "yy";
@@ -747,7 +749,7 @@
                     } else {
                         cleanData = allSeries;
                     }
-                } else if (allSeries[0] !== undefined && !(allSeries[0] instanceof Array)){
+                } else if (allSeries[0] !== undefined && !(allSeries[0] instanceof Array)) {
                     if (allSeries[0].series === undefined) {
                         // Looks like we got an array of value objects
                         temp = { series: [] };
@@ -863,14 +865,14 @@
     elroi.fn.init = init;
 
 })(elroi, jQuery);
-(function(elroi, $){
+(function(elroi, $) {
 
     /**
      * This function creates the grid that is used by the graph
      * @param {graph} graph The graph object defined by elroi
      * @return {function} draw Draws the grid, x-axis, and y-axes
      */
-    function grid(graph){
+    function grid(graph) {
 
         /**
          * Goes through the first series in a data set and creates a set of labels for the x-axis
@@ -878,11 +880,11 @@
          * @param {String} dateFormat
          * @return {Array} xLabels An array of correctly formatted labels for the x-axis
          */
-        function getXLabels(series, dateOptions){
+        function getXLabels(series, dateOptions) {
 
             var xLabels = [];
 
-            $(series).each(function(){
+            $(series).each(function() {
                 var label,
                     startDate,
                     endDate;
@@ -906,7 +908,7 @@
         /**
          * Draws the gridlines based on graph.grid.numYLabels
          */
-        function drawGrid(){
+        function drawGrid() {
             //draw the gridlines
             var i, y,
                 gridLine,
@@ -957,7 +959,7 @@
                     .addClass('x-ticks')
                     .addClass(axis.id);
 
-                $(axis.labels).each(function(i){
+                $(axis.labels).each(function(i) {
                     if (i % graph.showEvery === 0) {
                         var x = i * graph.xTick + graph.padding.left;
                         var label = (axis.labels[i].replace(/^\s+|\s+$/g, '') || '');
@@ -972,7 +974,7 @@
 
 
             // Get those labels centered relative to their bar
-            $labels.find('li').each(function(){
+            $labels.find('li').each(function() {
                 var $label = $(this);
                 var x = parseInt($label.css('left'), 10) + ($label.width())/2;
 
@@ -993,7 +995,7 @@
          * @param {number} precision The number of digits to show
          * @return {Array} yLabels A set of labels for the y axis
          */
-        function getYLabels(maxVal, minVal, precision){
+        function getYLabels(maxVal, minVal, precision) {
             var yLabels = [],
                 i;
 
@@ -1017,7 +1019,7 @@
          * @param {number} minVal The minimum value in the data series
          * @param {String} unit The units of the data
          */
-        function drawYLabels(maxVal, minVal, axis){
+        function drawYLabels(maxVal, minVal, axis) {
 
             // Draw the y labels
             var $yLabels = $('<ul></ul>')
@@ -1029,12 +1031,15 @@
                 avalaibleArea = graph.height - graph.padding.top - graph.padding.bottom,
                 maxYLabelWidth = 0;
 
+            //When using dynamic padding, provide an additional 3px cushion so text doesn't butt up against content
+            var MINIMUM_LEFT_PADDING = 3;
+
             while(containsDuplicateLabels(yLabels)) {
                 precision++;
                 yLabels = getYLabels(maxVal, minVal, precision);
             }
 
-            $(yLabels).each(function(i){
+            $(yLabels).each(function(i) {
                 var yLabel = commaFormat(yLabels[i], precision);
                 var li;
                 var y = graph.height -
@@ -1071,7 +1076,7 @@
 
             $yLabels.appendTo(graph.$el);
 
-            if (graph.options.dynamicLeftPadding){
+            if (graph.options.dynamicLeftPadding) {
                 $yLabels.children().each(function(index, label) {
                     if ($(label).width() > maxYLabelWidth) {
                         maxYLabelWidth = $(label).width();
@@ -1079,7 +1084,7 @@
                 });
 
                 if (graph.padding.left < maxYLabelWidth) {
-                    graph.padding.left = maxYLabelWidth + 3;
+                    graph.padding.left = maxYLabelWidth + MINIMUM_LEFT_PADDING;
                 }
             }
         }
@@ -1087,7 +1092,7 @@
         /**
          * Calls all other draw methods
          */
-        function draw(){
+        function draw() {
 
             drawGrid();
             var seriesIndex;
@@ -1104,14 +1109,14 @@
                 drawYLabels(graph.maxVals[graph.options.axes.y2.seriesIndex], graph.minVals[graph.options.axes.y2.seriesIndex], graph.options.axes.y2);
             }
 
-            if (graph.options.axes.x1.show){
+            if (graph.options.axes.x1.show) {
                 if (!graph.options.axes.x1.labels || graph.options.axes.x1.labels.length === 0) {
                     seriesIndex = graph.options.axes.x1.seriesIndex;
                     graph.options.axes.x1.labels= getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.dates);
                 }
                 drawXLabels(graph.options.axes.x1);
             }
-            if (graph.options.axes.x2.show && graph.hasData){
+            if (graph.options.axes.x2.show && graph.hasData) {
                 if (!graph.options.axes.x2.labels || graph.options.axes.x2.labels.length === 0) {
                     seriesIndex = graph.options.axes.x2.seriesIndex;
                     graph.options.axes.x2.labels = getXLabels(graph.allSeries[seriesIndex].series[0], graph.options.dates);
@@ -1126,7 +1131,7 @@
         };
     }
 
-    function containsDuplicateLabels(arr){
+    function containsDuplicateLabels(arr) {
         var i, j, n;
         n= arr.length;
 
@@ -1176,7 +1181,7 @@
     elroi.fn.grid = grid;
 
 })(elroi, jQuery);
-(function(elroi){
+(function(elroi) {
 
     /**
      * Creates a line graph for a particulary series of data
@@ -1185,13 +1190,36 @@
      * @param {int} seriesIndex The index of this series
      * @return {function} draw Draws the line on the graph
      */
-    function lines(graph, series, seriesIndex){
+    function lines(graph, series, seriesIndex) {
 
         // points on the graph are centered horizontally relative to their labels
         var pointOffset = 0.5 * graph.labelWidth,
             yTick = graph.yTicks[seriesIndex],
-            seriesOptions = graph.seriesOptions[seriesIndex];
+            seriesOptions = graph.seriesOptions[seriesIndex],
+            calculatedPointRadius = calculatePointRadius(graph.xTick,
+                graph.options.lines.pointStrokeWidth,
+                graph.options.lines.pointRadius);
 
+        /**
+         * Intelligently determines a radius for the points in the line graph.  If the point will overflow from its
+         * column the radius is reduced to a minimum of 0px.  A calculated radius will never be larger than the radius
+         * specified in the options.
+         * @param xTick - width of column point should fit in
+         * @param pointStrokeWidth - the stroke-width of the point
+         * @param pointRadius - the desired radius of the point
+         * @return {Number}
+         */
+        function calculatePointRadius(xTick, pointStrokeWidth, pointRadius) {
+            var MINIMUM_SPACING = 1, //We want at least 1px between points
+                calculatedPointRadius = Math.floor((xTick - MINIMUM_SPACING) / 2 - pointStrokeWidth);
+
+            return (calculatedPointRadius < 0) ? 0                      //Radius must be 0 or greater
+                : (calculatedPointRadius > pointRadius) ? pointRadius   //Calculated cannot be bigger than original
+                : calculatedPointRadius;
+        }
+
+        //Add to helpers for unit testing
+        elroi.fn.helpers.calculatePointRadius = calculatePointRadius;
 
         /**
          * Draws a single point
@@ -1203,7 +1231,7 @@
          * @param {String} clickTarget - The url where the point should link to if clicked
          * @param {Boolean} animate - If the point should be animated.
          */
-        function drawPoint(x, y, value, color, fillPoint, clickTarget, animate, stroke){
+        function drawPoint(x, y, value, color, fillPoint, clickTarget, animate, stroke) {
             var point;
 
             function conditionallyFillPoint() {
@@ -1228,18 +1256,18 @@
 
                     conditionallyFillPoint();
 
-                    point.animate({r:graph.options.lines.pointRadius}, 500, 'bounce');
+                    point.animate({r: calculatedPointRadius}, 500, 'bounce');
                 }
                 else {
 
                     // Draw the point
-                    point = graph.paper.circle(x, y, graph.options.lines.pointRadius).attr(pointAttributes);
+                    point = graph.paper.circle(x, y, calculatedPointRadius).attr(pointAttributes);
 
                     conditionallyFillPoint();
 
                 }
 
-                $(point.node).click(function(){
+                $(point.node).click(function() {
                     if (clickTarget) {
                         document.location = clickTarget;
                     }
@@ -1277,7 +1305,7 @@
          * @param {String} units The unit to append to the label
          * @param {String} color Color of the point label
          */
-        function drawPointLabel(x, y, pointNumber, value, units, color){
+        function drawPointLabel(x, y, pointNumber, value, units, color) {
             var isOffGraph = graph.height - graph.labelLineHeight < y,
                 isInSetToShow = pointNumber % graph.showEvery === 0;
 
@@ -1340,7 +1368,7 @@
                 pathString = seriesOptions.type === 'step' ?
                     "L" + x + " " + prevPoint.y + "L" + x + " " + y  :
                     "L" + x + " " + y;
-            } else if (isNullPoint && !isFirstPoint){
+            } else if (isNullPoint && !isFirstPoint) {
                 pathString = "";
             }
             else {
@@ -1386,7 +1414,7 @@
             }
 
 
-            function pointsAndLabels(){
+            function pointsAndLabels() {
                 if (!isNullPoint) {
                     if (seriesOptions.showPoints) {
                         drawPoint(
@@ -1408,7 +1436,7 @@
             if (graph.options.animation) {
                 line.animate({
                     path: currentPath + pathString
-                }, animSpeed, function(){
+                }, animSpeed, function() {
                     pointsAndLabels();
                     drawLine({
                         series:series,
@@ -1441,7 +1469,7 @@
         }
 
         var currentHighlights = graph.paper.set(); // A set of raphael objects for highlighting hovers
-        graph.$el.mouseleave(function(){
+        graph.$el.mouseleave(function() {
             // Hide the highlights if the mouse leaves the graph
             currentHighlights.attr('opacity', 0);
         });
@@ -1460,7 +1488,7 @@
                 pointsInSet = [],
                 highlights = graph.paper.set();
 
-            $(series).each(function(i){
+            $(series).each(function(i) {
                 // skip any null points
                 if (series[i][index].value || series[i][index].value === 0) {
                     pointsInSet.push(series[i][index].value);
@@ -1497,7 +1525,7 @@
                     graph.$tooltip.stop().animate({
                         bottom: y,
                         left: x
-                    }, 1, function(){
+                    }, 1, function() {
                         var tipContent = graph.options.tooltip.formatter(graph.tooltips[index], graph.options.messages);
                         graph.$tooltip.find('.elroi-tooltip-content').html(tipContent);
                     });
@@ -1573,15 +1601,15 @@
          * things like the center of a pie graph if we didn't specify it ourselves.
          * */
         var pieOptions = graph.options.pie = graph.options.pie || {};
-        var CENTER = pieOptions.center = pieOptions.center || {
+        var center = pieOptions.center = pieOptions.center || {
             x : (graph.width + graph.padding.left - graph.padding.right)/2,
             y : (graph.height - graph.padding.bottom + graph.padding.top)/2
         };
         var RADIUS = pieOptions.radius =
             pieOptions.radius || (graph.height - graph.padding.bottom + graph.padding.top)/ 2;
         var INNER_RADIUS = pieOptions.innerRadius = pieOptions.innerRadius || pieOptions.radius/2;
-        var WEDGE_ATTRIBUTES = pieOptions.wedgeAttributes = pieOptions.wedgeAttributes || {};
-        var PIE_HOLE_ATTRIBUTES = pieOptions.pieHoleAttributes = pieOptions.pieHoleAttributes || {};
+        var wedgeAttributes = pieOptions.wedgeAttributes = pieOptions.wedgeAttributes || {};
+        var pieHoleAttributes = pieOptions.pieHoleAttributes = pieOptions.pieHoleAttributes || {};
 
         var LOAD_ANIMATION_PROMISE;
 
@@ -1596,7 +1624,7 @@
         var DEFAULT_ROTATION = -90; //current rotation of the pie
 
         /* Raphael transform constants */
-        var CENTER_COORDINATES = CENTER.x+','+CENTER.y,
+        var CENTER_COORDINATES = center.x + ',' + center.y,
             S11 = 's1,1';
 
         /* Set to store wedge paths */
@@ -1689,7 +1717,7 @@
          * @return {object} jQuery deferred object that resolves after the resize animation, or immediately if animation
          *     is flagged off.
          */
-        function resize(ms){
+        function resize(ms) {
             var start = 0, // current angle offset
                 total = graph.sums[seriesIndex],
                 data = series[seriesIndex],
@@ -1704,7 +1732,7 @@
 
             for (i = 0; i < dataLength; i++) {
                 wedgeSize = 360 / total * data[i].value;
-                newAttributes = {segment: [CENTER.x, CENTER.y, wedges[i].attr('radius'), start, start += wedgeSize]};
+                newAttributes = {segment: [center.x, center.y, wedges[i].attr('radius'), start, start += wedgeSize]};
 
                 wedges[i].data = data[i]; //update data tied to each wedge
 
@@ -1742,7 +1770,7 @@
          * Triggers a wedgeSelectionChanged event if one was provided.
          * @param [wedge] {object} Raphael wedge from the current pie that is the new selectedWedge.
          */
-        function updateSelectedWedge(wedge){
+        function updateSelectedWedge(wedge) {
             var previouslySelectedWedge;
 
             if (selectedWedge === wedge) {
@@ -1772,7 +1800,7 @@
              * by default rotateToWedge.
              * @param wedge {object} Raphael element for the clicked wedge
              */
-            function wedgeClick(wedge){
+            function wedgeClick(wedge) {
                 if (wedgeEventsEnabled) {
 
                     if (graph.options.pie.wedgeClick) {
@@ -1822,9 +1850,9 @@
              */
             function generateWedge() {
                 var wedge = graph.paper.path()
-                    .click(function(e){ wedgeClick(wedge); })
-                    .hover(function(e){ wedgeEnter(e,wedge); },
-                    function(e){ wedgeExit(e,wedge); });
+                    .click(function(e) { wedgeClick(wedge); })
+                    .hover(function(e) { wedgeEnter(e,wedge); },
+                    function(e) { wedgeExit(e,wedge); });
                 return wedge;
             }
 
@@ -1841,7 +1869,7 @@
 
                 wedge = generateWedge()
                     .attr({fill: graph.options.colors[i % graph.options.colors.length]})
-                    .attr(WEDGE_ATTRIBUTES);
+                    .attr(wedgeAttributes);
 
                 wedge.data = data[i];
 
@@ -1852,9 +1880,9 @@
                 }
 
                 if (graph.options.animation) {
-                    wedge.attr({segment: [CENTER.x, CENTER.y, 1, start, start + val]});
+                    wedge.attr({segment: [center.x, center.y, 1, start, start + val]});
                 } else {
-                    wedge.attr({segment: [CENTER.x, CENTER.y, RADIUS, start, start + val],
+                    wedge.attr({segment: [center.x, center.y, RADIUS, start, start + val],
                         transform: [S11+CENTER_COORDINATES+'r'+ DEFAULT_ROTATION +','+CENTER_COORDINATES]});
                 }
 
@@ -1876,9 +1904,9 @@
 
             if(pieOptions.drawPieHole) {
                 pieHole = graph.paper
-                    .circle(CENTER.x, CENTER.y, INNER_RADIUS)
+                    .circle(center.x, center.y, INNER_RADIUS)
                     .attr({fill: 'white'})
-                    .attr(PIE_HOLE_ATTRIBUTES).hide();
+                    .attr(pieHoleAttributes).hide();
             }
 
             graph.$el.addClass('piechart');
@@ -1894,10 +1922,8 @@
          */
         function generateHitShield() {
             var hitShieldContainer,
-                PIE_HOLE_STROKE_WIDTH = PIE_HOLE_ATTRIBUTES['stroke-width'] || 0,
-                PIE_HOLE_CURSOR = PIE_HOLE_ATTRIBUTES['cursor'] || 'auto';
-
-            debugger;
+                PIE_HOLE_STROKE_WIDTH = pieHoleAttributes['stroke-width'] || 0,
+                PIE_HOLE_CURSOR = pieHoleAttributes['cursor'] || 'auto';
 
             /**
              *  Handles determination of which wedge is under the donut hole so that events can be passed to that wedge.
@@ -1938,7 +1964,7 @@
              * If a passthrough wedge exist attempt to find its click handlers and execute it. If no click handler is
              * found just return.
              */
-            function hitShieldClick(){
+            function hitShieldClick() {
                 var i;
                 if (passThroughWedge) {
                     for (i=0;i< passThroughWedge.events.length; i+=1) {
@@ -1952,7 +1978,7 @@
 
             hitShieldContainer = $('<div></div>').addClass('hit-shield').prependTo(graph.$el);
             hitShield = Raphael(hitShieldContainer[0], graph.width, graph.height)
-                .circle(CENTER.x, CENTER.y, RADIUS + PIE_HOLE_STROKE_WIDTH)
+                .circle(center.x, center.y, RADIUS + PIE_HOLE_STROKE_WIDTH)
                 .attr({fill: 'red', 'stroke-width':0, opacity: 0, cursor: PIE_HOLE_CURSOR}); // fill is required so picked an arbitrary color
 
             $.when(LOAD_ANIMATION_PROMISE).done(function() {
@@ -2001,8 +2027,8 @@
                 var fontRadius = Math.max(label.width(), label.height()); //This could be refactored to be more accommodating
 
                 var angle = (getDegreesRotated() + wedge.data.offset + .5 * wedge.data.degrees) * DEGREES_TO_RADIANS;
-                var top = CENTER.y + Math.sin(angle) * (wedge.attrs.radius+fontRadius);
-                var left = CENTER.x + Math.cos(angle) * (wedge.attrs.radius+fontRadius);
+                var top = center.y + Math.sin(angle) * (wedge.attrs.radius+fontRadius);
+                var left = center.x + Math.cos(angle) * (wedge.attrs.radius+fontRadius);
 
                 label.css('position','absolute')
                     .css('left',left-label.width() *.5)
@@ -2051,7 +2077,7 @@
          *                  null is returned.
          */
         function getDegreesRotated() {
-            if (!wedges[0].attr("transform")[1]){
+            if (!wedges[0].attr("transform")[1]) {
                 return null;
             } else {
                 return wedges[0].attr("transform")[1][1];
@@ -2111,7 +2137,7 @@
          * Get the container used to hold pie messages.
          * @return {object} jQuery element that is the container
          */
-        function getMessageContainer(){
+        function getMessageContainer() {
             return messageContainer;
         }
 
@@ -2148,7 +2174,7 @@
          * @param wedge {object} the wedge that is to be found
          * @return {number} index of the wedge if found, otherwise -1
          */
-        function getWedgeIndex(wedge){
+        function getWedgeIndex(wedge) {
             var i, //index of wedge for traversal
                 wedgesLength = wedges.length; //length of wedges for traversal
             for (i=0; i < wedgesLength; i+=1) {
@@ -2248,8 +2274,8 @@
 
                     bar = graph.paper.rect(x, barStartY, barWidth, barStartHeight).attr('fill', color).attr('stroke', color);
 
-                    if (graph.options.animation){
-                        bar.animate({y:y, height: barHeight}, 550, function(){
+                    if (graph.options.animation) {
+                        bar.animate({y:y, height: barHeight}, 550, function() {
                             $(graph.$el).trigger('barDrawn');
                         });
                     } else {
@@ -2316,13 +2342,13 @@
             if (isStacked) {
                 $(series).each(function(i) {
                     total += series[i][index].value;
-                    if (series[i][index].value < min){
+                    if (series[i][index].value < min) {
                         min = series[i][index].value;
                     }
                     if (series[i][index].value > max) {
                         max = series[i][index].value;
                     }
-                    if (series[i][index].clickTarget){
+                    if (series[i][index].clickTarget) {
                         clickTarget = series[i][index].clickTarget;
                     }
                 });
@@ -2397,7 +2423,7 @@
                 });
 
             // Attach the click behavior, if we have a target
-            $(rollOverTargetBar.node).click(function(){
+            $(rollOverTargetBar.node).click(function() {
                 if (clickTarget) {
                     document.location = clickTarget;
                 }
@@ -2431,8 +2457,8 @@
             barStartY = graph.options.animation ? barStartY : y;
 
             barObj = graph.paper.rect(x, barStartY, barWidth, barStartHeight).attr('fill', color).attr('stroke', color);
-            if (graph.options.animation){
-                barObj.animate({y:y, height: barHeight}, 550, function(){
+            if (graph.options.animation) {
+                barObj.animate({y:y, height: barHeight}, 550, function() {
                     $(graph.$el).trigger('barDrawn');
                 });
             } else {
@@ -2471,7 +2497,7 @@
             }
 
             // draw in the point flags
-            graph.$el.bind('barDrawn', function(){$('.elroi-point-flag').fadeIn();});
+            graph.$el.bind('barDrawn', function() {$('.elroi-point-flag').fadeIn();});
             for (j = 0; j < series.length; j++) {
                 drawPointFlags(series[j], seriesSum, j+1, graph.yTicks[seriesIndex]);
             }

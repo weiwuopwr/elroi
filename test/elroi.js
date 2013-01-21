@@ -199,17 +199,17 @@
             return output.replace(/\s/g, '&nbsp;');
         };
 
-        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {}), parseResult('Mar 1 &ndash;Mar 10, 2011'), 'same month+year, year dropped');
+        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {}), parseResult('Mar 1 &ndash; Mar 10, 2011'), 'same month+year, year dropped');
         Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {skipRepeatedYear: true}),
-                parseResult('Mar 1 &ndash;Mar 10, 2011'), 'same month+year, year dropped, skipRepeatedYear explicit true');
+                parseResult('Mar 1 &ndash; Mar 10, 2011'), 'same month+year, year dropped, skipRepeatedYear explicit true');
         Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {skipRepeatedYear: false}),
-                parseResult('Mar 1, 2011 &ndash;Mar 10, 2011'), 'same month+year, year dropped, skipRepeatedYear explicit false');
+                parseResult('Mar 1, 2011 &ndash; Mar 10, 2011'), 'same month+year, year dropped, skipRepeatedYear explicit false');
 
-        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, aprilOne2011, {}), parseResult('Mar 1 &ndash;Apr 1, 2011'), 'different month, same year, year dropped');
-        Q.equal(elroi.fn.formatDateRange('d M y', marchOne2011, aprilOne2011, {}), parseResult('1 Mar &ndash;1 Apr 11'), 'd M y format, same year, year dropped');
-        Q.equal(elroi.fn.formatDateRange('d M yy', marchOne2011, marchEleven2012, {}), parseResult('1 Mar 2011 &ndash;11 Mar 2012'), 'd M yy format, different year');
+        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, aprilOne2011, {}), parseResult('Mar 1 &ndash; Apr 1, 2011'), 'different month, same year, year dropped');
+        Q.equal(elroi.fn.formatDateRange('d M y', marchOne2011, aprilOne2011, {}), parseResult('1 Mar &ndash; 1 Apr 11'), 'd M y format, same year, year dropped');
+        Q.equal(elroi.fn.formatDateRange('d M yy', marchOne2011, marchEleven2012, {}), parseResult('1 Mar 2011 &ndash; 11 Mar 2012'), 'd M yy format, different year');
         Q.equal(elroi.fn.formatDateRange('d M yy', marchOne2011, marchEleven2012, {skipRepeatedYear: true}),
-                parseResult('1 Mar 2011 &ndash;11 Mar 2012'), 'd M yy format, different year, skip repeated year ignored');
+                parseResult('1 Mar 2011 &ndash; 11 Mar 2012'), 'd M yy format, different year, skip repeated year ignored');
     });
 
     Q.test('elroi date range determiner', function(){
@@ -634,7 +634,14 @@
     Q.test('detects 0 and -0 as duplicates', function() {
         Q.equal(elroi.fn.helpers.containsDuplicateLabels(["-0", "0"]), true);
     });
-    
-    
+
+    Q.test('calculate point radius for line chart', function() {
+        Q.equal(elroi.fn.helpers.calculatePointRadius(2,0,1), 0, "No stroke test 1 (Respects radius check)");
+        Q.equal(elroi.fn.helpers.calculatePointRadius(4,0,1), 1, "No stroke test 2 (Respects 1px spacing check)");
+        Q.equal(elroi.fn.helpers.calculatePointRadius(4,1,1), 0, "Stroke test 1 (Respects radius+stroke check)");
+        Q.equal(elroi.fn.helpers.calculatePointRadius(6,1,1), 1, "Stroke test 2 (Respects 1px spacing check)");
+        Q.equal(elroi.fn.helpers.calculatePointRadius(1,5,1), 0, "Disallow negative radius test");
+        Q.equal(elroi.fn.helpers.calculatePointRadius(20,0,3), 3, "Disallow radius larger than provided");
+    });
 
 }(QUnit, jQuery, elroi));
