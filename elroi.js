@@ -1005,12 +1005,17 @@
 
                 yLabel = (yLabel === 0) ? '0' : yLabel.toFixed(precision); /* Don't show 0.00... ever */
 
+                // (-.23).toFixed(0) will produce '-0', which we don't want
+                yLabel = yLabel === '-0' ? '0' : yLabel;
+
                 yLabels.push(yLabel);
 
             }
             return yLabels;
         }
 
+        // visible for testing
+        elroi.fn.helpers.getYLabels = getYLabels;
 
         /**
          * This draws either the y1 or y2 axis, depending on the series data
@@ -1137,7 +1142,7 @@
 
         for (i=0; i<n; i++) {
             for (j=i+1; j<n; j++) {
-                if (arr[i] === arr[j] || (arr[i] === '-0' && arr[j] === '0')) {
+                if (arr[i] === arr[j]) {
                     return true;
                 }
             }
