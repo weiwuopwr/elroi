@@ -631,8 +631,12 @@
         Q.equal(elroi.fn.helpers.containsDuplicateLabels(["-1", "0", "1"]), false);
     });
 
-    Q.test('detects 0 and -0 as duplicates', function() {
-        Q.equal(elroi.fn.helpers.containsDuplicateLabels(["-0", "0"]), true);
+    Q.test('should get labels for a precision', function() {
+        Q.deepEqual(elroi.fn.helpers.getYLabels(4, 0, 0), ["0", "1", "2", "3", "4"]);
+    });
+
+    Q.test('should not include -0 as a label, no matter how much elroi is tempted', function() {
+        Q.equal(elroi.fn.helpers.getYLabels(4, -.23, 0).indexOf('-0'), -1);
     });
 
     Q.test('calculate point radius for line chart', function() {
