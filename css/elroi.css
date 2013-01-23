@@ -103,16 +103,17 @@
 }
 
 .elroi .elroi-point-label {
-  font-weight: bold;
-  white-space: nowrap;
+    font-size: 12px;
+    font-weight: bold;
+    position: absolute;
+    text-align: center;
+    white-space: nowrap;
 }
 
 /* Point flags */
-.elroi .elroi-point-flag, .elroi .elroi-point-label{
-  position: absolute;
-  text-align: center;
-  font-size: 12px;
-  padding: 0 0 10px 0;
+.elroi .elroi-point-flag {
+    position: absolute;
+    text-align: center;
+    font-size: 12px;
+    padding: 0 0 10px 0;
 }
-
-
