@@ -640,9 +640,9 @@
     });
 
     Q.test('calculate point radius for line chart', function() {
-        Q.equal(elroi.fn.helpers.calculatePointRadius(2,0,1), 0, "No stroke test 1 (Respects radius check)");
+        Q.equal(elroi.fn.helpers.calculatePointRadius(2,0,1), .5, "No stroke test 1 (Respects radius check)");
         Q.equal(elroi.fn.helpers.calculatePointRadius(4,0,1), 1, "No stroke test 2 (Respects 1px spacing check)");
-        Q.equal(elroi.fn.helpers.calculatePointRadius(4,1,1), 0, "Stroke test 1 (Respects radius+stroke check)");
+        Q.equal(elroi.fn.helpers.calculatePointRadius(4,1,1), 1, "Stroke test 1 (Respects radius+stroke check)");
         Q.equal(elroi.fn.helpers.calculatePointRadius(6,1,1), 1, "Stroke test 2 (Respects 1px spacing check)");
         Q.equal(elroi.fn.helpers.calculatePointRadius(1,5,1), 0, "Disallow negative radius test");
         Q.equal(elroi.fn.helpers.calculatePointRadius(20,0,3), 3, "Disallow radius larger than provided");

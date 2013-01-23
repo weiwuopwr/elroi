@@ -1198,12 +1198,14 @@
     function lines(graph, series, seriesIndex) {
 
         // points on the graph are centered horizontally relative to their labels
-        var pointOffset = 0.5 * graph.labelWidth,
+        var pointOffsetX = 0.5 * graph.labelWidth,
             yTick = graph.yTicks[seriesIndex],
             seriesOptions = graph.seriesOptions[seriesIndex],
             calculatedPointRadius = calculatePointRadius(graph.xTick,
                 graph.options.lines.pointStrokeWidth,
-                graph.options.lines.pointRadius);
+                graph.options.lines.pointRadius),
+            pointOffsetY = (calculatedPointRadius)
+                ? (calculatedPointRadius + graph.options.lines.pointStrokeWidth * .5) : 0;
 
         /**
          * Intelligently determines a radius for the points in the line graph.  If the point will overflow from its
@@ -1216,7 +1218,7 @@
          */
         function calculatePointRadius(xTick, pointStrokeWidth, pointRadius) {
             var MINIMUM_SPACING = 1, //We want at least 1px between points
-                calculatedPointRadius = Math.floor((xTick - MINIMUM_SPACING) / 2 - pointStrokeWidth);
+                calculatedPointRadius = (xTick - MINIMUM_SPACING- pointStrokeWidth) / 2;
 
             return (calculatedPointRadius < 0) ? 0                      //Radius must be 0 or greater
                 : (calculatedPointRadius > pointRadius) ? pointRadius   //Calculated cannot be bigger than original
@@ -1317,8 +1319,8 @@
             if (!isOffGraph && isInSetToShow) {
                 var pointLabel = document.createElement("span");
                 $(pointLabel).addClass('elroi-point-label').html(Math.round(value) + " " + units).css({
-                    'left': x - pointOffset,
-                    'bottom': graph.paper.height - y - graph.labelLineHeight - pointOffset,
+                    'left': x - pointOffsetX,
+                    'top': y + pointOffsetY,
                     'width': graph.labelWidth,
                     'color': color
                 });
@@ -1357,7 +1359,7 @@
 
             var isNullPoint = !(series[index].value || series[index].value === 0);
 
-            var x = index * graph.xTick + graph.padding.left + pointOffset,
+            var x = index * graph.xTick + graph.padding.left + pointOffsetX,
                 y = graph.height - ((series[index].value - graph.minVals[seriesIndex]) * yTick) - graph.padding.bottom + graph.padding.top,
                 pathString = "",
                 animSpeed = (window.isIE6 ? 1 : 800)/series.length,
@@ -1488,7 +1490,7 @@
          */
         function lineHover(series, yTick, index, seriesOptions) {
 
-            var x = (index * graph.xTick + graph.padding.left) - (graph.xTick/2) + pointOffset,
+            var x = (index * graph.xTick + graph.padding.left) - (graph.xTick/2) + pointOffsetX,
                 y = 0,
                 pointsInSet = [],
                 highlights = graph.paper.set();
@@ -1497,7 +1499,7 @@
                 // skip any null points
                 if (series[i][index].value || series[i][index].value === 0) {
                     pointsInSet.push(series[i][index].value);
-                    var highlightX = index * graph.xTick + graph.padding.left + pointOffset;
+                    var highlightX = index * graph.xTick + graph.padding.left + pointOffsetX;
                     var highlightY = graph.height - ((series[i][index].value - graph.minVals[seriesIndex]) * yTick) - graph.padding.bottom + graph.padding.top;
 
                     var highlightCirc = graph.paper.circle(highlightX, highlightY, graph.options.lines.highlightRadius).attr({
@@ -1524,7 +1526,7 @@
 
                 // Show the tooltip
                 if (graph.options.tooltip.show) {
-                    var x = index * graph.xTick + graph.padding.left + pointOffset - graph.options.tooltip.width / 2;
+                    var x = index * graph.xTick + graph.padding.left + pointOffsetX - graph.options.tooltip.width / 2;
                     var y = ((topPoint - graph.minVals[seriesIndex]) * yTick) - graph.padding.top + graph.padding.bottom + graph.options.flagOffset + graph.options.lines.pointStrokeWidth + graph.options.lines.highlightRadius;
 
                     graph.$tooltip.stop().animate({
