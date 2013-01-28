@@ -145,9 +145,14 @@
         }
 
         /**
-         * (A)nimate and return (jQ)uery (P)romise
+         * Animate and return (jQ)uery (P)romise
          * Helper function that executes a Raphael animate and returns a jQuery promise that will resolve on animation
          * complete.  This is extremely useful when chaining or synchronizing animations!
+         *
+         * Known Raphael bug: If the element that is animating has .stop() called on it; its callback won't be called!
+         *                     As a result its promise won't resolve and hence stop should not be called on elements
+         *                     utilizing animateJQP.
+         *
          * @param e {Object} Raphael JS element or set of elements
          * @param params {Array} Array of animate parameters (DO NOT INCLUDE CALLBACK)
          * @return {Object} jQuery promise that will resolve when the animation is complete.
@@ -1710,7 +1715,7 @@
          * @return jQuery promise that resolves when the load animation is complete
          */
         function loadAnimation(ms) {
-
+            wedgeEventsDisable();
             return graph.animateJQP(wedges, [
                 {radius: RADIUS, transform: [S11+CENTER_COORDINATES+'r'+ DEFAULT_ROTATION +','+CENTER_COORDINATES]},
                 ms || 1500,
@@ -1736,7 +1741,7 @@
             var wedgeSize, //In degrees
                 newAttributes; //New segment and transform attributes for Raphael
 
-
+            wedgeEventsDisable();
             for (i = 0; i < dataLength; i++) {
                 wedgeSize = 360 / total * data[i].value;
                 newAttributes = {segment: [center.x, center.y, wedges[i].attr('radius'), start, start += wedgeSize]};
@@ -1744,13 +1749,14 @@
                 wedges[i].data = data[i]; //update data tied to each wedge
 
                 if (graph.options.animation) {  //either animate transition of flatly update
-                    $deferreds.push(graph.animateJQP(wedges[i],[ms || 750, 'backOut']));
+                    $deferreds.push(graph.animateJQP(wedges[i], [newAttributes, ms || 750, 'backOut']));
                 } else {
                     wedges[i].attr(newAttributes);
                 }
             }
 
-            return $.when($deferreds);
+            return $.when.apply(null, $deferreds)
+                .done(regenerateTransformedWedgePaths, wedgeEventsEnable);
         }
 
         /**
