@@ -116,8 +116,19 @@
         var width = $paper.width() || $el.width(),
             height = $paper.height() || $el.height();
 
-        var containerOffsetLeft = $(element).offset().left;
-        var containerOffsetTop = $(element).offset().top;
+        /**
+         * Get mouse position relative to the top left corner of the Elroi element.
+         * @param e {Object} Mouse event object
+         * @return {Object} x - x position relative to the top left corner of the Elroi element.
+         *                  y - y position relative to the top left corner of the Elroi element.
+         */
+        function getRelativeMousePosition (e) {
+            var elementOffset = $(element).offset();
+            return {
+                x: e.clientX + $(document).scrollLeft() - elementOffset.left,
+                y: e.clientY + $(document).scrollTop() - elementOffset.top
+            };
+        }
 
         /**
          * Helper function to determine whether a mouse is in a Raphael path.
@@ -126,9 +137,8 @@
          * @return {boolean} true if the mouse is in the path, false otherwise
          */
         function isMouseInPath(e, path) {
-            var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft,
-                posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
-            return Raphael.isPointInsidePath(path, posx, posy);
+            var relativePosition = getRelativeMousePosition(e);
+            return Raphael.isPointInsidePath(path, relativePosition.x, relativePosition.y);
         }
 
         /**
@@ -139,9 +149,26 @@
          * @return {boolean} true if the mouse is in the element, false otherwise
          */
         function isMouseInElement(e, element) {
-            var posx = e.clientX + $(document).scrollLeft() - containerOffsetLeft,
-                posy = e.clientY + $(document).scrollTop() - containerOffsetTop;
-            return element.isPointInside(posx, posy);
+            var relativePosition = getRelativeMousePosition(e);
+            return element.isPointInside(relativePosition.x, relativePosition.y);
+        }
+
+
+        /**
+         * Creates a random alpha-numeric string of the length specified.  This is used to create IDs by stopJQP.
+         *
+         * @param length {Number} The length of the desired string. A length less than 1 will result in an empty string.
+         * @return {String} A randomly generated alpha-numeric string of specified length.
+         */
+        function generateId(length) {
+            var text = "",
+                possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            for (var i=0; i < length; i++) {
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+            }
+
+            return text;
         }
 
         /**
@@ -149,21 +176,45 @@
          * Helper function that executes a Raphael animate and returns a jQuery promise that will resolve on animation
          * complete.  This is extremely useful when chaining or synchronizing animations!
          *
-         * Known Raphael bug: If the element that is animating has .stop() called on it; its callback won't be called!
-         *                     As a result its promise won't resolve and hence stop should not be called on elements
-         *                     utilizing animateJQP.
+         * IMPORTANT
+         * If the element that is animating has .stop() called on it; its callback won't be called!
+         * As a result its promise won't be rejected and hence stop should not be called on elements
+         * utilizing animateJQP, instead use stopJQP.
+         *
+         * A feature request has been created on the Raphael repo requesting a proper stop/interrupt callback which
+         * would allow the removal of stopJQP() and generateId().
+         * https://github.com/DmitryBaranovskiy/raphael/issues/661
          *
          * @param e {Object} Raphael JS element or set of elements
          * @param params {Array} Array of animate parameters (DO NOT INCLUDE CALLBACK)
          * @return {Object} jQuery promise that will resolve when the animation is complete.
          */
-        function animateJQP (e, params) {
+        function animateJQP(element, params) {
             var deferred = $.Deferred();
-            params.push(function() {
-                deferred.resolve();
-            });
-            e.animate.apply(e, params);
+            params.push(deferred.resolve);
+
+            //Elements are provided ids by default but sets are not; for stopJQP to work we need a unique ID, so we'll
+            // assign an ID if one isn't provided (null or undefined).
+            if (!element.id && element.id !== 0) {
+                element.id = generateId();
+            }
+
+            eve.once('raphael.anim.stop.' + element.id, deferred.reject);
+            element.animate.apply(element, params);
             return deferred.promise();
+        }
+
+        /**
+         * Stop and reject (jQ)uery (P)romise
+         * If animateJQP is used; stopJQP should be used instead of stop() to ensure that the promise provided by
+         * animateJQP is rejected.
+         *
+         * @param e {Object} Raphael JS element or set of elements
+         */
+        function stopJQP(element) {
+            element.stop();
+            eve('raphael.anim.stop.'+ element.id, null, null);
+            return element;
         }
 
         var graph = elroi.fn.init({
@@ -178,7 +229,8 @@
             tooltips: tooltips,
             isMouseInPath: isMouseInPath,
             isMouseInElement: isMouseInElement,
-            animateJQP: animateJQP
+            animateJQP: animateJQP,
+            stopJQP: stopJQP
         });
 
         var html = '<div class="elroi-tooltip"><div class="elroi-tooltip-content"></div></div>';
@@ -252,7 +304,6 @@
             update: update
         }, graph.ext);
     }
-
 
 })(jQuery);
 (function(elroi, $) {
