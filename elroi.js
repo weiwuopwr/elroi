@@ -26,6 +26,14 @@
             },
             errorMessage : false,
             labelWidth : 'auto',
+            topLabelFormatter: function(value, axis) {
+        	var label = axis.prefixUnit ? (axis.topUnit + value) : (value + ' ' + axis.topUnit);
+        	return label;
+        	},
+            labelFormatter: function(value, axis) {
+        	var label = axis.prefixUnit ? (axis.unit + value) : (value + ' ' + axis.unit);
+        	return label;
+            },
             flagOffset : 5,
             skipPointThreshhold : 18,
             precision: 0,
@@ -1111,13 +1119,9 @@
 
                 // Topmost ylabel gets a different unit
                 if (i === graph.options.grid.numYLabels-1) {
-                    yLabel = (axis.prefixUnit ? axis.topUnit : '') +
-                        yLabel +
-                        (!axis.prefixUnit ? " " + axis.topUnit : '');
+                    yLabel = graph.options.topLabelFormatter(yLabel,axis);
                 } else {
-                    yLabel = (axis.prefixUnit ? axis.unit : '') +
-                        yLabel +
-                        (!axis.prefixUnit ? " " + axis.unit : '');
+                    yLabel = graph.options.labelFormatter(yLabel,axis);
                 }
 
                 // y1 labels go on the left, y2 labels go on the right
