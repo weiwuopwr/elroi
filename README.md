@@ -6,17 +6,17 @@ Elroi is a graphing library built for Opower's Astro web application
 
 It is based on the Raphael JavaScript library, meaning that every element
 in the chart is essentially an HTML element. This has powerful implications,
-since you can augment everything elroi does with straight HTML, CSS, and JavaScript.
+since you can augment everything Elroi does with straight HTML, CSS, and JavaScript.
 
 ## Usage
 
-Elroi requires jQuery http://jquery.com (tested with 1.6.4 and 1.7.1) and RaphaelJS http://http://raphaeljs.com/ (2.1.0).  To use elroi,
+Elroi requires jQuery http://jquery.com (tested with 1.6.4 and 1.7.1) and RaphaelJS http://raphaeljs.com/ (2.1.0).  To use Elroi,
 include jQuery, Raphael, elroi.js, and elroi.css.  You can create and draw a graph with:
 
     var myGraph = elroi($element, dataSeries, [graphOptions], [tooltips]);
 
 ### $element
-A jQuery object for the HMTL element that will contain the graph.  The height and width of the graph elroi creates are determined
+A jQuery object for the HMTL element that will contain the graph.  The height and width of the graph Elroi creates are determined
 by your styles on $element.
 
     example: var $element = $('#my-graph-container');`
@@ -121,10 +121,10 @@ For a ton of usage examples, see
 
 ## Development
 
-There are two scripts to aid in developing elroi:
+There are two scripts to aid in developing Elroi:
 
 * bin/combine.sh
-    Combines all of the elroi source files into a single elroi.js library.
+    Combines all of the Elroi source files into a single elroi.js library.
 * bin/watch.sh
     When invoked, this script listens for changes in the working directory and runs combine.sh to regenerate the elroi.js library.
 
@@ -144,4 +144,3 @@ Tests are written in QUnit. To run the tests, open this in any browser:
 ##  License
 
 Distributes under the Apache License, see LICENSE.txt
-
