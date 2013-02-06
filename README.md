@@ -10,7 +10,7 @@ since you can augment everything Elroi does with straight HTML, CSS, and JavaScr
 
 ## Usage
 
-Elroi requires jQuery http://jquery.com (tested with 1.6.4 and 1.7.1) and RaphaelJS http://raphaeljs.com/ (1.5.2).  To use Elroi,
+Elroi requires jQuery http://jquery.com (tested with 1.6.4 and 1.7.1) and RaphaelJS http://raphaeljs.com/ (2.1.0).  To use Elroi,
 include jQuery, Raphael, elroi.js, and elroi.css.  You can create and draw a graph with:
 
     var myGraph = elroi($element, dataSeries, [graphOptions], [tooltips]);
@@ -135,7 +135,6 @@ There are two scripts to aid in developing Elroi:
 To work with combine.sh and watch.sh, you'll need to install two ruby gems:
 
     gem install watchr
-    gem install sprockets -v 1.0.2
 ### Test
 
 Tests are written in QUnit. To run the tests, open this in any browser:
@@ -145,4 +144,3 @@ Tests are written in QUnit. To run the tests, open this in any browser:
 ##  License
 
 Distributes under the Apache License, see LICENSE.txt
-
