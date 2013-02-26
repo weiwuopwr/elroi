@@ -27,12 +27,12 @@
             errorMessage : false,
             labelWidth : 'auto',
             topLabelFormatter: function(value, axis) {
-        	var label = axis.prefixUnit ? (axis.topUnit + value) : (value + ' ' + axis.topUnit);
-        	return label;
-        	},
+                var label = axis.prefixUnit ? (axis.topUnit + value) : (value + ' ' + axis.topUnit);
+                return label;
+            },
             labelFormatter: function(value, axis) {
-        	var label = axis.prefixUnit ? (axis.unit + value) : (value + ' ' + axis.unit);
-        	return label;
+                var label = axis.prefixUnit ? (axis.unit + value) : (value + ' ' + axis.unit);
+                return label;
             },
             flagOffset : 5,
             skipPointThreshhold : 18,
@@ -1589,7 +1589,13 @@
                         left: x
                     }, 1, function() {
                         var tipContent = graph.options.tooltip.formatter(graph.tooltips[index], graph.options.messages);
-                        graph.$tooltip.find('.elroi-tooltip-content').html(tipContent);
+                        var toolTipContent = graph.$tooltip.find('.elroi-tooltip-content'),
+                            toolTipContainer = toolTipContent.find('.elroi-tooltip-container');
+                        toolTipContent.html(tipContent);
+
+                        if (toolTipContainer && toolTipContainer.width() > graph.options.tooltip.width) {
+                            graph.$tooltip.width(toolTipContainer.width() + 20);
+                        }
                     });
                 }
 
@@ -2489,7 +2495,14 @@
                         var tipY = tallestBarHeight + graph.options.flagOffset + graph.options.bars.highlightBorderWidth;
                         graph.$tooltip.stop().animate({bottom: tipY, left:tipX }, 1, function() {
                             var tipContent = graph.options.tooltip.formatter(graph.tooltips[index], graph.options.messages);
-                            graph.$tooltip.find('.elroi-tooltip-content').html(tipContent);
+                            var toolTipContent = graph.$tooltip.find('.elroi-tooltip-content'),
+                                toolTipContainer = toolTipContent.find('.elroi-tooltip-container');
+                            toolTipContent.html(tipContent);
+                            
+                            if (toolTipContainer && toolTipContainer.width() > graph.options.tooltip.width) {
+                                graph.$tooltip.width(toolTipContainer.width() + 20);
+                            }
+
                         });
 
                     }
