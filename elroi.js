@@ -652,7 +652,8 @@
          * @return {Array} The array of each values to use for scales & axes
          */
         maxValues : function(dataValuesSet, seriesOptions, graph) {
-            var maxVals = [];
+            var maxVals = [],
+                scaleDistortion;
 
             // Get the max value for each series
             $(dataValuesSet).each(function(i) {
@@ -669,36 +670,74 @@
              * @return {Number} The scale to multiply against each of the max values to make some room
              */
             function distortMaxValuesBy() {
+                var totalPixelsNeeded = pixelsNeededForErrorMessages() + pixelsNeededForPointFlags()
+                        + pixelsNeededForX2Axis(),
+                    totalPixelsInGraph = graph.height - graph.padding.top - graph.padding.bottom;
 
-                var pixelsNeeded = 0;
-
-                // Error messaging
-                if (graph.options.errorMessage) {
-                    var $errorMsg = $('<div id="graph-error">' + graph.options.errorMessage + '</div>').addClass('alert box').appendTo(graph.$el.find('.paper'));
-                    pixelsNeeded += $errorMsg.outerHeight() + $errorMsg.position().top * 2;
-                    $errorMsg.remove();
+                function pixelsNeededForErrorMessages() {
+                    var pixelsNeeded = 0,
+                        $errorMsg;
+                    if (graph.options.errorMessage) {
+                        $errorMsg = $('<div id="graph-error">' + graph.options.errorMessage + '</div>')
+                            .addClass('alert box').appendTo(graph.$el.find('.paper'));
+                        pixelsNeeded = $errorMsg.outerHeight() + $errorMsg.position().top * 2;
+                        $errorMsg.remove();
+                    }
+                    return pixelsNeeded;
                 }
 
-                // Point flags
-                var hasPointFlags = elroi.fn.helpers.hasPointFlags(graph.allSeries);
-                if (hasPointFlags && graph.options.bars.flagPosition !== 'interior') {
-                    var $pointFlag = $('<div class="point-flag"><div class="flag-content">Test flag</div></div>').appendTo(graph.$el.find('.paper'));
-                    pixelsNeeded += $pointFlag.outerHeight();
-                    $pointFlag.remove();
+                function pixelsNeededForPointFlags() {
+                    var pixelsNeeded = 0,
+                        hasPointFlags = elroi.fn.helpers.hasPointFlags(graph.allSeries),
+                        $pointFlag;
+                    if (hasPointFlags && graph.options.bars.flagPosition !== 'interior') {
+                        $pointFlag = $('<div class="point-flag"><div class="flag-content">Test flag</div></div>')
+                            .appendTo(graph.$el.find('.paper'));
+                        pixelsNeeded = $pointFlag.outerHeight();
+                        $pointFlag.remove();
+                    }
+                    return pixelsNeeded;
                 }
 
-                // x-2 axis
-                if (graph.options.axes.x2.show) {
-                    var $x2 = $('<ul class="x-ticks x2"><li>test axis</li></ul>').appendTo(graph.$el);
-                    pixelsNeeded += $x2.find('li').outerHeight() + graph.labelLineHeight;
-                    $x2.remove();
+                /**
+                 * Adds each graph label to the DOM and discerns the maximum height (in pixels) required to avoid graph
+                 * overlap.  As the labels are inserted into a hidden container, this should be transparent to the user.
+                 * The labels will be permanently added to the graph later.
+                 *
+                 * @returns {number} height (in pixels) of the tallest label or 0 if graph.options.axes.x2.show is false
+                 *   or there are no graph.options.axes.x2.labels.
+                 */
+                function pixelsNeededForX2Axis() {
+                    var pixelsNeeded = 0, $x2;
+                    if (graph.options.axes.x2.show) {
+
+                        /* Create hidden container and add it to the graph. */
+                        $x2 = $('<ul>').addClass('x-ticks x2 visibility-hidden').appendTo(graph.$el);
+
+                        /* Add each label into our container($x2). */
+                        $.each(graph.options.axes.x2.labels, function(index, value) {
+                            var $li = $('<li>').width(graph.options.labelWidth).html(value).appendTo($x2);
+
+                            /* If the current label takes up more height, update pixelsNeeded */
+                            pixelsNeeded = Math.max(pixelsNeeded, $li.outerHeight());
+
+                            /* Remove the list item from the DOM */
+                            $li.remove();
+                        });
+
+                        /* Remove the hidden container from the DOM */
+                        $x2.remove();
+                    }
+
+                    /* If pixelsNeeded isn't 0 (the graph has an x2 axis with labels) add a small bit extra padding. */
+                    return (pixelsNeeded === 0) ? 0 : pixelsNeeded + graph.labelLineHeight / 2;
                 }
 
-                return 1 + pixelsNeeded/graph.height;
+                return totalPixelsInGraph / (totalPixelsInGraph - totalPixelsNeeded);
             }
 
             // Figure out how much we need to distort these by
-            var scaleDistortion = distortMaxValuesBy();
+            scaleDistortion = distortMaxValuesBy();
 
             maxVals = $.map(maxVals, function(val, i) {
                 // Distort the max values if necessary to make room; if the maxval of a series is 0, we need to set it to 1 so gridlines will show up
