@@ -424,6 +424,7 @@
                     break;
                 case ':':
                     formattedDate += timeSeparator;
+                    break;
                 default:
                     formattedDate += thisChar;
             }
