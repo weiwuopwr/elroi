@@ -342,13 +342,15 @@
             MONTH_NAMES_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
             MONTH_NAMES_LONG = ['January','Feburary','March','April','May','June','July','August','September','October','November','December'],
             MERIDIAN = ['am', 'pm'],
+            TIME_SEPARATOR = ':',
             date = new Date(value),
             dayNamesShort,
             dayNamesLong,
             monthNamesShort,
             monthNamesLong,
             merid,
-            formattedDate = "",
+            timeSeparator,
+            formattedDate = '',
             thisChar,
             isDoubled,
             i;
@@ -356,13 +358,14 @@
         if (!format) {
             return '';
         }
+
         options = options || {};
         dayNamesShort = options.dayNamesShort || DAY_NAMES_SHORT;
         dayNamesLong = options.dayNamesLong || DAY_NAMES_LONG;
         monthNamesShort = options.monthNamesShort || MONTH_NAMES_SHORT;
         monthNamesLong = options.monthNamesLong || MONTH_NAMES_LONG;
         merid = options.meridian || MERIDIAN;
-        timeSeparator = options.customTimeSeparator || ':';
+        timeSeparator = options.timeSeparator || TIME_SEPARATOR;
 
         for (i = 0; i < format.length; i++) {
             thisChar = format.charAt(i);
@@ -1819,9 +1822,9 @@
         function loadAnimation(ms) {
             wedgeEventsDisable();
             return graph.animateJQP(wedges, [
-                {radius: RADIUS, transform: [S11+CENTER_COORDINATES+'r'+ DEFAULT_ROTATION +','+CENTER_COORDINATES]},
-                ms || 1500,
-                'backOut'])
+                    {radius: RADIUS, transform: [S11+CENTER_COORDINATES+'r'+ DEFAULT_ROTATION +','+CENTER_COORDINATES]},
+                    ms || 1500,
+                    'backOut'])
                 .always(regenerateTransformedWedgePaths, wedgeEventsEnable);
         }
 
@@ -2543,7 +2546,7 @@
                             var toolTipContent = graph.$tooltip.find('.elroi-tooltip-content'),
                                 toolTipContainer = toolTipContent.find('.elroi-tooltip-container');
                             toolTipContent.html(tipContent);
-                            
+
                             if (toolTipContainer && toolTipContainer.width() > graph.options.tooltip.width) {
                                 graph.$tooltip.width(toolTipContainer.width() + 20);
                             }
