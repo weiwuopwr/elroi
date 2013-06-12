@@ -37,6 +37,8 @@
             flagOffset : 5,
             skipPointThreshhold : 18,
             precision: 0,
+            thousandsSeparator: ',',
+            decimalSeparator: '.',
             dynamicLeftPadding: false,
             grid : {
                 show: true,
@@ -1138,6 +1140,8 @@
                 .addClass(axis.id);
 
             var precision = graph.options.precision,
+                thousandsSeparator = graph.options.thousandsSeparator,
+                decimalSeparator = graph.options.decimalSeparator,
                 yLabels = getYLabels(maxVal, minVal, precision),
                 avalaibleArea = graph.height - graph.padding.top - graph.padding.bottom,
                 maxYLabelWidth = 0;
@@ -1151,7 +1155,7 @@
             }
 
             $(yLabels).each(function(i) {
-                var yLabel = commaFormat(yLabels[i], precision);
+                var yLabel = commaFormat(yLabels[i], precision, thousandsSeparator, decimalSeparator);
                 var li;
                 var y = graph.height -
                     i / (graph.options.grid.numYLabels - 1) * avalaibleArea -
@@ -1255,7 +1259,15 @@
     // visible for testing
     elroi.fn.helpers.containsDuplicateLabels = containsDuplicateLabels;
 
-    function commaFormat (num, precision) {
+    function commaFormat (num, precision, thousandsSeparator, decimalSeparator) {
+        var splitNum,
+            preDecimal,
+            postDecimal,
+            rgx = /(\d+)(\d{3})/;
+
+        thousandsSeparator = thousandsSeparator || ' ';
+        decimalSeparator = decimalSeparator || ' ';
+
         /* Don't show 0.00... ever */
         if (num === '0') {
             return '0';
@@ -1269,21 +1281,20 @@
         // stringify it
         num += '';
 
-        var preDecimal,
-            postDecimal,
-            splitNum = num.split('.'),
-            rgx = /(\d+)(\d{3})/;
+        splitNum = num.split('.');
 
         preDecimal = splitNum[0];
-        postDecimal = splitNum[1] ? '.' + splitNum[1] : '';
+        postDecimal = splitNum[1] ? decimalSeparator + splitNum[1] : '';
 
         while (rgx.test(preDecimal)) {
-            preDecimal = preDecimal.replace(rgx, '$1' + ',' + '$2');
+            preDecimal = preDecimal.replace(rgx, '$1' + thousandsSeparator + '$2');
         }
 
         return preDecimal + postDecimal;
-
     }
+
+    // visible for testing
+    elroi.fn.helpers.commaFormat = commaFormat;
 
     elroi.fn.grid = grid;
 
@@ -2028,6 +2039,7 @@
                     .attr(pieHoleAttributes).hide();
             }
 
+            graph.$el.addClass('piechart');
             graph.$el.addClass('piechart');
             messageContainer = $('<div></div>').addClass('text-container').prependTo(graph.$el);
 

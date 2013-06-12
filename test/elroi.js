@@ -212,7 +212,30 @@
                 parseResult('1 Mar 2011 &ndash; 11 Mar 2012'), 'd M yy format, different year, skip repeated year ignored');
     });
 
-    Q.test('elroi date range determiner', function(){
+    Q.test('elroi decimal/thousands separator number formatting', function () {
+        //No formatting required positive/zero/negative
+        Q.equal(elroi.fn.helpers.commaFormat(1, 0, ',', '.'), '1', 'No formatting required 1');
+        Q.equal(elroi.fn.helpers.commaFormat(0, 0, ',', '.'), '0', 'No formatting required 0');
+        Q.equal(elroi.fn.helpers.commaFormat(-1, 0, ',', '.'), '-1', 'No formatting required -1');
+
+        //Precision
+        Q.raises(function() { elroi.fn.helpers.commaFormat(1, -1, ',', '.'); }, 'Invalid negative precision throws error');
+        Q.equal(elroi.fn.helpers.commaFormat(1, null, ',', '.'), '1', 'Null treated as 0 precision');
+        Q.equal(elroi.fn.helpers.commaFormat(1, 1, ',', '.'), '1.0', 'Provides proper precision (case 1)');
+        Q.equal(elroi.fn.helpers.commaFormat(1.2345, 3, ',', '.'), '1.234', 'Provides proper precision (case 2)');
+
+        //Thousands Separator
+        Q.equal(elroi.fn.helpers.commaFormat(1000, 0, null, '.'), '1 000', 'Null treated as blank space separator');
+        Q.equal(elroi.fn.helpers.commaFormat(1000, 0, ',', '.'), '1,000', 'Provides proper thousands separator (case 1; comma separator)');
+        Q.equal(elroi.fn.helpers.commaFormat(1000000, 0, ' ', '.'), '1 000 000', 'Provides proper thousands separator (case 2; space separator)');
+
+        //Decimal Separator
+        Q.equal(elroi.fn.helpers.commaFormat(1.2345, 4, ',', null), '1 2345', 'Null treated as blank space separator');
+        Q.equal(elroi.fn.helpers.commaFormat(1.2345, 4, ',', ','), '1,2345', 'Provides proper decimal separator (case 1; comma separator)');
+        Q.equal(elroi.fn.helpers.commaFormat(1.2345, 4, ',', '.'), '1.2345', 'Provides proper decimal separator (case 2; decimal separator)');
+    });
+
+    Q.test('elroi date range determiner', function() {
        var subDaily = 
         [ 
             {
