@@ -299,352 +299,353 @@
      */
      
          
-         Q.test('elroi visual test 1 - line graph', function() {
-             var $graph = $('<div/>')
-                             .css({width: 900, height: 300})
-                             .appendTo($('#test'));
-         
-         
-             var e = elroi(
-                 $graph,
-                 [
-                         {
-                             series:
+     Q.test('elroi visual test 1 - line graph', function() {
+         var $graph = $('<div/>')
+                         .css({width: 900, height: 300})
+                         .appendTo($('#test'));
+
+
+         var e = elroi(
+             $graph,
+             [
+                     {
+                         series:
+                         [
                              [
-                                 [
-                                     {
-                                         value: 683,
-                                         clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/4?meterType=ELEC",
-                                         pointFlag: false,
-                                         endDate: "2009/05/01 03:59:59"
-                                     },
-                                     {value: 689,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/5?meterType=ELEC",pointFlag: false,endDate: "2009/06/01 03:59:59"},
-                                     {value: 708,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/6?meterType=ELEC",pointFlag: false,endDate: "2009/07/01 03:59:59"},
-                                     {value: 680,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/7?meterType=ELEC",pointFlag: false,endDate: "2009/08/01 03:59:59"},
-                                     {value: 690,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/8?meterType=ELEC",pointFlag: false,endDate: "2009/09/01 03:59:59"},
-                                     {value: 682,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/9?meterType=ELEC",pointFlag: false,endDate: "2009/10/01 03:59:59"},
-                                     {value: 685,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/10?meterType=ELEC",pointFlag: false,endDate: "2009/11/01 03:59:59"},
-                                     {value: 707,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/11?meterType=ELEC",pointFlag: false,endDate: "2009/12/01 03:59:59"},
-                                     {value: 702,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/12?meterType=ELEC",pointFlag: false,endDate: "2010/01/01 03:59:59"},
-                                     {value: 653,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/1?meterType=ELEC",pointFlag: false,endDate: "2010/02/01 03:59:59"},
-                                     {value: 748,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/2?meterType=ELEC",pointFlag: false,endDate: "2010/03/01 03:59:59"},
-                                     {value: 748,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/3?meterType=ELEC",pointFlag: false,endDate: "2010/04/01 03:59:59"}
-                                 ]
-                             ],
-                             options:
-                             {
-                                 type:  "line"
-                             }
+                                 {
+                                     value: 683,
+                                     clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/4?meterType=ELEC",
+                                     pointFlag: false,
+                                     endDate: "2009/05/01 03:59:59"
+                                 },
+                                 {value: 689,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/5?meterType=ELEC",pointFlag: false,endDate: "2009/06/01 03:59:59"},
+                                 {value: 708,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/6?meterType=ELEC",pointFlag: false,endDate: "2009/07/01 03:59:59"},
+                                 {value: 680,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/7?meterType=ELEC",pointFlag: false,endDate: "2009/08/01 03:59:59"},
+                                 {value: 690,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/8?meterType=ELEC",pointFlag: false,endDate: "2009/09/01 03:59:59"},
+                                 {value: 682,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/9?meterType=ELEC",pointFlag: false,endDate: "2009/10/01 03:59:59"},
+                                 {value: 685,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/10?meterType=ELEC",pointFlag: false,endDate: "2009/11/01 03:59:59"},
+                                 {value: 707,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/11?meterType=ELEC",pointFlag: false,endDate: "2009/12/01 03:59:59"},
+                                 {value: 702,clickTarget: "/ei/app/myEnergyUse/usage/bill/2009/12?meterType=ELEC",pointFlag: false,endDate: "2010/01/01 03:59:59"},
+                                 {value: 653,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/1?meterType=ELEC",pointFlag: false,endDate: "2010/02/01 03:59:59"},
+                                 {value: 748,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/2?meterType=ELEC",pointFlag: false,endDate: "2010/03/01 03:59:59"},
+                                 {value: 748,clickTarget: "/ei/app/myEnergyUse/usage/bill/2010/3?meterType=ELEC",pointFlag: false,endDate: "2010/04/01 03:59:59"}
+                             ]
+                         ],
+                         options:
+                         {
+                             type:  "line"
                          }
-                 ],
+                     }
+             ],
+             {
+                 tooltip:
                  {
-                     tooltip:
-                     {
-                         width: 180
-                     },
-                     colors:
-                     [
-                         "#33bbcc",
-                         "#888888",
-                         "#99cc33"
-                     ],
-                     axes:
-                     {
-                         x1: {},
-                         y1:
-                         {
-                             unit: "kWh"
-                         }
-                     },
-                     messages:
-                     {
-                         rateCallouts:
-                         {
-                             REBATE: "You earned a {0} rebate.",
-                             PEAK_DAY: "Peak Day"
-                         },
-                         usage:
-                         {
-                             you:  "You",
-                             effNeighbors:  "Efficient",
-                             allNeighbors:  "All neighbors"
-                         },
-                         drilldowns:
-                         {
-                             DAY:  "View each day",
-                             HOUR: "View each hour"
-                         },
-                         error:
-                         {
-                             noEnergyData:  "Data not available.",
-                             noNeighbor:  "Neighbor comparisons are not yet available in this view. <a href=\"/ei/app/myEnergyUse/neighbors/year/\">See your comparison for the year &raquo;</a>",
-                             noCostData: "Your costs are not yet available in this view. <a href=\"/ei/app/myEnergyUse/rates/year/\">See your costs for the year &raquo;</a>",
-                             noData: "Data not available.",
-                             noAmiBill: "This data is not available because your Smart Meter was not installed yet.",
-                             noAmiDay: "This data is not available because your Smart Meter was not installed yet.<br /><a href=\"/ei/app/myEnergyUse/usage/day/2009/05/01\">See your first available day &raquo;</a>",
-                             insufficientData: "We&#39;re still collecting the rest of your data for this day. Check back tomorrow."
-                         },
-                         units:
-                         {
-                             KWH: "kWh",
-                             THERM: "therms"
-                         },
-                         axis:
-                         {
-                             dupeMonth: "<p><strong>About your billing cycle</strong></p><p>You had multiple bills during the same month. Each bill covers different days of the month. Move your mouse over the graph to see the date range.</p>"
-                         }
-                     },
-                     dates: { format: "M"},
-                     errorMessage: false
+                     width: 180
                  },
+                 colors:
                  [
+                     "#33bbcc",
+                     "#888888",
+                     "#99cc33"
+                 ],
+                 axes:
+                 {
+                     x1: {},
+                     y1:
                      {
-                         dateRange:  "Apr 1 &ndash; Apr 30",
-                         you: 683,
-                         unit:  "kWh",
-                         drillLink:  "/ei/app/myEnergyUse/usage/bill/2009/4?meterType=ELEC",
-                         drillMessage: "View each day"
+                         unit: "kWh"
+                     }
+                 },
+                 messages:
+                 {
+                     rateCallouts:
+                     {
+                         REBATE: "You earned a {0} rebate.",
+                         PEAK_DAY: "Peak Day"
                      },
-                     {dateRange: "May 1 &ndash; May 31",you: 689,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/5?meterType=ELEC",drillMessage: "View each day"},
-                     {dateRange: "Jun 1 &ndash; Jun 30",you: 708,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/6?meterType=ELEC",drillMessage: "View each day"},
-                     {dateRange: "Jul 1 &ndash; Jul 31",you: 680,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/7?meterType=ELEC",drillMessage: "View each day"},
-                     {dateRange: "Aug 1 &ndash; Aug 31",you: 690,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/8?meterType=ELEC",drillMessage: "View each day"},
-                     {dateRange: "Sep 1 &ndash; Sep 30",you: 682,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/9?meterType=ELEC",drillMessage: "View each day"},
-                     {dateRange: "Oct 1 &ndash; Oct 31",you: 685,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/10?meterType=ELEC",drillMessage: "View each day"},
-                     {dateRange: "Nov 1 &ndash; Nov 30",you: 707,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/11?meterType=ELEC",drillMessage: "View each day"},
-                     {dateRange: "Dec 1 &ndash; Dec 31",you: 702,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/12?meterType=ELEC",drillMessage: "View each day"},
-                     {dateRange: "Jan 1 &ndash; Jan 31",you: 653,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2010/1?meterType=ELEC",drillMessage: "View each day"},
-                     {dateRange: "Feb 1 &ndash; Feb 28",you: 748,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2010/2?meterType=ELEC",drillMessage: "View each day"},
-                     {dateRange: "Mar 1 &ndash; Mar 31",you: 748,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2010/3?meterType=ELEC",drillMessage: "View each day"}
-                 ]
-             );
-         
-         });
-         
-         Q.test('elroi visual test 2 - no animations', function() {
-              var $lineGraph = $('<div/>')
-                  .css({width: 900, height: 300})
-                  .appendTo($('#test')),
-              $stackedBarGraph = $('<div/>')
-                   .css({width: 900, height: 300})
-                   .appendTo($('#test')),
-              $barGraph = $('<div/>')
-                  .css({width: 900, height: 300})
-                  .appendTo($('#test')),
-              $easyLineGraph = $('<div/>')
-                        .css({width: 900, height: 300})
-                        .appendTo($('#test')),
+                     usage:
+                     {
+                         you:  "You",
+                         effNeighbors:  "Efficient",
+                         allNeighbors:  "All neighbors"
+                     },
+                     drilldowns:
+                     {
+                         DAY:  "View each day",
+                         HOUR: "View each hour"
+                     },
+                     error:
+                     {
+                         noEnergyData:  "Data not available.",
+                         noNeighbor:  "Neighbor comparisons are not yet available in this view. <a href=\"/ei/app/myEnergyUse/neighbors/year/\">See your comparison for the year &raquo;</a>",
+                         noCostData: "Your costs are not yet available in this view. <a href=\"/ei/app/myEnergyUse/rates/year/\">See your costs for the year &raquo;</a>",
+                         noData: "Data not available.",
+                         noAmiBill: "This data is not available because your Smart Meter was not installed yet.",
+                         noAmiDay: "This data is not available because your Smart Meter was not installed yet.<br /><a href=\"/ei/app/myEnergyUse/usage/day/2009/05/01\">See your first available day &raquo;</a>",
+                         insufficientData: "We&#39;re still collecting the rest of your data for this day. Check back tomorrow."
+                     },
+                     units:
+                     {
+                         KWH: "kWh",
+                         THERM: "therms"
+                     },
+                     axis:
+                     {
+                         dupeMonth: "<p><strong>About your billing cycle</strong></p><p>You had multiple bills during the same month. Each bill covers different days of the month. Move your mouse over the graph to see the date range.</p>"
+                     }
+                 },
+                 dates: { format: "M"},
+                 errorMessage: false
+             },
+             [
+                 {
+                     dateRange:  "Apr 1 &ndash; Apr 30",
+                     you: 683,
+                     unit:  "kWh",
+                     drillLink:  "/ei/app/myEnergyUse/usage/bill/2009/4?meterType=ELEC",
+                     drillMessage: "View each day"
+                 },
+                 {dateRange: "May 1 &ndash; May 31",you: 689,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/5?meterType=ELEC",drillMessage: "View each day"},
+                 {dateRange: "Jun 1 &ndash; Jun 30",you: 708,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/6?meterType=ELEC",drillMessage: "View each day"},
+                 {dateRange: "Jul 1 &ndash; Jul 31",you: 680,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/7?meterType=ELEC",drillMessage: "View each day"},
+                 {dateRange: "Aug 1 &ndash; Aug 31",you: 690,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/8?meterType=ELEC",drillMessage: "View each day"},
+                 {dateRange: "Sep 1 &ndash; Sep 30",you: 682,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/9?meterType=ELEC",drillMessage: "View each day"},
+                 {dateRange: "Oct 1 &ndash; Oct 31",you: 685,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/10?meterType=ELEC",drillMessage: "View each day"},
+                 {dateRange: "Nov 1 &ndash; Nov 30",you: 707,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/11?meterType=ELEC",drillMessage: "View each day"},
+                 {dateRange: "Dec 1 &ndash; Dec 31",you: 702,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2009/12?meterType=ELEC",drillMessage: "View each day"},
+                 {dateRange: "Jan 1 &ndash; Jan 31",you: 653,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2010/1?meterType=ELEC",drillMessage: "View each day"},
+                 {dateRange: "Feb 1 &ndash; Feb 28",you: 748,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2010/2?meterType=ELEC",drillMessage: "View each day"},
+                 {dateRange: "Mar 1 &ndash; Mar 31",you: 748,unit: "kWh",drillLink: "/ei/app/myEnergyUse/usage/bill/2010/3?meterType=ELEC",drillMessage: "View each day"}
+             ]
+         );
 
-              $singleSeriesLineGraph = $('<div/>')
-                            .css({width: 900, height: 300})
-                            .appendTo($('#test')),
-              $singleSeriesBarGraph = $('<div/>')
-                  .css({width: 900, height: 300})
-                  .appendTo($('#test')),
-              $germanDateLabels = $('<div/>')
-                  .css({width: 900, height: 300})
-                  .appendTo($('#test')),
-                                     
-               testSeriesData = 
-                            [
-                                [
-                                    {value: 683, endDate: "2009/05/01 03:59:59"},
-                                    {value: 689, endDate: "2009/06/01 03:59:59"},
-                                    {value: 708, endDate: "2009/07/01 03:59:59"},
-                                    {value: 680, endDate: "2009/08/01 03:59:59"},
-                                    {value: 690, endDate: "2009/09/01 03:59:59"},
-                                    {value: 682, endDate: "2009/10/01 03:59:59"},
-                                    {value: 685, endDate: "2009/11/01 03:59:59"},
-                                    {value: 707, endDate: "2009/12/01 04:59:59"},
-                                    {value: 702, endDate: "2010/01/01 04:59:59"},
-                                    {value: 653, endDate: "2010/02/01 04:59:59"},
-                                    {value: 748, endDate: "2010/03/01 04:59:59"},
-                                    {value: 748, endDate: "2010/04/01 03:59:59"}
-                                ],
-                                [
-                                    {value: 383, endDate: "2009/05/01 03:59:59"},
-                                    {value: 389, endDate: "2009/06/01 03:59:59"},
-                                    {value: 308, endDate: "2009/07/01 03:59:59"},
-                                    {value: 380, endDate: "2009/08/01 03:59:59"},
-                                    {value: 390, endDate: "2009/09/01 03:59:59"},
-                                    {value: 382, endDate: "2009/10/01 03:59:59"},
-                                    {value: 285, endDate: "2009/11/01 03:59:59"},
-                                    {value: 407, endDate: "2009/12/01 04:59:59"},
-                                    {value: 502, endDate: "2010/01/01 04:59:59"},
-                                    {value: 353, endDate: "2010/02/01 04:59:59"},
-                                    {value: 448, endDate: "2010/03/01 04:59:59"},
-                                    {value: 448, endDate: "2010/04/01 03:59:59"}
-                                ]
-                            ];
-            var deDayNamesShort = ['So','Mo','Di','Mi','Do','Fr','Sa'],
-                deDayNamesLong = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
-                deMonthNamesShort = ['Jan','Feb','März','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-         
-             var lg = elroi(
-                 $lineGraph,
-                 [ { series: testSeriesData, options : { type: 'line'} }],
-                 { animation: false }
-             ),
-             sbg = elroi(
-                  $stackedBarGraph,
-                  [ { series: testSeriesData, options : { type: 'stackedBar'} }],
-                  {  colors: ['#000', '#090'] }
-              ),
-              bg = elroi(
-                  $barGraph,
-                  [ { series: testSeriesData, options : { type: 'bar'} }],
-                  { animation: false }
-              );
-              elg = elroi($easyLineGraph, [1,3,7,8,9,2,10]);
-              sslg = elroi($singleSeriesLineGraph, 
-                  [{value: 1, endDate: "2009/05/01 03:59:59"}, 
-                        {value: 2, date: "2009/06/01 03:59:59"}, 
-                        {value: 3, date: "2009/07/01 03:59:59"}, 
-                        {value: 4, date: "2009/08/01 03:59:59"}, 
-                        {value: 5, date: "2009/09/01 03:59:59"}, 
-                        {value: 6, date: "2009/10/01 03:59:59"}, 
-                        {value: 7, date: "2009/11/01 03:59:59"}]
-              );
-              ssbg = elroi($singleSeriesBarGraph, { series: [ {value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}], options: {type: 'bar'}});
-              germLabLG = elroi(
-                  $germanDateLabels,
-                  [ { series: testSeriesData, options : { type: 'line'} }], 
-                  { 
-                      dates: {
-                        format: "DD M",
-                        dayNamesShort: deDayNamesShort,
-                        dayNamesLong: deDayNamesLong,
-                        monthNamesShort: deMonthNamesShort
-                      }
-                  }
-              ); 
-                    
-         });
-         
-         Q.test('negative value graphs', function(){
-             testSeriesData = 
-                             [
-                                 [
-                                     {value: 683, endDate: "2009/05/01 03:59:59"},
-                                     {value: 689, endDate: "2009/06/01 03:59:59"},
-                                     {value: 708, endDate: "2009/07/01 03:59:59"},
-                                     {value: 680, endDate: "2009/08/01 03:59:59"},
-                                     {value: -690, endDate: "2009/09/01 03:59:59"},
-                                     {value: 682, endDate: "2009/10/01 03:59:59"},
-                                     {value: 685, endDate: "2009/11/01 03:59:59"},
-                                     {value: 707, endDate: "2009/12/01 04:59:59"},
-                                     {value: 702, endDate: "2010/01/01 04:59:59"},
-                                     {value: 653, endDate: "2010/02/01 04:59:59"},
-                                     {value: 748, endDate: "2010/03/01 04:59:59"},
-                                     {value: 748, endDate: "2010/04/01 03:59:59"}
-                                 ],
-                                 [
-                                     {value: 383, endDate: "2009/05/01 03:59:59"},
-                                     {value: 389, endDate: "2009/06/01 03:59:59"},
-                                     {value: 308, endDate: "2009/07/01 03:59:59"},
-                                     {value: 380, endDate: "2009/08/01 03:59:59"},
-                                     {value: 390, endDate: "2009/09/01 03:59:59"},
-                                     {value: 382, endDate: "2009/10/01 03:59:59"},
-                                     {value: 285, endDate: "2009/11/01 03:59:59"},
-                                     {value: 407, endDate: "2009/12/01 04:59:59"},
-                                     {value: 502, endDate: "2010/01/01 04:59:59"},
-                                     {value: 353, endDate: "2010/02/01 04:59:59"},
-                                     {value: 448, endDate: "2010/03/01 04:59:59"},
-                                     {value: 448, endDate: "2010/04/01 03:59:59"}
-                                 ]
-                             ];
-                             
-             testSeriesData2 = 
-                              [
-                                  [
-                                      {value: 2, endDate: "2009/05/01 03:59:59"},
-                                      {value: 3, endDate: "2009/06/01 03:59:59"},
-                                      {value: 4, endDate: "2009/07/01 03:59:59"},
-                                      {value: 5, endDate: "2009/08/01 03:59:59"},
-                                      {value: -5, endDate: "2009/09/01 03:59:59"},
-                                      {value: 3, endDate: "2009/10/01 03:59:59"}
-                                  ],
-                                  [
-                                      {value: 1, endDate: "2009/05/01 03:59:59"},
-                                      {value: 2, endDate: "2009/06/01 03:59:59"},
-                                      {value: 3, endDate: "2009/07/01 03:59:59"},
-                                      {value: 4, endDate: "2009/08/01 03:59:59"},
-                                      {value: -5, endDate: "2009/09/01 03:59:59"},
-                                      {value: 6, endDate: "2009/10/01 03:59:59"}
-                                  ]
-                              ];
+     });
 
-            var $negativeValuesLG = $('<div/>')
-                  .css({width: 900, height: 300})
-                  .appendTo($('#test'));
-
-            var $negativeValuesBG = $('<div/>')
-                   .css({width: 900, height: 300})
-                   .appendTo($('#test'));
-            var $negativeValuesSBG = $('<div/>')
-                .css({width: 900, height: 300})
-                .appendTo($('#test'));
-            var $negativeValuesSBG2 = $('<div/>')
-                .css({width: 900, height: 300})
-                .appendTo($('#test'));
-            var negsLG = elroi(
-                $negativeValuesLG,
-                [ { series: testSeriesData, options : { type: 'line', minYValue: 'auto'} }],
-                { animation: false }
-            );
-            var negsBG = elroi(
-               $negativeValuesBG,
-               [ { series: testSeriesData, options : { type: 'bar', minYValue: 'auto'} }],
-               { animation: true }
-            );
-            var negsSBG = elroi(
-               $negativeValuesSBG,
-               [ { series: testSeriesData, options : { type: 'stackedBar', minYValue: 'zeroOrLess'} }],
-               { animation: true }
-            );
-            var negsSBG2 = elroi(
-               $negativeValuesSBG2,
-               [ { series: testSeriesData2, options : { type: 'stackedBar', minYValue: 'zeroOrLess'} }],
-               { animation: true }
-            );
-         });
-         Q.test('negative value tooltips', function(){
-             testSeriesData = 
-                             [
-                                 [
-                                     {value: 383, endDate: "2009/05/01 03:59:59"},
-                                     {value: 389, endDate: "2009/06/01 03:59:59"},
-                                     {value: 308, endDate: "2009/07/01 03:59:59"},
-                                     {value: 380, endDate: "2009/08/01 03:59:59"},
-                                     {value: -390, endDate: "2009/09/01 03:59:59"},
-                                     {value: 382, endDate: "2009/10/01 03:59:59"},
-                                     {value: 285, endDate: "2009/11/01 03:59:59"},
-                                     {value: 407, endDate: "2009/12/01 04:59:59"},
-                                     {value: 502, endDate: "2010/01/01 04:59:59"},
-                                     {value: 353, endDate: "2010/02/01 04:59:59"},
-                                     {value: 448, endDate: "2010/03/01 04:59:59"},
-                                     {value: 448, endDate: "2010/04/01 03:59:59"}
-                                 ]
-                             ];
-                             
-                              var $negativeValuesTT = $('<div/>')
-                                     .css({width: 900, height: 300})
-                                     .appendTo($('#test'));
-             var negs = elroi(
-                  $negativeValuesTT,
-                  [ { series: testSeriesData, options : { type: 'line', minYValue: 'auto'} }],
-                  { animation: false }
-              );
-         })
-         
-         Q.test('data less graphs', function() {
-             
-           $nullSeriesGraph = $('<div/>')
+     Q.test('elroi visual test 2 - no animations', function() {
+          var $lineGraph = $('<div/>')
+              .css({width: 900, height: 300})
+              .appendTo($('#test')),
+          $stackedBarGraph = $('<div/>')
                .css({width: 900, height: 300})
                .appendTo($('#test')),
-           
-           nullSeries = elroi($nullSeriesGraph, [], {errorMessage: '<p>no data at all!</p>'});
-            });
+          $barGraph = $('<div/>')
+              .css({width: 900, height: 300})
+              .appendTo($('#test')),
+          $easyLineGraph = $('<div/>')
+                    .css({width: 900, height: 300})
+                    .appendTo($('#test')),
+
+          $singleSeriesLineGraph = $('<div/>')
+                        .css({width: 900, height: 300})
+                        .appendTo($('#test')),
+          $singleSeriesBarGraph = $('<div/>')
+              .css({width: 900, height: 300})
+              .appendTo($('#test')),
+          $germanDateLabels = $('<div/>')
+              .css({width: 900, height: 300})
+              .appendTo($('#test')),
+
+           testSeriesData =
+                        [
+                            [
+                                {value: 683, endDate: "2009/05/01 03:59:59"},
+                                {value: 689, endDate: "2009/06/01 03:59:59"},
+                                {value: 708, endDate: "2009/07/01 03:59:59"},
+                                {value: 680, endDate: "2009/08/01 03:59:59"},
+                                {value: 690, endDate: "2009/09/01 03:59:59"},
+                                {value: 682, endDate: "2009/10/01 03:59:59"},
+                                {value: 685, endDate: "2009/11/01 03:59:59"},
+                                {value: 707, endDate: "2009/12/01 04:59:59"},
+                                {value: 702, endDate: "2010/01/01 04:59:59"},
+                                {value: 653, endDate: "2010/02/01 04:59:59"},
+                                {value: 748, endDate: "2010/03/01 04:59:59"},
+                                {value: 748, endDate: "2010/04/01 03:59:59"}
+                            ],
+                            [
+                                {value: 383, endDate: "2009/05/01 03:59:59"},
+                                {value: 389, endDate: "2009/06/01 03:59:59"},
+                                {value: 308, endDate: "2009/07/01 03:59:59"},
+                                {value: 380, endDate: "2009/08/01 03:59:59"},
+                                {value: 390, endDate: "2009/09/01 03:59:59"},
+                                {value: 382, endDate: "2009/10/01 03:59:59"},
+                                {value: 285, endDate: "2009/11/01 03:59:59"},
+                                {value: 407, endDate: "2009/12/01 04:59:59"},
+                                {value: 502, endDate: "2010/01/01 04:59:59"},
+                                {value: 353, endDate: "2010/02/01 04:59:59"},
+                                {value: 448, endDate: "2010/03/01 04:59:59"},
+                                {value: 448, endDate: "2010/04/01 03:59:59"}
+                            ]
+                        ];
+        var deDayNamesShort = ['So','Mo','Di','Mi','Do','Fr','Sa'],
+            deDayNamesLong = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
+            deMonthNamesShort = ['Jan','Feb','März','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+
+         var lg = elroi(
+             $lineGraph,
+             [ { series: testSeriesData, options : { type: 'line'} }],
+             { animation: false }
+         ),
+         sbg = elroi(
+              $stackedBarGraph,
+              [ { series: testSeriesData, options : { type: 'stackedBar'} }],
+              {  colors: ['#000', '#090'] }
+          ),
+          bg = elroi(
+              $barGraph,
+              [ { series: testSeriesData, options : { type: 'bar'} }],
+              { animation: false }
+          );
+          elg = elroi($easyLineGraph, [1,3,7,8,9,2,10]);
+          sslg = elroi($singleSeriesLineGraph,
+              [{value: 1, endDate: "2009/05/01 03:59:59"},
+                    {value: 2, date: "2009/06/01 03:59:59"},
+                    {value: 3, date: "2009/07/01 03:59:59"},
+                    {value: 4, date: "2009/08/01 03:59:59"},
+                    {value: 5, date: "2009/09/01 03:59:59"},
+                    {value: 6, date: "2009/10/01 03:59:59"},
+                    {value: 7, date: "2009/11/01 03:59:59"}]
+          );
+          ssbg = elroi($singleSeriesBarGraph, { series: [ {value: 1}, {value: 2}, {value: 3}, {value: 4}, {value: 5}, {value: 6}, {value: 7}], options: {type: 'bar'}});
+          germLabLG = elroi(
+              $germanDateLabels,
+              [ { series: testSeriesData, options : { type: 'line'} }],
+              {
+                  dates: {
+                    format: "DD M",
+                    dayNamesShort: deDayNamesShort,
+                    dayNamesLong: deDayNamesLong,
+                    monthNamesShort: deMonthNamesShort
+                  }
+              }
+          );
+
+     });
+
+     Q.test('negative value graphs', function(){
+         testSeriesData =
+                         [
+                             [
+                                 {value: 683, endDate: "2009/05/01 03:59:59"},
+                                 {value: 689, endDate: "2009/06/01 03:59:59"},
+                                 {value: 708, endDate: "2009/07/01 03:59:59"},
+                                 {value: 680, endDate: "2009/08/01 03:59:59"},
+                                 {value: -690, endDate: "2009/09/01 03:59:59"},
+                                 {value: 682, endDate: "2009/10/01 03:59:59"},
+                                 {value: 685, endDate: "2009/11/01 03:59:59"},
+                                 {value: 707, endDate: "2009/12/01 04:59:59"},
+                                 {value: 702, endDate: "2010/01/01 04:59:59"},
+                                 {value: 653, endDate: "2010/02/01 04:59:59"},
+                                 {value: 748, endDate: "2010/03/01 04:59:59"},
+                                 {value: 748, endDate: "2010/04/01 03:59:59"}
+                             ],
+                             [
+                                 {value: 383, endDate: "2009/05/01 03:59:59"},
+                                 {value: 389, endDate: "2009/06/01 03:59:59"},
+                                 {value: 308, endDate: "2009/07/01 03:59:59"},
+                                 {value: 380, endDate: "2009/08/01 03:59:59"},
+                                 {value: 390, endDate: "2009/09/01 03:59:59"},
+                                 {value: 382, endDate: "2009/10/01 03:59:59"},
+                                 {value: 285, endDate: "2009/11/01 03:59:59"},
+                                 {value: 407, endDate: "2009/12/01 04:59:59"},
+                                 {value: 502, endDate: "2010/01/01 04:59:59"},
+                                 {value: 353, endDate: "2010/02/01 04:59:59"},
+                                 {value: 448, endDate: "2010/03/01 04:59:59"},
+                                 {value: 448, endDate: "2010/04/01 03:59:59"}
+                             ]
+                         ];
+
+         testSeriesData2 =
+                          [
+                              [
+                                  {value: 2, endDate: "2009/05/01 03:59:59"},
+                                  {value: 3, endDate: "2009/06/01 03:59:59"},
+                                  {value: 4, endDate: "2009/07/01 03:59:59"},
+                                  {value: 5, endDate: "2009/08/01 03:59:59"},
+                                  {value: -5, endDate: "2009/09/01 03:59:59"},
+                                  {value: 3, endDate: "2009/10/01 03:59:59"}
+                              ],
+                              [
+                                  {value: 1, endDate: "2009/05/01 03:59:59"},
+                                  {value: 2, endDate: "2009/06/01 03:59:59"},
+                                  {value: 3, endDate: "2009/07/01 03:59:59"},
+                                  {value: 4, endDate: "2009/08/01 03:59:59"},
+                                  {value: -5, endDate: "2009/09/01 03:59:59"},
+                                  {value: 6, endDate: "2009/10/01 03:59:59"}
+                              ]
+                          ];
+
+        var $negativeValuesLG = $('<div/>')
+              .css({width: 900, height: 300})
+              .appendTo($('#test'));
+
+        var $negativeValuesBG = $('<div/>')
+               .css({width: 900, height: 300})
+               .appendTo($('#test'));
+        var $negativeValuesSBG = $('<div/>')
+            .css({width: 900, height: 300})
+            .appendTo($('#test'));
+        var $negativeValuesSBG2 = $('<div/>')
+            .css({width: 900, height: 300})
+            .appendTo($('#test'));
+        var negsLG = elroi(
+            $negativeValuesLG,
+            [ { series: testSeriesData, options : { type: 'line', minYValue: 'auto'} }],
+            { animation: false }
+        );
+        var negsBG = elroi(
+           $negativeValuesBG,
+           [ { series: testSeriesData, options : { type: 'bar', minYValue: 'auto'} }],
+           { animation: true }
+        );
+        var negsSBG = elroi(
+           $negativeValuesSBG,
+           [ { series: testSeriesData, options : { type: 'stackedBar', minYValue: 'zeroOrLess'} }],
+           { animation: true }
+        );
+        var negsSBG2 = elroi(
+           $negativeValuesSBG2,
+           [ { series: testSeriesData2, options : { type: 'stackedBar', minYValue: 'zeroOrLess'} }],
+           { animation: true }
+        );
+     });
+
+     Q.test('negative value tooltips', function(){
+         testSeriesData =
+                         [
+                             [
+                                 {value: 383, endDate: "2009/05/01 03:59:59"},
+                                 {value: 389, endDate: "2009/06/01 03:59:59"},
+                                 {value: 308, endDate: "2009/07/01 03:59:59"},
+                                 {value: 380, endDate: "2009/08/01 03:59:59"},
+                                 {value: -390, endDate: "2009/09/01 03:59:59"},
+                                 {value: 382, endDate: "2009/10/01 03:59:59"},
+                                 {value: 285, endDate: "2009/11/01 03:59:59"},
+                                 {value: 407, endDate: "2009/12/01 04:59:59"},
+                                 {value: 502, endDate: "2010/01/01 04:59:59"},
+                                 {value: 353, endDate: "2010/02/01 04:59:59"},
+                                 {value: 448, endDate: "2010/03/01 04:59:59"},
+                                 {value: 448, endDate: "2010/04/01 03:59:59"}
+                             ]
+                         ];
+
+                          var $negativeValuesTT = $('<div/>')
+                                 .css({width: 900, height: 300})
+                                 .appendTo($('#test'));
+         var negs = elroi(
+              $negativeValuesTT,
+              [ { series: testSeriesData, options : { type: 'line', minYValue: 'auto'} }],
+              { animation: false }
+          );
+     });
+
+     Q.test('data less graphs', function() {
+
+       $nullSeriesGraph = $('<div/>')
+           .css({width: 900, height: 300})
+           .appendTo($('#test')),
+
+       nullSeries = elroi($nullSeriesGraph, [], {errorMessage: '<p>no data at all!</p>'});
+     });
 
     Q.test('reports duplicates when they exist', function() {
         Q.equal(elroi.fn.helpers.containsDuplicateLabels(["-1", "-1", "0", "1"]), true);

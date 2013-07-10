@@ -223,6 +223,21 @@
             return element;
         }
 
+        /**
+         * Creates an error box containing the provided html and injects it into the graph.  The error box has the
+         * classes elroi-error, alert, and box.  These classes can be used to provide appropriate styling.
+         *
+         * @param html {String} HTML content to show in the error box
+         * @param additionalClasses {String} additional CSS classes to add to the error message box beyond the default
+         * @returns {Object} jQuery element for the error box that has been injected into the DOM
+         */
+        function injectErrorMessage(html, additionalClasses) {
+            return $('<div/>', {
+                html: html,
+                'class': 'elroi-error alert box'
+            }).addClass(additionalClasses).prependTo($el.find('.paper'));
+        }
+
         var graph = elroi.fn.init({
             padding : options.padding,
             labelLineHeight: 12,
@@ -236,7 +251,8 @@
             isMouseInPath: isMouseInPath,
             isMouseInElement: isMouseInElement,
             animateJQP: animateJQP,
-            stopJQP: stopJQP
+            stopJQP: stopJQP,
+            injectErrorMessage: injectErrorMessage
         });
 
         var html = '<div class="elroi-tooltip"><div class="elroi-tooltip-content"></div></div>';
@@ -255,10 +271,7 @@
             var isGridDrawn = false;
 
             if (graph.options.errorMessage) {
-                var $errorMsg = $('<div class="elroi-error">' + graph.options.errorMessage + '</div>')
-                    .addClass('alert box');
-
-                graph.$el.find('.paper').prepend($errorMsg);
+                injectErrorMessage(graph.options.errorMessage);
             }
 
             if (!graph.allSeries.length) {
@@ -672,8 +685,10 @@
 
 
             /**
-             * Helper function to figure out if we should distort the maximum values to make room for flags, messages, et
-             * @return {Number} The scale to multiply against each of the max values to make some room
+             * Helper function to figure out if we should distort the maximum values to make room for flags, messages, etc
+             * @return {Number} The scale to multiply against each of the max values to make some room;
+             *   if the height required for the flags/messages/etc is equal to or greater than the the height of the
+             *   actual graph, 1 (no-op) is returned.
              */
             function distortMaxValuesBy() {
                 var totalPixelsNeeded = pixelsNeededForErrorMessages() + pixelsNeededForPointFlags()
@@ -684,8 +699,7 @@
                     var pixelsNeeded = 0,
                         $errorMsg;
                     if (graph.options.errorMessage) {
-                        $errorMsg = $('<div id="graph-error">' + graph.options.errorMessage + '</div>')
-                            .addClass('alert box').appendTo(graph.$el.find('.paper'));
+                        $errorMsg = graph.injectErrorMessage(graph.options.errorMessage, 'visibility-hidden');
                         pixelsNeeded = $errorMsg.outerHeight() + $errorMsg.position().top * 2;
                         $errorMsg.remove();
                     }
@@ -739,7 +753,13 @@
                     return (pixelsNeeded === 0) ? 0 : pixelsNeeded + graph.labelLineHeight / 2;
                 }
 
-                return totalPixelsInGraph / (totalPixelsInGraph - totalPixelsNeeded);
+                // Return a multiplier to use that will cause the graph to fit below the error-message / point-flags
+                // / x2-axis-labels etc.  If the total height of error/flags/etc. (in pixels) needed is equal to or
+                // greater than the height of the graph, the state is erroneous.  Instead of returning a negative
+                // multiplier or causing a division by zero exception, we'll simply 1 which is essentially a no-op.
+                return (totalPixelsNeeded >= totalPixelsInGraph)
+                    ? 1
+                    : totalPixelsInGraph / (totalPixelsInGraph - totalPixelsNeeded);
             }
 
             // Figure out how much we need to distort these by
@@ -2040,7 +2060,6 @@
             }
 
             graph.$el.addClass('piechart');
-            graph.$el.addClass('piechart');
             messageContainer = $('<div></div>').addClass('text-container').prependTo(graph.$el);
 
             pieOptions.usePassThrough && generateHitShield();
@@ -2147,8 +2166,7 @@
             $.each(wedges, function(i, wedge) {
 
                 var label = $('<span>'+wedge.data.value+'</span>')
-                    .addClass('label')
-                    .css('visibility','hidden')
+                    .addClass('label visibility-hidden')
                     .appendTo(getMessageContainer());
 
                 if(wedge === selectedWedge) {
@@ -2164,7 +2182,7 @@
                 label.css('position','absolute')
                     .css('left',left-label.width() *.5)
                     .css('top',top-label.height() *.5)
-                    .css('visibility','visible');
+                    .removeClass('visibility-hidden');
             });
         }
 
