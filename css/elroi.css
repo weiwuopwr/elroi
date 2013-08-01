@@ -1,33 +1,35 @@
-/* Styles used for all graphs */
-/* graph needs to have an explicitly height & width - set it in the page specific css */
+/* Styles used for all Elroi graphs */
+/* NOTE: Any overrides should be included in a separate CSS file as this file will be overwritten if Elroi is revved */
+
 .elroi {
-  position: relative;
-  z-index: 2;
+    position: relative;
+    z-index: 2;
 }
 
+/* Override paper height & width to change graph size - however, set it in the page specific CSS! */
 .elroi .paper {
-  position: relative;
-  width: 620px;
-  height: 270px;
-  z-index: 2;
+    position: relative;
+    height: 270px;
+    width: 620px;
+    z-index: 2;
 }
 
 .elroi .elroi-tooltip {
-  border: none;
-  padding: 0 0 10px 0;
-  left: -1000px;
-  position: absolute;
-  width: 120px;
-  z-index: 4;
+    border: none;
+    padding: 0 0 10px 0;
+    left: -1000px;
+    position: absolute;
+    width: 120px;
+    z-index: 4;
 }
 
 .elroi .elroi-tooltip .elroi-tooltip-content {
-  background: #fff;
-  border: 4px solid #ccc;
-  font-size: 12px;
-  line-height: 15px;
-  padding: 5px;
-  text-align: center;
+    background: #fff;
+    border: 4px solid #ccc;
+    font-size: 12px;
+    line-height: 15px;
+    padding: 5px;
+    text-align: center;
 }
 
 .elroi .visibility-hidden {
@@ -38,22 +40,22 @@
 /* Pie chart
 ------------------------------ */
 .elroi.piechart .paper {
-  position: absolute;
-  z-index: 0;
+    position: absolute;
+    z-index: 0;
 }
 
 .elroi.piechart .text-container {
-  position: absolute;
-  z-index: 50;
+    position: absolute;
+    z-index: 50;
 }
 
 .elroi.piechart .hit-shield {
-  position: absolute;
-  z-index: 100;
+    position: absolute;
+    z-index: 100;
 }
 
 .elroi.piechart .label {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 .elroi.piechart .label.selected {
@@ -63,47 +65,48 @@
 /* Graph error
 ------------------------------ */
 .elroi-error {
-  font-size: 12px;
-  left: 40px;
-  position: absolute;
-  text-align: center;
-  top: 25px;
-  width: 540px;
-  z-index: 3;
+    font-size: 12px;
+    left: 40px;
+    position: absolute;
+    text-align: center;
+    top: 25px;
+    width: 540px;
+    z-index: 3;
+    background-color: #EE6363;
 }
 
 .elroi .elroi-tooltip .elroi-flag {
-  font-weight: bold;
-  padding: 4px;
-  text-align: center;
+    font-weight: bold;
+    padding: 4px;
+    text-align: center;
 }
 
 .elroi .x-ticks, .elroi .y-ticks {
-  z-index: 1;
-  list-style-type: none;
+    z-index: 1;
+    list-style-type: none;
 }
 
 .elroi .x-ticks li {
-  padding-top: 5px;
+    padding-top: 5px;
 }
 
 .elroi .y-ticks li,
 .elroi .x-ticks li,
 .elroi .point-label {
-  color: #888;
-  font-size: 12px;
-  line-height: 12px;
-  position: absolute;
-  text-align: center;
-  z-index: 1; }
+    color: #888;
+    font-size: 12px;
+    line-height: 12px;
+    position: absolute;
+    text-align: center;
+    z-index: 1; }
 
 .elroi .point-label {
-  font-size: 10px;
+    font-size: 10px;
 }
 
 .elroi .x-ticks.x2 li {
-  color: #222;
-  font-size: 14px;
+    color: #222;
+    font-size: 14px;
 }
 
 .elroi .elroi-point-label {
