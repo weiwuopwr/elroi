@@ -129,16 +129,22 @@
 
     Q.test('minValues', function(){
         var negValueSet = [[1, 15, 30, 78, 96, -32]],
+            containsNullValue = [[-1, null, 2]],
             positivesOnly = [[1, 15, 30, 78, 96]],
             multipleSets = [[-2,-1,0], [1,2,3]];
 
-        Q.equal(elroi.fn.helpers.minValues(negValueSet, [{minYValue: 'zeroOrLess'}]), -32, 'Zero or less setting goes negative if it has to');
-        Q.equal(elroi.fn.helpers.minValues(positivesOnly, [{minYValue: 'zeroOrLess'}]), 0, 'Zero or less setting stays at 0 if all numbers are positive');
+        Q.equal(elroi.fn.helpers.minValues(negValueSet, [{minYValue: 'zeroOrLess'}]), -32, 'ZeroOrLess setting goes negative if it has to');
+        Q.equal(elroi.fn.helpers.minValues(positivesOnly, [{minYValue: 'zeroOrLess'}]), 0, 'ZeroOrLess setting stays at 0 if all numbers are positive');
 
         Q.equal(elroi.fn.helpers.minValues(negValueSet, [{minYValue: 'auto'}]), -32, 'Auto setting gives lowest number if its negative');
         Q.equal(elroi.fn.helpers.minValues(positivesOnly, [{minYValue: 'auto'}]), 1, 'Auto gives the lowest number even if all numbers are positive');
 
         Q.equal(elroi.fn.helpers.minValues(negValueSet, [{minYValue: 10}]), 10, 'Returns what you send it if it is a hard coded number');
+
+        Q.equal(elroi.fn.helpers.minValues(containsNullValue, [{minYValue: -2}]), -2, 'Returns what you send it if it is a hard coded number');
+        Q.equal(elroi.fn.helpers.minValues(containsNullValue, [{minYValue: 'auto'}]), -1, 'Auto setting returns the smallest value even with a null value in the data value set.');
+        Q.equal(elroi.fn.helpers.minValues(containsNullValue, [{minYValue: 'zeroOrLess'}]), -1, 'ZeroOrLess setting returns the smallest value even with a null value in the data value set.');
+
 
         Q.deepEqual(elroi.fn.helpers.minValues(multipleSets, [{minYValue: 'auto'}, {minYValue: 'auto'}]), [-2, 1],
             'Should provide max for each set of data values provided');
@@ -146,6 +152,7 @@
 
     Q.test('maxValues', function(){
         var positiveSet = [[-1, 0, 1]],
+            containsNullValue = [[-1, null, 2]],
             multipleSets = [[-2,-1,0], [1,2,3]];
 
         Q.equal(elroi.fn.helpers.maxValues(positiveSet, [{maxYValue: 2}]), 2, 'maxYValue is a number, should return maxYValue for series\' data values');
@@ -154,6 +161,9 @@
 
         Q.deepEqual(elroi.fn.helpers.maxValues(multipleSets, [{maxYValue: 'auto'}, {maxYValue: 'auto'}]), [0, 3],
             'Should provide max for each set of data values provided');
+
+        Q.equal(elroi.fn.helpers.maxValues(containsNullValue, [{maxYValue: 3}]), 3, 'Returns what you send it if it is a hard coded number');
+        Q.equal(elroi.fn.helpers.maxValues(containsNullValue, [{maxYValue: 'auto'}]), 2, 'Auto setting returns the largest value even with a null value in the data value set.');
     });
 
     Q.test('pixelsNeededForErrorMessages', function() {
@@ -305,8 +315,8 @@
             DISTORT_AXIS = {dontDistortAxis: false};
 
         var helperWithNegativeMin = mockElroiFnHelper({min: [-1], max: [1], percentRangeOffsetNeededForLabeling: .5}),
+            helperWithZeroMax = mockElroiFnHelper({min: [-1], max: [0], percentRangeOffsetNeededForLabeling: .25}),
             helperWithMultipleSeries = mockElroiFnHelper({min: [0, 2], max: [1, 4], percentRangeOffsetNeededForLabeling: .25});
-
 
         var result = helperWithNegativeMin.adjustedMaxMinValues(null, [DISTORT_AXIS], null);
 
@@ -317,6 +327,14 @@
 
         Q.equal(result.minValues[0], -1, 'Should always leave min value untouched');
         Q.equal(result.maxValues[0], 1, 'Should leave max alone if dontDistortAxis for series is true.');
+
+        //Verify scaling works with a zero max; as we distort our scale by adding padding to the maximum value it is
+        //important that scaling works appropriately if the max is 0.  This case didn't work at all when multiplicative
+        //scaling was used!
+        result = helperWithZeroMax.adjustedMaxMinValues(null, [DISTORT_AXIS], null);
+
+        Q.equal(result.minValues[0], -1, 'Should always leave min value untouched');
+        Q.equal(result.maxValues[0], .25, 'Should have adjusted max by 1 (range * percentRangeOffsetNeededForLabeling | 2 * .5).');
 
         result = helperWithMultipleSeries.adjustedMaxMinValues(null, [DONT_DISTORT_AXIS, DISTORT_AXIS], null);
 
@@ -884,6 +902,50 @@
                         {value : 2.3100},
                         {value : 0.0000},
                         {value : 1.7964}
+                    ]
+                ]
+                , options : { type: 'line', unit : 'KWH', precision : 0 }
+            }
+        ], {errorMessage: '<p>All data should appear below error message!</p>'});
+    });
+
+    /* Set of previously documented bugs; should all be visually verified. */
+    Q.test('Visually verify: data should appear below data label if 0 (null) is max value in set (28129-2)', function() {
+        //debugger;
+        elroi(createElroiGraphContainer(), [
+            { series:
+                [
+                    [
+                        {value : -83.3952},
+                        {value : -77.2380},
+                        {value : -127.7520},
+                        {value : -123.4644},
+                        {value : -60.7536},
+                        {value : -67.0800},
+                        {value : -92.5008},
+                        {value : -70.4712},
+                        {value : -61.4028},
+                        {value : -63.6204},
+                        {value : -98.7060},
+                        {value : -39.8124},
+                        {value : -28.2552},
+                        {value : -18.7860},
+                        {value : -34.1520},
+                        {value : -70.2816},
+                        {value : -101.4228},
+                        {value : -103.1520},
+                        {value : -69.1200},
+                        {value : -88.8912},
+                        {value : -18.5952},
+                        {value : -31.9632},
+                        {value : -58.9836},
+                        {value : -5.4276},
+                        {value : -62.4072},
+                        {value : -84.9048},
+                        {value : -96.7536},
+                        {value : -103.0680},
+                        {value : -20.6784},
+                        {value : null}
                     ]
                 ]
                 , options : { type: 'line', unit : 'KWH', precision : 0 }
