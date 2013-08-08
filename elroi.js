@@ -893,13 +893,38 @@
                 calculatedPercentRangeOffsetNeededForLabeling = this.percentRangeOffsetNeededForLabeling(graph);
 
             calculatedMaxValues = $.map(calculatedMaxValues, function(maxValue, i) {
-                var rangeOffset;
+                var rangeOffset,
+                    minValue = calculatedMinValues[i];
 
-                if (maxValue < calculatedMinValues[i]) {
+                // If maxValue and minValue are the same value it messes up a bunch of down stream calculations.  With
+                // min and max both equal to 0 Elroi can get stuck in an infinite while loop while attempting to
+                // calculate labels (which will hang the page) and with any other matching min-max values values it will
+                // generate an error in the same block of code preventing the graph from rendering!
+                //
+                // It's important that this alteration occurs here because otherwise the rangeOffset and the distortion
+                // to fit the graph under decoration (errors/pointFlags/x2labels) will break.  If the range is 0
+                // rangeOffset will always be 0 and that means no adjustment to the axes to fit the graph under the
+                // decoration will occur!
+                //
+                // Having a matching minimum and maximum doesn't really make very much sense in any case because if a
+                // graphs y-axis' range was 0, the graph would be a line.
+                //
+                // FUTURE REFACTOR:
+                //   If maxValue and minValue match the bottom axis line will assume be the value of minValue/maxValue.
+                //   This makes quite a bit of sense for zero and for a negative value, but less sense for a positive
+                //   value where it might make more sense to center the line to make it clear there was some amount of
+                //   usage.  The visual tests (28683) demonstrate this.  In the case of minValue/maxValue being the same
+                //   positive value, the flat line can be avoided by simply using zeroOrLess which will cause minValue
+                //   to be 0 instead, avoiding this problem.
+                if (maxValue === minValue) {
+                    maxValue += 1;
+                }
+
+                if (maxValue < minValue) {
                     throw new Error("The min value for a series' data values should not be less than the max value");
                 }
 
-                rangeOffset = (maxValue - calculatedMinValues[i]) * calculatedPercentRangeOffsetNeededForLabeling;
+                rangeOffset = (maxValue - minValue) * calculatedPercentRangeOffsetNeededForLabeling;
 
                 // Don't distort weather axis otherwise max value becomes 350 deg F. This is done by setting
                 // dontDistortAxis = true in the series option.
@@ -1090,8 +1115,7 @@
 
         // Figure out bar width
         var barWidth = xTick * 2/3; // 2/3 is magic number for padding between bars
-
-        var barWhiteSpace = (xTick * 1/3) / 2;
+        var barWhiteSpace = xTick / 6; // 1/6 + 2/3 + 1/6 = 1
 
         // Merge new graph object with the default graph object
         $.extend(graph, {

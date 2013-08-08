@@ -316,7 +316,8 @@
 
         var helperWithNegativeMin = mockElroiFnHelper({min: [-1], max: [1], percentRangeOffsetNeededForLabeling: .5}),
             helperWithZeroMax = mockElroiFnHelper({min: [-1], max: [0], percentRangeOffsetNeededForLabeling: .25}),
-            helperWithMultipleSeries = mockElroiFnHelper({min: [0, 2], max: [1, 4], percentRangeOffsetNeededForLabeling: .25});
+            helperWithMultipleSeries = mockElroiFnHelper({min: [0, 2], max: [1, 4], percentRangeOffsetNeededForLabeling: .25}),
+            helperWithSameMaxMin = mockElroiFnHelper({min: [1], max: [1], percentRangeOffsetNeededForLabeling: .25});
 
         var result = helperWithNegativeMin.adjustedMaxMinValues(null, [DISTORT_AXIS], null);
 
@@ -343,6 +344,17 @@
 
         Q.equal(result.minValues[1], 2, 'Should always leave min value untouched');
         Q.equal(result.maxValues[1], 4.5, 'Should have adjusted max by .5 (range * percentRangeOffsetNeededForLabeling | 2 * .25).');
+
+        result = helperWithSameMaxMin.adjustedMaxMinValues(null, [DONT_DISTORT_AXIS], null);
+
+        Q.equal(result.minValues[0], 1, 'Should always leave min value untouched');
+        Q.equal(result.maxValues[0], 2, 'Should have bumped max up to 2 so min (1) and max don\'t match; no distortion should have been applied otherwise.');
+
+        result = helperWithSameMaxMin.adjustedMaxMinValues(null, [DISTORT_AXIS], null);
+
+        Q.equal(result.minValues[0], 1, 'Should always leave min value untouched');
+        Q.equal(result.maxValues[0], 2.25, 'Should have bumped max up to 1 so min and max don\'t match and then distorted by .25 (range * percentRangeOffsetNeededForLabeling | 1 * .25).');
+
     });
 
     Q.test('elroi can handle an empty dataset without dying', function() {
@@ -874,7 +886,9 @@
         Q.equal(elroi.fn.helpers.calculatePointRadius(20,0,3), 3, 'Disallow radius larger than provided');
     });
 
+    /* ------------------------------------------------------------------- */
     /* Set of previously documented bugs; should all be visually verified. */
+    /* ------------------------------------------------------------------- */
     Q.test('Visually verify: data should appear below data label (28129)', function() {
         elroi(createElroiGraphContainer(), [
             { series:
@@ -909,9 +923,7 @@
         ], {errorMessage: '<p>All data should appear below error message!</p>'});
     });
 
-    /* Set of previously documented bugs; should all be visually verified. */
     Q.test('Visually verify: data should appear below data label if 0 (null) is max value in set (28129-2)', function() {
-        //debugger;
         elroi(createElroiGraphContainer(), [
             { series:
                 [
@@ -947,10 +959,55 @@
                         {value : -20.6784},
                         {value : null}
                     ]
-                ]
-                , options : { type: 'line', unit : 'KWH', precision : 0 }
+                ],
+                options : { type: 'line', unit : 'KWH', precision : 0 }
             }
         ], {errorMessage: '<p>All data should appear below error message!</p>'});
+    });
+
+    Q.test('Visually verify: All 0 entries doesn\'t hang the browser (28683-1)', function() {
+        elroi(createElroiGraphContainer(), [
+            { series:
+                [
+                    [
+                        {value : 0},
+                        {value : 0},
+                        {value : 0}
+                    ]
+                ],
+                options : { type: 'line', unit : 'KWH', precision : 0 }
+            }
+        ], {errorMessage: '<p>All 0 entries should not hang the browser!</p>'});
+    });
+
+    Q.test('Visually verify: All -1 entries doesn\'t generate an error (28683-2)', function() {
+        elroi(createElroiGraphContainer(), [
+            { series:
+                [
+                    [
+                        {value : -1},
+                        {value : -1},
+                        {value : -1}
+                    ]
+                ],
+                options : { type: 'line', unit : 'KWH', precision : 0 }
+            }
+        ], {errorMessage: '<p>Identical negative entries shouldn\'t generate errors that prevent graph from showing</p>'});
+    });
+
+    Q.test('Visually verify: All 1 entries doesn\'t generate an error (28683-3)', function() {
+        elroi(createElroiGraphContainer(), [
+            { series:
+                [
+                    [
+                        {value : 1},
+                        {value : 1},
+                        {value : 1}
+                    ]
+                ],
+                options : { type: 'line', minYValue: 'auto', unit : 'KWH', precision : 0 }
+            }
+        ], {errorMessage: '<p>Identical positive entries shouldn\'t generate errors that prevent graph from showing</p>'});
     });
 
     // Should throw exception if minYValue is greater than maxYValue
