@@ -448,22 +448,24 @@
         var marchTen2011 = new Date('2011/03/10');
         var aprilOne2011 = new Date('2011/04/01');
         var marchEleven2012 = new Date('2012/03/11');
+        var startTag = '<span class="nowrap">';
+        var endTag = '</span>';
 
-        var parseResult = function(output) {
-            return output.replace(/\s/g, '&nbsp;');
+        var parseResult = function(startDate, endDate) {
+            return startTag + startDate + endTag + '&nbsp;&ndash;&nbsp;' + startTag + endDate + endTag;
         };
 
-        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {}), parseResult('Mar 1 &ndash; Mar 10, 2011'), 'same month+year, year dropped');
+        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {}), parseResult('Mar 1', 'Mar 10, 2011'), 'same month+year, year dropped');
         Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {skipRepeatedYear: true}),
-            parseResult('Mar 1 &ndash; Mar 10, 2011'), 'same month+year, year dropped, skipRepeatedYear explicit true');
+            parseResult('Mar 1', 'Mar 10, 2011'), 'same month+year, year dropped, skipRepeatedYear explicit true');
         Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, marchTen2011, {skipRepeatedYear: false}),
-            parseResult('Mar 1, 2011 &ndash; Mar 10, 2011'), 'same month+year, year dropped, skipRepeatedYear explicit false');
+            parseResult('Mar 1, 2011', 'Mar 10, 2011'), 'same month+year, year dropped, skipRepeatedYear explicit false');
 
-        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, aprilOne2011, {}), parseResult('Mar 1 &ndash; Apr 1, 2011'), 'different month, same year, year dropped');
-        Q.equal(elroi.fn.formatDateRange('d M y', marchOne2011, aprilOne2011, {}), parseResult('1 Mar &ndash; 1 Apr 11'), 'd M y format, same year, year dropped');
-        Q.equal(elroi.fn.formatDateRange('d M yy', marchOne2011, marchEleven2012, {}), parseResult('1 Mar 2011 &ndash; 11 Mar 2012'), 'd M yy format, different year');
+        Q.equal(elroi.fn.formatDateRange('M d, yy', marchOne2011, aprilOne2011, {}), parseResult('Mar 1', 'Apr 1, 2011'), 'different month, same year, year dropped');
+        Q.equal(elroi.fn.formatDateRange('d M y', marchOne2011, aprilOne2011, {}), parseResult('1 Mar', '1 Apr 11'), 'd M y format, same year, year dropped');
+        Q.equal(elroi.fn.formatDateRange('d M yy', marchOne2011, marchEleven2012, {}), parseResult('1 Mar 2011', '11 Mar 2012'), 'd M yy format, different year');
         Q.equal(elroi.fn.formatDateRange('d M yy', marchOne2011, marchEleven2012, {skipRepeatedYear: true}),
-            parseResult('1 Mar 2011 &ndash; 11 Mar 2012'), 'd M yy format, different year, skip repeated year ignored');
+            parseResult('1 Mar 2011', '11 Mar 2012'), 'd M yy format, different year, skip repeated year ignored');
     });
 
     Q.test('elroi decimal/thousands separator number formatting', function () {

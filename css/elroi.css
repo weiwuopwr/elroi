@@ -124,3 +124,8 @@
     font-size: 12px;
     padding: 0 0 10px 0;
 }
+
+/* Fix word-breaking issue in CJK languages */
+.elroi .nowrap {
+    white-space: nowrap;
+}
